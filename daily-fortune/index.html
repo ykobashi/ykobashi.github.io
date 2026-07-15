@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日の運勢おみくじ | 無料で今日の総合運・恋愛運・仕事運・金運・健康運を診断</title>
+<meta name="description" content="今日の運勢を無料で診断できるおみくじツール。総合運(大吉〜大凶)に加えて恋愛運・仕事運・金運・健康運もチェックできます。毎日結果が変わります。">
+<meta property="og:title" content="今日の運勢おみくじ | 無料で今日の運勢を診断">
+<meta property="og:description" content="総合運・恋愛運・仕事運・金運・健康運を無料で診断できるおみくじツールです。毎日新しい結果が出ます。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/daily-fortune/">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>今日の運勢おみくじ</h1>
+  <p class="subtitle" id="today-label"></p>
+</header>
+
+<main>
+  <section class="card" id="form-section">
+    <form id="fortune-form" autocomplete="off">
+      <label for="name-input">お名前(任意)</label>
+      <input type="text" id="name-input" name="name" placeholder="例:山田太郎(未入力でもOK)" maxlength="30">
+      <button type="submit">おみくじを引く</button>
+    </form>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="card result-card" id="result-section" hidden>
+    <h2>今日の運勢</h2>
+    <p class="overall-fortune" id="overall-fortune"></p>
+    <p class="overall-comment" id="overall-comment"></p>
+
+    <ul class="category-list" id="category-list"></ul>
+
+    <div class="share-area">
+      <button type="button" id="share-button">結果をシェアする</button>
+    </div>
+
+    <button type="button" id="retry-button" class="secondary-button">もう一度引く</button>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="card about-section">
+    <h2>このツールについて</h2>
+    <p>
+      「今日の運勢おみくじ」は、今日の日付とお名前をもとに、総合運(大吉・中吉・小吉・吉・凶・大凶)と恋愛運・仕事運・金運・健康運の4つのカテゴリ運勢を診断する無料ツールです。
+      同じ日に同じお名前で診断すると、何度引いても同じ結果になります。日付が変われば結果も変わるので、毎日チェックするのがおすすめです。
+    </p>
+    <p>
+      入力された情報はサーバーに送信されず、すべてお使いのブラウザ内で診断処理が完結します。エンターテインメントとしてお楽しみください。
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 今日の運勢おみくじ</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

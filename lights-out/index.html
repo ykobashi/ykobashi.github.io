@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ライツアウト | 無料で遊べるブラウザ脳トレパズル</title>
+<meta name="description" content="5x5のマスをクリックして全消灯を目指す無料のライツアウトパズル。クリックすると上下左右のマスも一緒に点灯・消灯が切り替わります。手数を数えて頭の体操に。">
+<meta property="og:title" content="ライツアウト | 無料で遊べるブラウザ脳トレパズル">
+<meta property="og:description" content="5x5のマスをクリックして全消灯を目指す無料パズル、ライツアウト。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/lights-out/">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>ライツアウト</h1>
+  <p class="subtitle">マスをクリックして全部消灯させよう</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section class="status-bar">
+    <div class="stat"><span class="stat-label">手数</span><span id="moves-count">0</span></div>
+    <button id="reset-btn" class="reset-btn" type="button">新しい問題</button>
+  </section>
+
+  <section class="board-wrapper">
+    <div id="board" class="board" role="grid" aria-label="ライツアウト盤面"></div>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text">クリア!</p>
+      <p id="result-detail" class="result-detail"></p>
+      <button id="play-again-btn" class="reset-btn" type="button">もう一度遊ぶ</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../memory-match/index.html">神経衰弱</a></li>
+          <li><a href="../game-2048/index.html">2048</a></li>
+          <li><a href="../snake-game/index.html">スネークゲーム</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方</h2>
+    <ul>
+      <li>マスをクリック(タップ)すると、そのマスと上下左右に隣接するマスの点灯・消灯が切り替わります。</li>
+      <li>盤面の明かりを全て消せばクリアです。</li>
+      <li>開始時の配置は必ず解けるように自動生成されています。</li>
+      <li>「新しい問題」ボタンで別の初期配置に挑戦できます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 ライツアウト</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

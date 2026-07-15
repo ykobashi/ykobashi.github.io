@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2048 | 無料で遊べるブラウザパズルゲーム</title>
+<meta name="description" content="矢印キーやスワイプでタイルを動かして2048を目指す無料パズルゲーム。同じ数字を合体させてスコアを伸ばそう。インストール不要でブラウザですぐ遊べます。">
+<meta property="og:title" content="2048 | 無料で遊べるブラウザパズルゲーム">
+<meta property="og:description" content="タイルを動かして同じ数字を合体させ、2048を目指す無料パズルゲーム。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/game-2048/">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>2048</h1>
+  <p class="subtitle">タイルを動かして同じ数字を合体させよう</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section class="status-bar">
+    <div class="stat"><span class="stat-label">スコア</span><span id="score-count">0</span></div>
+    <div class="stat"><span class="stat-label">ベスト</span><span id="best-count">0</span></div>
+    <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+  </section>
+
+  <section class="board-wrapper">
+    <div id="board" class="board" role="grid" aria-label="2048盤面"></div>
+  </section>
+
+  <section class="touch-controls" aria-label="方向操作ボタン">
+    <button class="dir-btn dir-up" type="button" data-dir="up" aria-label="上へ">▲</button>
+    <div class="dir-row">
+      <button class="dir-btn dir-left" type="button" data-dir="left" aria-label="左へ">◀</button>
+      <button class="dir-btn dir-down" type="button" data-dir="down" aria-label="下へ">▼</button>
+      <button class="dir-btn dir-right" type="button" data-dir="right" aria-label="右へ">▶</button>
+    </div>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text">2048達成!</p>
+      <p id="result-detail" class="result-detail"></p>
+      <button id="play-again-btn" class="reset-btn" type="button">もう一度遊ぶ</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../memory-match/index.html">神経衰弱</a></li>
+          <li><a href="../lights-out/index.html">ライツアウト</a></li>
+          <li><a href="../snake-game/index.html">スネークゲーム</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方</h2>
+    <ul>
+      <li>矢印キー(またはスマホでは画面下の矢印ボタン)でタイルを上下左右にスライドさせます。</li>
+      <li>同じ数字のタイル同士がぶつかると合体して2倍の数字になります。</li>
+      <li>タイルを動かすたびに空いているマスにランダムで新しいタイル(2か4)が出現します。</li>
+      <li>「2048」のタイルを作ることができればクリアです。</li>
+      <li>盤面が埋まってどの方向にも動かせなくなるとゲームオーバーです。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 2048</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

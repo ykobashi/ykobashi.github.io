@@ -1,0 +1,107 @@
+:root {
+  --color-bg: #f6f8fa;
+  --color-text: #1f2933;
+  --color-primary: #7c3aed;
+  --color-card: #ffffff;
+  --color-border: #d7dde3;
+  --color-warn: #dc2626;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.7;
+}
+
+header { padding: 2rem 1rem 1rem; text-align: center; }
+header h1 { margin: 0 0 0.5rem; font-size: 1.8rem; }
+.lead { color: #4b5563; margin: 0; }
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+}
+
+.calculator {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  margin-bottom: 1.5rem;
+}
+
+#text-input {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.stat-card {
+  background: #f9fafb;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stat-label { font-size: 0.8rem; color: #6b7280; }
+.stat-value { font-size: 1.4rem; font-weight: bold; color: var(--color-primary); }
+
+#twitter-card.over-limit .stat-value { color: var(--color-warn); }
+
+.ad-slot {
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef1f4;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  color: #9ca3af;
+  font-size: 0.85rem;
+  margin: 1.5rem 0;
+}
+
+.info {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.info h2 { font-size: 1.2rem; margin-top: 1.5rem; }
+.info h2:first-child { margin-top: 0; }
+.info ul { padding-left: 1.3rem; }
+.info li { margin-bottom: 0.5rem; }
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+  header h1 { font-size: 1.4rem; }
+  .calculator, .info { padding: 1rem; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stat-value { font-size: 1.2rem; }
+}

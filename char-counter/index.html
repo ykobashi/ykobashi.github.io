@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文字数カウンター | 原稿用紙・バイト数・X(Twitter)字数対応</title>
+<meta name="description" content="テキストを入力するだけで文字数(スペース込み/除く)・行数・UTF-8バイト数・原稿用紙(400字詰め)換算枚数・X(Twitter)140字の残り文字数をリアルタイムで表示する無料ツール。">
+<meta property="og:title" content="文字数カウンター">
+<meta property="og:description" content="文字数・行数・バイト数・原稿用紙換算・X(Twitter)残り文字数をリアルタイム表示。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/char-counter/">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "文字数カウンター",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": "テキストの文字数・行数・UTF-8バイト数・原稿用紙換算枚数・X(Twitter)の残り文字数をリアルタイムで計算する無料ツール。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+</head>
+<body>
+<header>
+  <h1>文字数カウンター</h1>
+  <p class="lead">テキストを入力すると、文字数・行数・バイト数などをリアルタイムで表示します。</p>
+</header>
+
+<main>
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="calculator">
+    <textarea id="text-input" placeholder="ここに文章を入力してください..." rows="10"></textarea>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">文字数(スペース込み)</span>
+        <span id="chars-with-space" class="stat-value">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">文字数(スペース除く)</span>
+        <span id="chars-without-space" class="stat-value">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">行数</span>
+        <span id="line-count" class="stat-value">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">UTF-8バイト数</span>
+        <span id="byte-count" class="stat-value">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">原稿用紙換算(400字詰め)</span>
+        <span id="page-count" class="stat-value">0枚</span>
+      </div>
+      <div class="stat-card" id="twitter-card">
+        <span class="stat-label">X(Twitter) 残り文字数</span>
+        <span id="twitter-remaining" class="stat-value">140</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="info">
+    <h2>使い方</h2>
+    <p>上のテキストエリアに文章を入力・貼り付けするだけで、文字数・行数・バイト数などが自動的に(リアルタイムで)計算されます。ボタン操作は不要です。入力した文章はブラウザ内でのみ処理され、外部には送信されません。</p>
+
+    <h2>各項目の計算式について</h2>
+    <ul>
+      <li><strong>文字数</strong>: 絵文字などのサロゲートペアも1文字として正しくカウントしています。</li>
+      <li><strong>行数</strong>: 改行(LF/CRLF/CR)の数+1で計算します。</li>
+      <li><strong>UTF-8バイト数</strong>: 各文字をUTF-8エンコードした際のバイト数を合計しています(半角英数字は1バイト、日本語は3バイト、絵文字などは4バイトが基本です)。</li>
+      <li><strong>原稿用紙換算</strong>: 文字数(スペース込み)を400字で割り、小数点以下を切り上げた枚数です。</li>
+      <li><strong>X(Twitter)残り文字数</strong>: 140字からスペース込み文字数を引いた値です。超過するとマイナス表示になります。</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 文字数カウンター</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

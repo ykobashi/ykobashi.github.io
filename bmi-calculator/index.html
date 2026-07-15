@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI・適正体重計算機 | 無料でカンタン計算</title>
+<meta name="description" content="身長と体重を入力するだけでBMIと適正体重を瞬時に計算。日本肥満学会(JASSO)基準で肥満度も判定できる無料ツールです。">
+<meta property="og:title" content="BMI・適正体重計算機">
+<meta property="og:description" content="身長と体重からBMIと適正体重を計算。日本肥満学会基準の肥満度判定つき。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/bmi-calculator/">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "BMI・適正体重計算機",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Any",
+  "description": "身長と体重を入力してBMIと適正体重を計算する無料の健康管理ツール。日本肥満学会(JASSO)基準に基づいて肥満度を判定します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+</head>
+<body>
+<header>
+  <h1>BMI・適正体重計算機</h1>
+  <p class="lead">身長と体重を入力するだけで、BMIと適正体重をすぐに計算します。</p>
+</header>
+
+<main>
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="calculator">
+    <div class="input-group">
+      <label for="height">身長(cm)</label>
+      <input type="number" id="height" inputmode="decimal" placeholder="例: 170" min="1" step="0.1">
+    </div>
+    <div class="input-group">
+      <label for="weight">体重(kg)</label>
+      <input type="number" id="weight" inputmode="decimal" placeholder="例: 60" min="1" step="0.1">
+    </div>
+    <button id="calc-btn" type="button">計算する</button>
+
+    <div id="result" class="result" hidden>
+      <div class="result-row">
+        <span class="result-label">BMI</span>
+        <span id="bmi-value" class="result-value">--</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">判定</span>
+        <span id="bmi-category" class="result-value">--</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">適正体重</span>
+        <span id="ideal-weight" class="result-value">--</span>
+      </div>
+    </div>
+    <p id="error-msg" class="error" hidden>身長・体重には正の数値を入力してください。</p>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="info">
+    <h2>使い方</h2>
+    <p>身長(cm)と体重(kg)を入力し、「計算する」ボタンを押すだけで、BMIの数値・肥満度の判定・適正体重が表示されます。数値はすべてその場で(ブラウザ内で)計算されるため、入力した情報が外部に送信されることはありません。</p>
+
+    <h2>計算式について</h2>
+    <p>BMI(Body Mass Index)は次の式で計算されます。</p>
+    <p class="formula">BMI = 体重(kg) ÷ (身長(m) × 身長(m))</p>
+    <p>適正体重は、統計的に最も病気にかかりにくいとされるBMI22を基準に、次の式で計算しています。</p>
+    <p class="formula">適正体重(kg) = 22 × 身長(m) × 身長(m)</p>
+
+    <h2>肥満度の判定基準(日本肥満学会 JASSO)</h2>
+    <table class="ref-table">
+      <thead><tr><th>BMI</th><th>判定</th></tr></thead>
+      <tbody>
+        <tr><td>18.5未満</td><td>低体重</td></tr>
+        <tr><td>18.5以上25未満</td><td>普通体重</td></tr>
+        <tr><td>25以上30未満</td><td>肥満(1度)</td></tr>
+        <tr><td>30以上35未満</td><td>肥満(2度)</td></tr>
+        <tr><td>35以上40未満</td><td>肥満(3度)</td></tr>
+        <tr><td>40以上</td><td>肥満(4度)</td></tr>
+      </tbody>
+    </table>
+    <p class="note">※本ツールは目安であり、医学的な診断を行うものではありません。健康上の懸念がある場合は医療機関にご相談ください。</p>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 BMI・適正体重計算機</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

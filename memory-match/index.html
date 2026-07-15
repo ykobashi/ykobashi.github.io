@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>神経衰弱 | 無料で遊べるブラウザ記憶力ゲーム</title>
+<meta name="description" content="4x4・16枚のカードでペアを揃える無料の神経衰弱ゲーム。手数と経過時間を記録して記憶力を試せます。インストール不要、スマホ・PCどちらでも遊べます。">
+<meta property="og:title" content="神経衰弱 | 無料で遊べるブラウザ記憶力ゲーム">
+<meta property="og:description" content="4x4のカードをめくってペアを揃える無料の神経衰弱。手数と経過時間で記憶力を測定できます。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/memory-match/">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>神経衰弱</h1>
+  <p class="subtitle">カードをめくってペアを揃えよう</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section class="status-bar">
+    <div class="stat"><span class="stat-label">手数</span><span id="moves-count">0</span></div>
+    <div class="stat"><span class="stat-label">経過時間</span><span id="elapsed-time">00:00</span></div>
+    <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+  </section>
+
+  <section class="board-wrapper">
+    <div id="board" class="board" role="grid" aria-label="神経衰弱カード盤面"></div>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text">クリア!</p>
+      <p id="result-detail" class="result-detail"></p>
+      <button id="play-again-btn" class="reset-btn" type="button">もう一度遊ぶ</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../game-2048/index.html">2048</a></li>
+          <li><a href="../lights-out/index.html">ライツアウト</a></li>
+          <li><a href="../snake-game/index.html">スネークゲーム</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方</h2>
+    <ul>
+      <li>カードをタップ(クリック)すると絵柄がめくれます。</li>
+      <li>2枚めくって絵柄が一致すればそのまま表向きのまま残ります。</li>
+      <li>一致しなければ少し経ってから2枚とも裏返ります。</li>
+      <li>全8ペア(16枚)を揃えるとクリアです。手数と経過時間が少ないほど好成績です。</li>
+      <li>「最初から」ボタンでいつでも新しいカード配置に挑戦できます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 神経衰弱</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

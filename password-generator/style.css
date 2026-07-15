@@ -1,0 +1,203 @@
+:root {
+  --color-bg: #f6f8fa;
+  --color-text: #1f2933;
+  --color-primary: #0891b2;
+  --color-primary-dark: #0e7490;
+  --color-card: #ffffff;
+  --color-border: #d7dde3;
+  --color-error: #dc2626;
+  --color-weak: #dc2626;
+  --color-fair: #f59e0b;
+  --color-strong: #16a34a;
+  --color-very-strong: #059669;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.7;
+}
+
+header { padding: 2rem 1rem 1rem; text-align: center; }
+header h1 { margin: 0 0 0.5rem; font-size: 1.8rem; }
+.lead { color: #4b5563; margin: 0; }
+
+main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+}
+
+.calculator {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  margin-bottom: 1.5rem;
+}
+
+.password-display {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+#password-output {
+  flex: 1;
+  padding: 0.8rem;
+  font-size: 1.15rem;
+  font-family: "Consolas", "Courier New", monospace;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #f9fafb;
+  letter-spacing: 0.03em;
+}
+
+#copy-btn {
+  padding: 0 1.2rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  white-space: nowrap;
+}
+#copy-btn:hover { background: #f3f4f6; }
+#copy-btn.copied { background: var(--color-strong); color: #fff; border-color: var(--color-strong); }
+
+.strength-meter {
+  margin-bottom: 1.5rem;
+}
+
+.strength-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: #e5e7eb;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.2s ease, background-color 0.2s ease;
+  background: var(--color-weak);
+}
+
+.strength-label {
+  font-weight: bold;
+  margin-right: 0.6rem;
+}
+
+.entropy-value {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.input-group { margin-bottom: 1rem; }
+.input-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.4rem;
+}
+
+#length-slider { width: 100%; }
+
+.checkbox-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.generate-btn {
+  width: 100%;
+  padding: 0.9rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #fff;
+  background: var(--color-primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.generate-btn:hover { background: var(--color-primary-dark); }
+
+.error {
+  color: var(--color-error);
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.ad-slot {
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef1f4;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  color: #9ca3af;
+  font-size: 0.85rem;
+  margin: 1.5rem 0;
+}
+
+.info {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.info h2 { font-size: 1.2rem; margin-top: 1.5rem; }
+.info h2:first-child { margin-top: 0; }
+.info code {
+  background: #f3f4f6;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.formula {
+  background: #ecfeff;
+  border-radius: 6px;
+  padding: 0.7rem 1rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+.ref-table th, .ref-table td {
+  border: 1px solid var(--color-border);
+  padding: 0.5rem;
+  text-align: center;
+}
+.ref-table th { background: #f3f4f6; }
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: #9ca3af;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+  header h1 { font-size: 1.4rem; }
+  .calculator, .info { padding: 1rem; }
+  .checkbox-group { grid-template-columns: 1fr; }
+}

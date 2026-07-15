@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>単位変換ツール | 長さ・重さ・温度をカンタン変換</title>
+<meta name="description" content="長さ(m/cm/km/inch/feet/mile)、重さ(kg/g/lb/oz)、温度(℃/℉/K)を相互に変換できる無料ツール。カテゴリを切り替えてすぐに変換結果を確認できます。">
+<meta property="og:title" content="単位変換ツール">
+<meta property="og:description" content="長さ・重さ・温度をカテゴリ切り替えでカンタンに単位変換。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/unit-converter/">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "単位変換ツール",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": "長さ・重さ・温度の単位を相互に変換できる無料ツール。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+</head>
+<body>
+<header>
+  <h1>単位変換ツール</h1>
+  <p class="lead">長さ・重さ・温度の単位をカンタンに変換します。</p>
+</header>
+
+<main>
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="calculator">
+    <div class="tabs" role="tablist">
+      <button type="button" class="tab active" data-category="length">長さ</button>
+      <button type="button" class="tab" data-category="weight">重さ</button>
+      <button type="button" class="tab" data-category="temperature">温度</button>
+    </div>
+
+    <div class="convert-row">
+      <div class="input-group">
+        <label for="value-input">値</label>
+        <input type="number" id="value-input" value="1" step="any">
+      </div>
+      <div class="input-group">
+        <label for="from-unit">変換前</label>
+        <select id="from-unit"></select>
+      </div>
+      <div class="swap-wrap">
+        <button type="button" id="swap-btn" title="単位を入れ替える">⇄</button>
+      </div>
+      <div class="input-group">
+        <label for="to-unit">変換後</label>
+        <select id="to-unit"></select>
+      </div>
+    </div>
+
+    <div id="result" class="result">
+      <span id="result-text">--</span>
+    </div>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="info">
+    <h2>使い方</h2>
+    <p>上部のタブで「長さ」「重さ」「温度」を切り替え、値と変換前・変換後の単位を選ぶと、結果が自動的に表示されます。⇄ボタンで単位を入れ替えることもできます。</p>
+
+    <h2>対応単位</h2>
+    <ul>
+      <li><strong>長さ</strong>: m(メートル)、cm(センチメートル)、km(キロメートル)、inch(インチ)、feet(フィート)、mile(マイル)</li>
+      <li><strong>重さ</strong>: kg(キログラム)、g(グラム)、lb(ポンド)、oz(オンス)</li>
+      <li><strong>温度</strong>: ℃(摂氏)、℉(華氏)、K(ケルビン)</li>
+    </ul>
+
+    <h2>計算式について</h2>
+    <p>長さ・重さは基準単位(メートル・キログラム)に一度換算してから目的の単位に変換しています。温度は単純な倍率ではなく、以下の変換式を使用しています。</p>
+    <p class="formula">℉ = ℃ × 9/5 + 32　　K = ℃ + 273.15</p>
+    <p class="note">例: 0℃ = 32℉ = 273.15K、100℃ = 212℉ = 373.15K</p>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 単位変換ツール</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

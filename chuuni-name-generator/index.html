@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>厨二病風二つ名メーカー | 名前から中二病な二つ名を無料自動生成</title>
+<meta name="description" content="名前を入力するだけで「漆黒の死神」のような厨二病風の二つ名を自動生成する無料ツール。同じ名前なら何度試しても同じ候補が表示されます。">
+<meta property="og:title" content="厨二病風二つ名メーカー | あなただけの二つ名を生成">
+<meta property="og:description" content="名前を入力するだけで中二病な二つ名を自動生成する無料ツールです。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/chuuni-name-generator/">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>厨二病風二つ名メーカー</h1>
+  <p class="subtitle">あなたの中に眠る、もうひとつの名を呼び覚ませ</p>
+</header>
+
+<main>
+  <section class="card" id="form-section">
+    <form id="generator-form" autocomplete="off">
+      <label for="name-input">お名前</label>
+      <input type="text" id="name-input" name="name" placeholder="例:山田太郎" required maxlength="20">
+      <button type="submit">二つ名を覚醒させる</button>
+    </form>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="card result-card" id="result-section" hidden>
+    <h2>覚醒せし二つ名</h2>
+    <ul class="chuuni-list" id="chuuni-list"></ul>
+
+    <div class="share-area">
+      <button type="button" id="share-button">結果をシェアする</button>
+    </div>
+
+    <button type="button" id="retry-button" class="secondary-button">別の名前で試す</button>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="card about-section">
+    <h2>このツールについて</h2>
+    <p>
+      「厨二病風二つ名メーカー」は、入力した名前をもとに形容詞ワードバンクと名詞ワードバンクを組み合わせて「漆黒の死神」のような厨二病風の二つ名を自動生成する無料ツールです。
+      同じ名前を入力すると、何度生成しても同じ候補セットが表示されます。
+    </p>
+    <p>
+      入力された名前はサーバーに送信されず、すべてお使いのブラウザ内で生成処理が完結します。SNSのプロフィールや二次創作のネタなどにお使いください。
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 厨二病風二つ名メーカー</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

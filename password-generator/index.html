@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>パスワード生成ツール | 安全な乱数で強力なパスワードを作成</title>
+<meta name="description" content="crypto.getRandomValuesによる安全な乱数を使い、強力なパスワードをその場で生成。長さや使用する文字種を指定でき、エントロピーに基づく強度メーターも表示する無料ツールです。">
+<meta property="og:title" content="パスワード生成ツール">
+<meta property="og:description" content="安全な乱数で強力なパスワードを生成。強度メーターつきの無料ツール。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/password-generator/">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "パスワード生成ツール",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Any",
+  "description": "安全な乱数(crypto.getRandomValues)を使って強力なパスワードを生成する無料ツール。文字種・長さを指定でき、強度メーターも表示。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+</head>
+<body>
+<header>
+  <h1>パスワード生成ツール</h1>
+  <p class="lead">安全な乱数を使って、強力なパスワードをその場で生成します。</p>
+</header>
+
+<main>
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="calculator">
+    <div class="password-display">
+      <input type="text" id="password-output" readonly aria-label="生成されたパスワード">
+      <button id="copy-btn" type="button" title="コピー">コピー</button>
+    </div>
+
+    <div class="strength-meter">
+      <div class="strength-bar"><div id="strength-fill" class="strength-fill"></div></div>
+      <span id="strength-label" class="strength-label">--</span>
+      <span id="entropy-value" class="entropy-value"></span>
+    </div>
+
+    <div class="input-group">
+      <label for="length-slider">長さ: <span id="length-value">16</span>文字</label>
+      <input type="range" id="length-slider" min="4" max="64" value="16">
+    </div>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="opt-lowercase" checked> 小文字(a-z)</label>
+      <label><input type="checkbox" id="opt-uppercase" checked> 大文字(A-Z)</label>
+      <label><input type="checkbox" id="opt-numbers" checked> 数字(0-9)</label>
+      <label><input type="checkbox" id="opt-symbols"> 記号(!@#$%など)</label>
+    </div>
+
+    <button id="generate-btn" type="button" class="generate-btn">パスワードを生成する</button>
+    <p id="error-msg" class="error" hidden>少なくとも1つの文字種を選択してください。</p>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="info">
+    <h2>使い方</h2>
+    <p>長さをスライダーで指定し、使用したい文字種(小文字・大文字・数字・記号)にチェックを入れて「パスワードを生成する」ボタンを押すと、その場でパスワードが生成されます。生成されたパスワードは「コピー」ボタンでクリップボードにコピーできます。</p>
+
+    <h2>安全性について</h2>
+    <p>本ツールはブラウザ標準のWeb Crypto API(<code>crypto.getRandomValues</code>)を使用して乱数を生成しています。これは暗号用途にも使える安全な乱数生成器であり、予測されやすい<code>Math.random()</code>は使用していません。パスワードの生成・表示はすべてブラウザ内で完結し、サーバーに送信されることはありません。</p>
+
+    <h2>強度メーターの計算式について</h2>
+    <p>パスワードの強度は情報エントロピー(ビット数)で評価しています。</p>
+    <p class="formula">エントロピー(bit) = log2(選択した文字種の総数) × パスワードの長さ</p>
+    <p>エントロピーが大きいほど、総当たり攻撃に対して理論上必要な試行回数が多くなり、安全性が高いとされます。目安は次の通りです。</p>
+    <table class="ref-table">
+      <thead><tr><th>エントロピー</th><th>強度</th></tr></thead>
+      <tbody>
+        <tr><td>28bit未満</td><td>弱い</td></tr>
+        <tr><td>28bit以上60bit未満</td><td>普通</td></tr>
+        <tr><td>60bit以上80bit未満</td><td>強い</td></tr>
+        <tr><td>80bit以上</td><td>非常に強い</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 パスワード生成ツール</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

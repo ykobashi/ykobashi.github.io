@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>割り勘計算機 | 端数もぴったり計算できる無料ツール</title>
+<meta name="description" content="合計金額と人数を入力するだけで割り勘金額を自動計算。端数は先頭の人から+1円ずつ配分し合計がぴったり一致。幹事の負担調整にも対応した無料ツールです。">
+<meta property="og:title" content="割り勘計算機">
+<meta property="og:description" content="合計金額と人数から割り勘金額を計算。端数調整・幹事の負担調整にも対応。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/warikan-calculator/">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "割り勘計算機",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": "合計金額と人数を入力するだけで割り勘金額を自動計算する無料ツール。端数配分や幹事の負担調整にも対応。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+</head>
+<body>
+<header>
+  <h1>割り勘計算機</h1>
+  <p class="lead">合計金額と人数を入力するだけで、一人当たりの金額をぴったり計算します。</p>
+</header>
+
+<main>
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="calculator">
+    <div class="input-group">
+      <label for="total">合計金額(円)</label>
+      <input type="number" id="total" inputmode="numeric" placeholder="例: 10000" min="0" step="1">
+    </div>
+    <div class="input-group">
+      <label for="people">人数</label>
+      <input type="number" id="people" inputmode="numeric" placeholder="例: 3" min="1" step="1">
+    </div>
+
+    <details class="advanced">
+      <summary>幹事など多めに払う人がいる場合(任意)</summary>
+      <div class="input-group">
+        <label for="organizers">多めに払う人数</label>
+        <input type="number" id="organizers" inputmode="numeric" placeholder="例: 1" min="0" step="1" value="0">
+      </div>
+      <div class="input-group">
+        <label for="extra">一人あたりの追加負担額(円)</label>
+        <input type="number" id="extra" inputmode="numeric" placeholder="例: 500" min="0" step="1" value="0">
+      </div>
+    </details>
+
+    <button id="calc-btn" type="button">計算する</button>
+
+    <div id="result" class="result" hidden>
+      <h2>一人当たりの金額</h2>
+      <ol id="amount-list" class="amount-list"></ol>
+      <p class="result-total">合計: <span id="total-check"></span>円</p>
+    </div>
+    <p id="error-msg" class="error" hidden></p>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="info">
+    <h2>使い方</h2>
+    <p>合計金額と人数を入力して「計算する」ボタンを押すと、一人当たりの負担額が一覧表示されます。幹事など多めに払う人がいる場合は「幹事など多めに払う人がいる場合」を開き、人数と追加負担額を入力してください。</p>
+
+    <h2>計算式について</h2>
+    <p>基本の割り勘は次の式で計算します。</p>
+    <p class="formula">一人当たり金額 = 合計金額 ÷ 人数</p>
+    <p>円未満の端数が出た場合、1円単位で割り切れない分は先頭の人から順に1円ずつ多く配分し、全員の合計が必ず入力した合計金額と一致するようにしています。浮動小数点の誤差を避けるため、計算はすべて整数(円)で行っています。</p>
+    <p>幹事などが多めに払う場合は、まず「合計金額 − (追加負担額 × 人数)」を残りの人数で均等割りし、その後で幹事の負担額に追加負担額を上乗せします。</p>
+
+    <h2>よくある質問</h2>
+    <p><strong>Q. 1円単位でなく10円単位で揃えたい場合は?</strong><br>A. 本ツールは1円単位での精密な端数配分に対応しています。飲み会などでの利用を想定し、合計金額とのズレが出ないことを優先しています。</p>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 割り勘計算機</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

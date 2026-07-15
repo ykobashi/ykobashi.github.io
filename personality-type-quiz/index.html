@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>簡易性格タイプ診断 | 10問で分かる16パターンのオリジナル性格タイプ</title>
+<meta name="description" content="10問の簡単な質問に答えるだけで、16パターンのオリジナル性格タイプを診断できる無料ツール。行動軸と思考軸の2軸からあなたのタイプを判定します。">
+<meta property="og:title" content="簡易性格タイプ診断 | 16パターンでわかるあなたの性格タイプ">
+<meta property="og:description" content="10問の質問に答えるだけで、16パターンのオリジナル性格タイプを診断できる無料ツールです。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/personality-type-quiz/">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>簡易性格タイプ診断</h1>
+  <p class="subtitle">10の質問であなたの性格タイプがわかる</p>
+</header>
+
+<main>
+  <section class="card" id="quiz-section">
+    <p class="progress" id="progress-label">質問 1 / 10</p>
+    <form id="quiz-form" autocomplete="off">
+      <div id="question-container"></div>
+    </form>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="card result-card" id="result-section" hidden>
+    <h2>診断結果</h2>
+    <p class="result-headline" id="result-headline"></p>
+    <p class="result-description" id="result-description"></p>
+    <p class="result-axis" id="result-axis"></p>
+
+    <div class="share-area">
+      <button type="button" id="share-button">結果をシェアする</button>
+    </div>
+
+    <button type="button" id="retry-button" class="secondary-button">もう一度診断する</button>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="card about-section">
+    <h2>このツールについて</h2>
+    <p>
+      「簡易性格タイプ診断」は、10問の簡単な質問への回答から「行動軸」と「思考軸」という2つの軸のスコアを集計し、16パターンのオリジナル性格タイプの中からあなたに近いタイプを判定する無料診断ツールです。
+      既存の性格診断ブランドとは異なる、独自の名称・分類でタイプ分けしています。
+    </p>
+    <p>
+      入力された回答はサーバーに送信されず、すべてお使いのブラウザ内で診断処理が完結します。エンターテインメントとしてお楽しみください。
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 簡易性格タイプ診断</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

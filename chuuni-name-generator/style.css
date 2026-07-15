@@ -1,0 +1,183 @@
+:root {
+  --bg-a: #000000;
+  --bg-b: #3a0ca3;
+  --card-bg: #14102b;
+  --card-text: #e8e2ff;
+  --accent: #b21bd6;
+  --accent-dark: #8a12a8;
+  --muted: #a79ccf;
+  --border: #3c2f6e;
+  --glow: #ff2fd0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  background: radial-gradient(circle at top, var(--bg-b), var(--bg-a));
+  color: #e8e2ff;
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+.site-header {
+  text-align: center;
+  padding: 40px 16px 24px;
+}
+
+.site-header h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 12px var(--glow);
+}
+
+.subtitle {
+  margin: 0;
+  color: #c9b8ff;
+  font-size: 0.95rem;
+}
+
+main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.card {
+  background: var(--card-bg);
+  color: var(--card-text);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 30px rgba(178, 27, 214, 0.25);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+input[type="text"] {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #1e1740;
+  color: #fff;
+}
+
+input[type="text"]::placeholder {
+  color: #7c72a8;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 14px;
+  margin-top: 16px;
+  background: linear-gradient(90deg, var(--accent), var(--glow));
+  color: #fff;
+  font-weight: bold;
+  transition: filter 0.15s ease;
+}
+
+button:hover {
+  filter: brightness(1.15);
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--glow);
+  border: 1px solid var(--accent);
+}
+
+.secondary-button:hover {
+  background: rgba(178, 27, 214, 0.15);
+  filter: none;
+}
+
+.chuuni-list {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chuuni-list li {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #fff;
+  background: #1e1740;
+  text-shadow: 0 0 8px rgba(255, 47, 208, 0.6);
+}
+
+.share-area {
+  text-align: center;
+}
+
+#share-button {
+  background: #1da1f2;
+}
+
+#share-button:hover {
+  filter: brightness(1.1);
+}
+
+.about-section h2 {
+  margin-top: 0;
+}
+
+.about-section p {
+  line-height: 1.8;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.ad-slot {
+  min-height: 90px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+  margin-bottom: 20px;
+}
+
+.site-footer {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.8rem;
+  margin-top: 20px;
+}
+
+@media (max-width: 480px) {
+  .site-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+}

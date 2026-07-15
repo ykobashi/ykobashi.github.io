@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あだ名ジェネレーター | 名前から面白いあだ名候補を無料自動生成</title>
+<meta name="description" content="名前を入力するだけで、あなたにぴったりの面白いあだ名候補を自動生成する無料ツール。同じ名前なら何度試しても同じ候補が表示されます。">
+<meta property="og:title" content="あだ名ジェネレーター | 名前からあだ名を自動生成">
+<meta property="og:description" content="名前を入力するだけで面白いあだ名候補を自動生成する無料ツールです。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/nickname-generator/">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>あだ名ジェネレーター</h1>
+  <p class="subtitle">あなたにぴったりのあだ名を自動生成</p>
+</header>
+
+<main>
+  <section class="card" id="form-section">
+    <form id="generator-form" autocomplete="off">
+      <label for="name-input">お名前・ニックネーム</label>
+      <input type="text" id="name-input" name="name" placeholder="例:山田太郎" required maxlength="20">
+      <button type="submit">あだ名を生成する</button>
+    </form>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="card result-card" id="result-section" hidden>
+    <h2>あだ名候補</h2>
+    <ul class="nickname-list" id="nickname-list"></ul>
+
+    <div class="share-area">
+      <button type="button" id="share-button">結果をシェアする</button>
+    </div>
+
+    <button type="button" id="retry-button" class="secondary-button">別の名前で試す</button>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="card about-section">
+    <h2>このツールについて</h2>
+    <p>
+      「あだ名ジェネレーター」は、入力した名前をもとに、名前の一部と接頭語・接尾語のバンクを組み合わせて面白いあだ名候補を自動生成する無料ツールです。
+      同じ名前を入力すると、何度生成しても同じ候補セットが表示されます。
+    </p>
+    <p>
+      入力された名前はサーバーに送信されず、すべてお使いのブラウザ内で生成処理が完結します。友達同士のあだ名決めのきっかけなどにお使いください。
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 あだ名ジェネレーター</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

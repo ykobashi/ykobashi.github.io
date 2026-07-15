@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スネークゲーム | 無料で遊べるブラウザアクションゲーム</title>
+<meta name="description" content="矢印キーでヘビを操作し、餌を食べて成長する無料のスネークゲーム。壁または自分の体にぶつかるとゲームオーバー。スコアを競おう。PC・スマホどちらでも遊べます。">
+<meta property="og:title" content="スネークゲーム | 無料で遊べるブラウザアクションゲーム">
+<meta property="og:description" content="矢印キーでヘビを操作し餌を食べて成長する無料のスネークゲーム。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/snake-game/">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <h1>スネークゲーム</h1>
+  <p class="subtitle">矢印キーでヘビを操作して餌を食べよう</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section class="status-bar">
+    <div class="stat"><span class="stat-label">スコア</span><span id="score-count">0</span></div>
+    <div class="stat"><span class="stat-label">ベスト</span><span id="best-count">0</span></div>
+    <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+  </section>
+
+  <section class="board-wrapper">
+    <canvas id="board" class="board" aria-label="スネークゲーム盤面"></canvas>
+  </section>
+
+  <section class="touch-controls" aria-label="方向操作ボタン">
+    <button class="dir-btn dir-up" type="button" data-dir="UP" aria-label="上へ">▲</button>
+    <div class="dir-row">
+      <button class="dir-btn dir-left" type="button" data-dir="LEFT" aria-label="左へ">◀</button>
+      <button class="dir-btn dir-down" type="button" data-dir="DOWN" aria-label="下へ">▼</button>
+      <button class="dir-btn dir-right" type="button" data-dir="RIGHT" aria-label="右へ">▶</button>
+    </div>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text">ゲームオーバー</p>
+      <p id="result-detail" class="result-detail"></p>
+      <button id="play-again-btn" class="reset-btn" type="button">もう一度遊ぶ</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../memory-match/index.html">神経衰弱</a></li>
+          <li><a href="../game-2048/index.html">2048</a></li>
+          <li><a href="../lights-out/index.html">ライツアウト</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方</h2>
+    <ul>
+      <li>矢印キー(またはスマホでは画面下の矢印ボタン)でヘビの進行方向を操作します。</li>
+      <li>餌(赤いマス)を食べるとヘビが伸びてスコアが加算されます。</li>
+      <li>壁に衝突する、または自分の体にぶつかるとゲームオーバーです。</li>
+      <li>進行方向の真逆には直接反転できません(体に自分でぶつかってしまうため)。</li>
+      <li>「最初から」ボタンでいつでもやり直せます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 スネークゲーム</p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
