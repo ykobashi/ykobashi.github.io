@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ミニツール&ゲーム集 | 便利ツール・診断・簡単ゲームまとめ</title>
+<meta name="description" content="BMI計算機や割り勘計算機などの便利ツール、前世診断や性格診断などのエンタメ診断、五目並べや2048などのシンプルなゲームを無料でまとめて遊べるサイト集です。">
+<meta property="og:title" content="ミニツール&ゲーム集 | 便利ツール・診断・簡単ゲームまとめ">
+<meta property="og:description" content="便利ツール・エンタメ診断・シンプルなゲームを無料でまとめて遊べるサイト集です。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/">
+<link rel="canonical" href="https://ykobashi.github.io/">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f7f9;
+    --fg: #1b1b1f;
+    --card-bg: #ffffff;
+    --card-border: #e2e2e6;
+    --accent: #3d5afe;
+    --muted: #6b6b76;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121214;
+      --fg: #ececee;
+      --card-bg: #1c1c20;
+      --card-border: #2c2c31;
+      --accent: #7c93ff;
+      --muted: #9a9aa2;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Hiragino Sans", "Yu Gothic", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+  }
+  header {
+    padding: 3rem 1.5rem 2rem;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.8rem;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+  }
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+  section {
+    margin-bottom: 2.5rem;
+  }
+  section h2 {
+    font-size: 1.2rem;
+    border-left: 4px solid var(--accent);
+    padding-left: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    display: block;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  }
+  .card h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1.05rem;
+    color: var(--accent);
+  }
+  .card p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    padding: 1.5rem;
+  }
+  .ad-slot {
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 0.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>ミニツール&ゲーム集</h1>
+  <p>便利ツール・エンタメ診断・シンプルなゲームを、登録不要・完全無料でまとめて遊べます。</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section>
+    <h2>便利ツール</h2>
+    <div class="grid">
+      <a class="card" href="https://ykobashi.github.io/bmi-calculator/">
+        <h3>BMI・適正体重計算機</h3>
+        <p>身長と体重からBMIと適正体重をすぐ計算</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/warikan-calculator/">
+        <h3>割り勘計算機</h3>
+        <p>端数もきれいに配分する割り勘計算</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/char-counter/">
+        <h3>文字数カウンター</h3>
+        <p>原稿用紙換算・SNS文字数もリアルタイム表示</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/unit-converter/">
+        <h3>単位変換ツール</h3>
+        <p>長さ・重さ・温度をまとめて変換</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/password-generator/">
+        <h3>パスワード生成ツール</h3>
+        <p>安全な乱数で強力なパスワードを生成</p>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>診断・エンタメ</h2>
+    <div class="grid">
+      <a class="card" href="https://ykobashi.github.io/past-life-diagnosis/">
+        <h3>前世診断</h3>
+        <p>名前と生年月日からあなたの前世を診断</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/daily-fortune/">
+        <h3>今日の運勢おみくじ</h3>
+        <p>日替わりであなたの運勢をチェック</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/personality-type-quiz/">
+        <h3>性格タイプ診断</h3>
+        <p>簡単な質問であなたのタイプが分かる</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/nickname-generator/">
+        <h3>あだ名ジェネレーター</h3>
+        <p>名前からユニークなあだ名を生成</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/chuuni-name-generator/">
+        <h3>二つ名メーカー</h3>
+        <p>あなただけの厨二病風二つ名を生成</p>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>シンプルなゲーム</h2>
+    <div class="grid">
+      <a class="card" href="https://ykobashi.github.io/gomoku/">
+        <h3>五目並べ</h3>
+        <p>2人で対戦するシンプルな五目並べ</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/memory-match/">
+        <h3>神経衰弱</h3>
+        <p>カードをめくってペアを揃えよう</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/game-2048/">
+        <h3>2048</h3>
+        <p>タイルをスライドして2048を目指す</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/lights-out/">
+        <h3>ライツアウト</h3>
+        <p>全部消灯させればクリアのパズル</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/snake-game/">
+        <h3>スネークゲーム</h3>
+        <p>矢印キーで操作する定番スネークゲーム</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<footer>
+  <p>&copy; 2026 ミニツール&ゲーム集</p>
+</footer>
+</body>
+</html>
