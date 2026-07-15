@@ -15,6 +15,8 @@
   const resultText = document.getElementById('result-text');
   const resultDetail = document.getElementById('result-detail');
   const playAgainBtn = document.getElementById('play-again-btn');
+  const startOverlay = document.getElementById('start-overlay');
+  const startBtn = document.getElementById('start-btn');
   const dirButtons = document.querySelectorAll('.dir-btn');
 
   let canvasSize = 0;
@@ -182,11 +184,16 @@
     }
   }, { passive: true });
 
+  function beginGame() {
+    startOverlay.classList.add('hidden');
+    restart();
+  }
+
   resetBtn.addEventListener('click', restart);
   playAgainBtn.addEventListener('click', restart);
+  startBtn.addEventListener('click', beginGame);
   window.addEventListener('resize', resizeCanvas);
 
   resetState();
   resizeCanvas();
-  startLoop();
 })();
