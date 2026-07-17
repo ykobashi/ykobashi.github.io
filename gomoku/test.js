@@ -10,6 +10,9 @@ const {
   checkWin,
   isBoardFull,
   otherPlayer,
+  wouldWin,
+  evaluatePlacement,
+  chooseAiMove,
 } = require('./logic.js');
 
 function makeBoard(size, stones) {
@@ -158,6 +161,83 @@ function makeBoard(size, stones) {
 {
   assert.strictEqual(otherPlayer(BLACK), WHITE);
   assert.strictEqual(otherPlayer(WHITE), BLACK);
+}
+
+// wouldWin
+{
+  const board = makeBoard(13, [
+    [5, 3, BLACK],
+    [5, 4, BLACK],
+    [5, 5, BLACK],
+    [5, 6, BLACK],
+  ]);
+  assert.strictEqual(wouldWin(board, 5, 7, BLACK), true, '置けば5連になる手はwouldWin=true');
+  assert.strictEqual(wouldWin(board, 5, 7, WHITE), false, '色が違えば勝利にならない');
+  assert.strictEqual(wouldWin(board, 5, 4, BLACK), false, 'すでに石がある場所には置けない');
+}
+
+// evaluatePlacement: 開いた3連より開いた4連の方が高得点
+{
+  const openThree = makeBoard(13, [
+    [6, 4, BLACK],
+    [6, 5, BLACK],
+  ]);
+  const openFour = makeBoard(13, [
+    [6, 3, BLACK],
+    [6, 4, BLACK],
+    [6, 5, BLACK],
+  ]);
+  const scoreThree = evaluatePlacement(openThree, 6, 6, BLACK);
+  const scoreFour = evaluatePlacement(openFour, 6, 6, BLACK);
+  assert.ok(scoreFour > scoreThree, '4連を作る手の方が3連を作る手より高得点になるべき');
+}
+
+// chooseAiMove: 自分の勝ちが確定する手があれば必ずそれを選ぶ
+{
+  const board = makeBoard(13, [
+    [5, 3, WHITE],
+    [5, 4, WHITE],
+    [5, 5, WHITE],
+    [5, 6, WHITE],
+  ]);
+  const move = chooseAiMove(board, WHITE, BLACK);
+  assert.ok(
+    (move.row === 5 && move.col === 2) || (move.row === 5 && move.col === 7),
+    'AIは勝てる手があれば必ずそれを選ぶ'
+  );
+  assert.strictEqual(wouldWin(board, move.row, move.col, WHITE), true);
+}
+
+// chooseAiMove: 自分に勝ち手がない場合、相手の勝ちを阻止する
+{
+  const board = makeBoard(13, [
+    [5, 3, BLACK],
+    [5, 4, BLACK],
+    [5, 5, BLACK],
+    [5, 6, BLACK],
+  ]);
+  const move = chooseAiMove(board, WHITE, BLACK);
+  assert.ok(
+    (move.row === 5 && move.col === 2) || (move.row === 5 && move.col === 7),
+    'AIは相手の勝ちを阻止する手を選ぶ'
+  );
+}
+
+// chooseAiMove: 盤面が空でも必ず空きマスを返す
+{
+  const board = createEmptyBoard(13);
+  const move = chooseAiMove(board, WHITE, BLACK);
+  assert.ok(move && canPlaceStone(board, move.row, move.col), '空の盤面でも有効な手を返す');
+}
+
+// chooseAiMove: 盤面が満杯なら null
+{
+  const board = createEmptyBoard(2);
+  board[0][0] = BLACK;
+  board[0][1] = WHITE;
+  board[1][0] = BLACK;
+  board[1][1] = WHITE;
+  assert.strictEqual(chooseAiMove(board, WHITE, BLACK), null, '満杯の盤面ではnullを返す');
 }
 
 console.log('All tests passed');

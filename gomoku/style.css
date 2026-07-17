@@ -123,6 +123,11 @@ main {
   touch-action: manipulation;
 }
 
+.board.thinking {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
 .cell {
   position: relative;
   border-right: 1px solid var(--line-color);

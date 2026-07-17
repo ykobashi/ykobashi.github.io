@@ -78,6 +78,99 @@ function otherPlayer(player) {
   return player === BLACK ? WHITE : BLACK;
 }
 
+// (row, col) に player を置いたら勝利するかどうかを判定する(盤面は変更しない)
+function wouldWin(board, row, col, player) {
+  if (!canPlaceStone(board, row, col)) return false;
+  const next = placeStone(board, row, col, player);
+  return checkWin(next, row, col);
+}
+
+// 連続数(count)と開いている端の数(openEnds: 0〜2)から、その並びの強さを点数化する
+function scoreLine(count, openEnds) {
+  if (count >= 5) return 100000;
+  if (count === 4) return openEnds === 2 ? 10000 : openEnds === 1 ? 1000 : 0;
+  if (count === 3) return openEnds === 2 ? 500 : openEnds === 1 ? 100 : 0;
+  if (count === 2) return openEnds === 2 ? 50 : openEnds === 1 ? 10 : 0;
+  return openEnds === 2 ? 5 : 1;
+}
+
+// (row, col) に player を置いたと仮定した場合の、4方向それぞれの並びの強さの合計点を返す(盤面は変更しない)
+function evaluatePlacement(board, row, col, player) {
+  const size = board.length;
+  const inBounds = (r, c) => r >= 0 && r < size && c >= 0 && c < size;
+  const directions = [
+    [0, 1],
+    [1, 0],
+    [1, 1],
+    [1, -1],
+  ];
+
+  let total = 0;
+  for (const [dr, dc] of directions) {
+    let forward = 0;
+    let r = row + dr;
+    let c = col + dc;
+    while (inBounds(r, c) && board[r][c] === player) {
+      forward++;
+      r += dr;
+      c += dc;
+    }
+    const forwardOpen = inBounds(r, c) && board[r][c] === EMPTY;
+
+    let backward = 0;
+    r = row - dr;
+    c = col - dc;
+    while (inBounds(r, c) && board[r][c] === player) {
+      backward++;
+      r -= dr;
+      c -= dc;
+    }
+    const backwardOpen = inBounds(r, c) && board[r][c] === EMPTY;
+
+    const count = forward + backward + 1;
+    const openEnds = (forwardOpen ? 1 : 0) + (backwardOpen ? 1 : 0);
+    total += scoreLine(count, openEnds);
+  }
+  return total;
+}
+
+// CPU(aiPlayer)が次に打つべき手を決める。
+// 1. 自分の勝ちが確定する手があればそれを打つ
+// 2. 相手(humanPlayer)の勝ちを阻止する手があればそれを打つ
+// 3. それ以外は、攻め(自分の並び)と守り(相手の並び潰し)を点数化して最良のマスを選ぶ
+function chooseAiMove(board, aiPlayer, humanPlayer) {
+  const size = board.length;
+  const emptyCells = [];
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (board[r][c] === EMPTY) emptyCells.push({ row: r, col: c });
+    }
+  }
+  if (emptyCells.length === 0) return null;
+
+  for (const { row, col } of emptyCells) {
+    if (wouldWin(board, row, col, aiPlayer)) return { row, col };
+  }
+  for (const { row, col } of emptyCells) {
+    if (wouldWin(board, row, col, humanPlayer)) return { row, col };
+  }
+
+  const center = (size - 1) / 2;
+  let best = null;
+  let bestScore = -Infinity;
+  for (const { row, col } of emptyCells) {
+    const offense = evaluatePlacement(board, row, col, aiPlayer);
+    const defense = evaluatePlacement(board, row, col, humanPlayer);
+    const centerBonus = -(Math.abs(row - center) + Math.abs(col - center)) * 0.1;
+    const score = offense + defense * 0.9 + centerBonus;
+    if (score > bestScore) {
+      bestScore = score;
+      best = { row, col };
+    }
+  }
+  return best;
+}
+
 const GomokuLogic = {
   BOARD_SIZE,
   EMPTY,
@@ -89,6 +182,9 @@ const GomokuLogic = {
   checkWin,
   isBoardFull,
   otherPlayer,
+  wouldWin,
+  evaluatePlacement,
+  chooseAiMove,
 };
 
 if (typeof module !== 'undefined') {

@@ -3,6 +3,10 @@
   'use strict';
 
   const SIZE = GomokuLogic.BOARD_SIZE;
+  const HUMAN = GomokuLogic.BLACK;
+  const AI = GomokuLogic.WHITE;
+  const AI_THINK_MS = 450;
+
   const boardEl = document.getElementById('board');
   const turnTextEl = document.getElementById('turn-text');
   const turnIndicatorEl = document.getElementById('turn-indicator');
@@ -14,6 +18,7 @@
   let board = GomokuLogic.createEmptyBoard(SIZE);
   let currentPlayer = GomokuLogic.BLACK;
   let gameOver = false;
+  let aiThinking = false;
   const cellEls = [];
 
   function buildBoard() {
@@ -39,32 +44,57 @@
   function updateTurnIndicator() {
     const preview = turnIndicatorEl.querySelector('.stone-preview');
     preview.className = 'stone-preview ' + currentPlayer;
-    turnTextEl.textContent = (currentPlayer === GomokuLogic.BLACK ? '黒' : '白') + '番の手番です';
+    if (currentPlayer === HUMAN) {
+      turnTextEl.textContent = 'あなたの番です(黒)';
+    } else {
+      turnTextEl.textContent = 'CPU思考中です(白)…';
+    }
+  }
+
+  function placeAndCheck(row, col, player) {
+    board = GomokuLogic.placeStone(board, row, col, player);
+    cellEls[row][col].classList.add(player);
+
+    if (GomokuLogic.checkWin(board, row, col)) {
+      gameOver = true;
+      showResult(player === HUMAN ? 'あなたの勝ちです!' : 'CPUの勝ちです');
+      return true;
+    }
+    if (GomokuLogic.isBoardFull(board)) {
+      gameOver = true;
+      showResult('引き分けです');
+      return true;
+    }
+    return false;
   }
 
   function onCellClick(e) {
-    if (gameOver) return;
+    if (gameOver || aiThinking || currentPlayer !== HUMAN) return;
     const row = Number(e.currentTarget.dataset.row);
     const col = Number(e.currentTarget.dataset.col);
     if (!GomokuLogic.canPlaceStone(board, row, col)) return;
 
-    board = GomokuLogic.placeStone(board, row, col, currentPlayer);
-    cellEls[row][col].classList.add(currentPlayer);
+    if (placeAndCheck(row, col, HUMAN)) return;
 
-    if (GomokuLogic.checkWin(board, row, col)) {
-      gameOver = true;
-      showResult((currentPlayer === GomokuLogic.BLACK ? '黒' : '白') + 'の勝ち!');
-      return;
-    }
-
-    if (GomokuLogic.isBoardFull(board)) {
-      gameOver = true;
-      showResult('引き分けです');
-      return;
-    }
-
-    currentPlayer = GomokuLogic.otherPlayer(currentPlayer);
+    currentPlayer = AI;
     updateTurnIndicator();
+    scheduleAiMove();
+  }
+
+  function scheduleAiMove() {
+    aiThinking = true;
+    boardEl.classList.add('thinking');
+    setTimeout(() => {
+      const move = GomokuLogic.chooseAiMove(board, AI, HUMAN);
+      aiThinking = false;
+      boardEl.classList.remove('thinking');
+      if (!move || gameOver) return;
+
+      if (placeAndCheck(move.row, move.col, AI)) return;
+
+      currentPlayer = HUMAN;
+      updateTurnIndicator();
+    }, AI_THINK_MS);
   }
 
   function showResult(message) {
@@ -76,6 +106,8 @@
     board = GomokuLogic.createEmptyBoard(SIZE);
     currentPlayer = GomokuLogic.BLACK;
     gameOver = false;
+    aiThinking = false;
+    boardEl.classList.remove('thinking');
     resultOverlay.classList.add('hidden');
     buildBoard();
     updateTurnIndicator();

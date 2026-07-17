@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>五目並べ | ブラウザで遊べる無料2人対戦ゲーム</title>
-<meta name="description" content="無料で遊べるブラウザ五目並べ。13x13盤で2人交互にタップ・クリックして石を置き、縦横斜めに5つ並べたら勝利。インストール不要、同じ端末で対戦できます。">
-<meta property="og:title" content="五目並べ | ブラウザで遊べる無料2人対戦ゲーム">
-<meta property="og:description" content="13x13盤で2人交互に石を置く無料の五目並べ。縦横斜めに5つ並べたら勝利です。">
+<title>五目並べ | ブラウザで遊べる無料CPU対戦ゲーム</title>
+<meta name="description" content="無料で遊べるブラウザ五目並べ。13x13盤でCPU(コンピューター)と対戦し、縦横斜めに5つ並べたら勝利。インストール不要ですぐ遊べます。">
+<meta property="og:title" content="五目並べ | ブラウザで遊べる無料CPU対戦ゲーム">
+<meta property="og:description" content="13x13盤でCPUと対戦する無料の五目並べ。縦横斜めに5つ並べたら勝利です。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ykobashi.github.io/gomoku/">
 <link rel="stylesheet" href="style.css">
@@ -14,7 +14,7 @@
 <body>
 <header class="site-header">
   <h1>五目並べ</h1>
-  <p class="subtitle">2人交互で石を置いて、縦・横・斜めに5つ並べよう</p>
+  <p class="subtitle">CPUと対戦!縦・横・斜めに5つ先に並べたら勝ち</p>
 </header>
 
 <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
@@ -23,7 +23,7 @@
   <section class="status-bar">
     <div id="turn-indicator" class="turn-indicator">
       <span class="stone-preview black"></span>
-      <span id="turn-text">黒番の手番です</span>
+      <span id="turn-text">あなたの番です(黒)</span>
     </div>
     <button id="reset-btn" class="reset-btn" type="button">最初から</button>
   </section>
@@ -34,7 +34,7 @@
 
   <section id="result-overlay" class="overlay hidden">
     <div class="overlay-card">
-      <p id="result-text" class="result-text">黒の勝ち!</p>
+      <p id="result-text" class="result-text">勝負あり!</p>
       <button id="play-again-btn" class="reset-btn" type="button">もう一度遊ぶ</button>
       <div class="other-games">
         <p>他のゲームもどうぞ</p>
@@ -51,11 +51,11 @@
   <section class="howto">
     <h2>遊び方</h2>
     <ul>
-      <li>黒番から交互に盤面のマス目をクリック(タップ)して石を置きます。</li>
+      <li>あなたは黒番で先手です。盤面のマス目をクリック(タップ)して石を置きます。</li>
+      <li>あなたが打つと、CPU(白番)が少し考えてから自動的に打ち返します。</li>
       <li>縦・横・斜め(どちらの方向も)のいずれかで自分の石が5つ連続で並んだら勝利です。</li>
       <li>盤面が全て埋まって誰も5つ並べられなければ引き分けです。</li>
       <li>「最初から」ボタンでいつでも新しい対局を始められます。</li>
-      <li>同じ端末を2人で交互に操作して対戦してください。</li>
     </ul>
   </section>
 
