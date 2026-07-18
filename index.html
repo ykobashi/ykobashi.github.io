@@ -32,6 +32,9 @@
     }
   }
   * { box-sizing: border-box; }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     margin: 0;
     font-family: "Hiragino Sans", "Yu Gothic", "Segoe UI", sans-serif;
@@ -40,7 +43,7 @@
     line-height: 1.7;
   }
   header {
-    padding: 3rem 1.5rem 2rem;
+    padding: 2.4rem 1.5rem 1.6rem;
     text-align: center;
   }
   header h1 {
@@ -51,6 +54,75 @@
     margin: 0;
     color: var(--muted);
   }
+
+  /* カテゴリが増えても迷わないための、常時表示のクイックナビ */
+  .quick-nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg);
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--card-border);
+    padding: 0.65rem 1.5rem;
+  }
+  .quick-nav-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .quick-nav-links {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    flex: 1 1 auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .quick-nav-links::-webkit-scrollbar {
+    display: none;
+  }
+  .quick-nav-links a {
+    flex: 0 0 auto;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .quick-nav-links a:hover {
+    border-color: var(--accent);
+  }
+  .quick-nav-links a.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .search-box {
+    flex: 0 0 auto;
+  }
+  .search-box input {
+    padding: 0.42rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--fg);
+    font-size: 0.85rem;
+    width: 160px;
+    max-width: 34vw;
+  }
+  .search-box input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
   main {
     max-width: 960px;
     margin: 0 auto;
@@ -58,12 +130,28 @@
   }
   section {
     margin-bottom: 2.5rem;
+    scroll-margin-top: var(--nav-offset, 4.5rem);
+  }
+  section.category-hidden {
+    display: none;
   }
   section h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-size: 1.2rem;
     border-left: 4px solid var(--accent);
     padding-left: 0.6rem;
     margin-bottom: 1rem;
+  }
+  section h2 .count-badge {
+    font-size: 0.72rem;
+    font-weight: normal;
+    color: var(--muted);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    padding: 0.1rem 0.55rem;
   }
   .grid {
     display: grid;
@@ -84,6 +172,9 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.08);
   }
+  .card.card-hidden {
+    display: none;
+  }
   .card h3 {
     margin: 0 0 0.4rem;
     font-size: 1.05rem;
@@ -93,6 +184,12 @@
     margin: 0;
     font-size: 0.88rem;
     color: var(--muted);
+  }
+  #no-results {
+    display: none;
+    text-align: center;
+    color: var(--muted);
+    padding: 3rem 1rem;
   }
   footer {
     text-align: center;
@@ -117,110 +214,29 @@
 <body>
 <header>
   <h1>ミニツール&ゲーム集</h1>
-  <p>便利ツール・エンタメ診断・シンプルなゲームを、登録不要・完全無料でまとめて遊べます。</p>
+  <p>便利ツール・エンタメ診断・ゲームを、登録不要・完全無料でまとめて遊べます。</p>
 </header>
+
+<nav class="quick-nav" aria-label="カテゴリ">
+  <div class="quick-nav-inner">
+    <div class="quick-nav-links" id="quick-nav-links">
+      <a href="#party-games">🎉 みんなで遊ぶ</a>
+      <a href="#games">🎮 ゲーム</a>
+      <a href="#creative-games">🎨 創作ゲーム</a>
+      <a href="#diagnosis">🔮 診断・エンタメ</a>
+      <a href="#tools">🛠️ 便利ツール</a>
+    </div>
+    <div class="search-box">
+      <input type="search" id="site-search" placeholder="🔍 検索" aria-label="ツール・ゲームを検索">
+    </div>
+  </div>
+</nav>
 
 <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
 
 <main>
-  <section>
-    <h2>便利ツール</h2>
-    <div class="grid">
-      <a class="card" href="https://ykobashi.github.io/bmi-calculator/">
-        <h3>BMI・適正体重計算機</h3>
-        <p>身長と体重からBMIと適正体重をすぐ計算</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/warikan-calculator/">
-        <h3>割り勘計算機</h3>
-        <p>端数もきれいに配分する割り勘計算</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/char-counter/">
-        <h3>文字数カウンター</h3>
-        <p>原稿用紙換算・SNS文字数もリアルタイム表示</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/unit-converter/">
-        <h3>単位変換ツール</h3>
-        <p>長さ・重さ・温度をまとめて変換</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/password-generator/">
-        <h3>パスワード生成ツール</h3>
-        <p>安全な乱数で強力なパスワードを生成</p>
-      </a>
-    </div>
-  </section>
-
-  <section>
-    <h2>診断・エンタメ</h2>
-    <div class="grid">
-      <a class="card" href="https://ykobashi.github.io/past-life-diagnosis/">
-        <h3>前世診断</h3>
-        <p>名前と生年月日からあなたの前世を診断</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/daily-fortune/">
-        <h3>今日の運勢おみくじ</h3>
-        <p>日替わりであなたの運勢をチェック</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/personality-type-quiz/">
-        <h3>性格タイプ診断</h3>
-        <p>簡単な質問であなたのタイプが分かる</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/nickname-generator/">
-        <h3>あだ名ジェネレーター</h3>
-        <p>名前からユニークなあだ名を生成</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/chuuni-name-generator/">
-        <h3>二つ名メーカー</h3>
-        <p>あなただけの厨二病風二つ名を生成</p>
-      </a>
-    </div>
-  </section>
-
-  <section>
-    <h2>シンプルなゲーム</h2>
-    <div class="grid">
-      <a class="card" href="https://ykobashi.github.io/gomoku/">
-        <h3>五目並べ</h3>
-        <p>2人で対戦するシンプルな五目並べ</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/memory-match/">
-        <h3>神経衰弱</h3>
-        <p>カードをめくってペアを揃えよう</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/game-2048/">
-        <h3>2048</h3>
-        <p>タイルをスライドして2048を目指す</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/lights-out/">
-        <h3>ライツアウト</h3>
-        <p>全部消灯させればクリアのパズル</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/snake-game/">
-        <h3>スネークゲーム</h3>
-        <p>矢印キーで操作する定番スネークゲーム</p>
-      </a>
-    </div>
-  </section>
-
-  <section>
-    <h2>創作ゲーム</h2>
-    <div class="grid">
-      <a class="card" href="https://ykobashi.github.io/gomoku-othello/">
-        <h3>五目オセロ</h3>
-        <p>五目並べ×オセロの新感覚対戦ゲーム</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/gravity-othello/">
-        <h3>重力オセロ</h3>
-        <p>コネクト4×オセロの新感覚対戦ゲーム</p>
-      </a>
-      <a class="card" href="https://ykobashi.github.io/nested-tic-tac-toe/">
-        <h3>入れ子○×ゲーム</h3>
-        <p>置いた位置が相手の打つ小盤を決める先読み○×対戦</p>
-      </a>
-    </div>
-  </section>
-
-  <section>
-    <h2>みんなで遊ぶ</h2>
+  <section id="party-games">
+    <h2>🎉 みんなで遊ぶ <span class="count-badge"></span></h2>
     <div class="grid">
       <a class="card" href="https://ykobashi.github.io/ito-game/">
         <h3>ito(イト)</h3>
@@ -248,6 +264,104 @@
       </a>
     </div>
   </section>
+
+  <section id="games">
+    <h2>🎮 ゲーム <span class="count-badge"></span></h2>
+    <div class="grid">
+      <a class="card" href="https://ykobashi.github.io/gomoku/">
+        <h3>五目並べ</h3>
+        <p>2人で対戦するシンプルな五目並べ</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/memory-match/">
+        <h3>神経衰弱</h3>
+        <p>カードをめくってペアを揃えよう</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/game-2048/">
+        <h3>2048</h3>
+        <p>タイルをスライドして2048を目指す</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/lights-out/">
+        <h3>ライツアウト</h3>
+        <p>全部消灯させればクリアのパズル</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/snake-game/">
+        <h3>スネークゲーム</h3>
+        <p>矢印キーで操作する定番スネークゲーム</p>
+      </a>
+    </div>
+  </section>
+
+  <section id="creative-games">
+    <h2>🎨 創作ゲーム <span class="count-badge"></span></h2>
+    <div class="grid">
+      <a class="card" href="https://ykobashi.github.io/gomoku-othello/">
+        <h3>五目オセロ</h3>
+        <p>五目並べ×オセロの新感覚対戦ゲーム</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/gravity-othello/">
+        <h3>重力オセロ</h3>
+        <p>コネクト4×オセロの新感覚対戦ゲーム</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/nested-tic-tac-toe/">
+        <h3>入れ子○×ゲーム</h3>
+        <p>置いた位置が相手の打つ小盤を決める先読み○×対戦</p>
+      </a>
+    </div>
+  </section>
+
+  <section id="diagnosis">
+    <h2>🔮 診断・エンタメ <span class="count-badge"></span></h2>
+    <div class="grid">
+      <a class="card" href="https://ykobashi.github.io/past-life-diagnosis/">
+        <h3>前世診断</h3>
+        <p>名前と生年月日からあなたの前世を診断</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/daily-fortune/">
+        <h3>今日の運勢おみくじ</h3>
+        <p>日替わりであなたの運勢をチェック</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/personality-type-quiz/">
+        <h3>性格タイプ診断</h3>
+        <p>簡単な質問であなたのタイプが分かる</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/nickname-generator/">
+        <h3>あだ名ジェネレーター</h3>
+        <p>名前からユニークなあだ名を生成</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/chuuni-name-generator/">
+        <h3>二つ名メーカー</h3>
+        <p>あなただけの厨二病風二つ名を生成</p>
+      </a>
+    </div>
+  </section>
+
+  <section id="tools">
+    <h2>🛠️ 便利ツール <span class="count-badge"></span></h2>
+    <div class="grid">
+      <a class="card" href="https://ykobashi.github.io/bmi-calculator/">
+        <h3>BMI・適正体重計算機</h3>
+        <p>身長と体重からBMIと適正体重をすぐ計算</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/warikan-calculator/">
+        <h3>割り勘計算機</h3>
+        <p>端数もきれいに配分する割り勘計算</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/char-counter/">
+        <h3>文字数カウンター</h3>
+        <p>原稿用紙換算・SNS文字数もリアルタイム表示</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/unit-converter/">
+        <h3>単位変換ツール</h3>
+        <p>長さ・重さ・温度をまとめて変換</p>
+      </a>
+      <a class="card" href="https://ykobashi.github.io/password-generator/">
+        <h3>パスワード生成ツール</h3>
+        <p>安全な乱数で強力なパスワードを生成</p>
+      </a>
+    </div>
+  </section>
+
+  <p id="no-results">「<span id="no-results-query"></span>」に一致するツール・ゲームは見つかりませんでした。</p>
 </main>
 
 <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
@@ -256,5 +370,115 @@
   <p>&copy; 2026 ミニツール&ゲーム集</p>
   <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
 </footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main > section[id]'));
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#quick-nav-links a'));
+  var searchInput = document.getElementById('site-search');
+  var noResultsEl = document.getElementById('no-results');
+  var noResultsQueryEl = document.getElementById('no-results-query');
+
+  // カテゴリごとの件数バッジを表示
+  sections.forEach(function (section) {
+    var badge = section.querySelector('.count-badge');
+    var count = section.querySelectorAll('.card').length;
+    if (badge) badge.textContent = count + '件';
+  });
+
+  // 検索ボックスの入力で、タイトル・説明文に一致するカードだけ表示する
+  function applyFilter() {
+    var query = searchInput.value.trim().toLowerCase();
+    var visibleTotal = 0;
+
+    sections.forEach(function (section) {
+      var cards = Array.prototype.slice.call(section.querySelectorAll('.card'));
+      var visibleInSection = 0;
+
+      cards.forEach(function (card) {
+        var text = card.textContent.toLowerCase();
+        var match = query === '' || text.indexOf(query) !== -1;
+        card.classList.toggle('card-hidden', !match);
+        if (match) visibleInSection++;
+      });
+
+      section.classList.toggle('category-hidden', query !== '' && visibleInSection === 0);
+      visibleTotal += visibleInSection;
+    });
+
+    if (query !== '' && visibleTotal === 0) {
+      noResultsQueryEl.textContent = searchInput.value.trim();
+      noResultsEl.style.display = 'block';
+    } else {
+      noResultsEl.style.display = 'none';
+    }
+  }
+
+  searchInput.addEventListener('input', applyFilter);
+
+  // スクロール位置に応じて、ナビの現在地をハイライトする。
+  // セクションの高さがバラバラ(創作ゲームは3件、みんなで遊ぶは6件など)でも
+  // ずれないよう、IntersectionObserverの交差判定ではなく「ナビ直下のラインを
+  // 一番下まで通過したセクション」を素直に探す方式にしている。
+  //
+  // ここで使う基準線(lineY)は、CSS側の scroll-margin-top (--nav-offset) と
+  // 必ず同じ値にすること。ズレていると、アンカーへのスムーズスクロールが
+  // 収まった位置がちょうど基準線をまたいでしまい、一つ上/下のリンクが
+  // 誤ってハイライトされる不具合になる。
+  var quickNav = document.querySelector('.quick-nav');
+  var navOffset = 0;
+
+  function updateNavOffset() {
+    navOffset = quickNav.offsetHeight + 12;
+    document.documentElement.style.setProperty('--nav-offset', navOffset + 'px');
+  }
+
+  function setActiveLink(id) {
+    navLinks.forEach(function (a) {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+    });
+  }
+
+  function updateActiveOnScroll() {
+    // スムーズスクロールが収まる位置は端数px単位でズレることがあるため、
+    // 数px分の余裕(EPSILON)を持たせて基準線ちょうどでも自分自身を指すようにする
+    var EPSILON = 8;
+    var current = sections[0];
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].getBoundingClientRect().top - navOffset <= EPSILON) {
+        current = sections[i];
+      }
+    }
+    setActiveLink(current.id);
+  }
+
+  var scrollTicking = false;
+  window.addEventListener('scroll', function () {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(function () {
+      updateActiveOnScroll();
+      scrollTicking = false;
+    });
+  }, { passive: true });
+  window.addEventListener('resize', function () {
+    updateNavOffset();
+    updateActiveOnScroll();
+  });
+
+  // ナビのリンクをクリックした瞬間にも即座にハイライトを切り替える
+  // (スムーズスクロールのアニメーションが終わるのを待たせない)
+  navLinks.forEach(function (a) {
+    a.addEventListener('click', function () {
+      setActiveLink(a.getAttribute('href').slice(1));
+    });
+  });
+
+  updateNavOffset();
+  updateActiveOnScroll();
+})();
+</script>
 </body>
 </html>
