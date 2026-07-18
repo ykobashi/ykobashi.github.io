@@ -8,6 +8,40 @@
   --radius: 10px;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #121214;
+    --color-text: #ececee;
+    --color-card: #1c1c20;
+    --color-border: #2c2c31;
+  }
+  .lead,
+  .note,
+  footer {
+    color: #9a9aa2;
+  }
+  .tab {
+    background: #26262c;
+    color: #9a9aa2;
+  }
+  .input-group input,
+  .input-group select,
+  #swap-btn {
+    background: #1c1c20;
+    color: #ececee;
+  }
+  #swap-btn:hover {
+    background: #26262c;
+  }
+  .result {
+    background: #2a1f16;
+  }
+  .ad-slot {
+    background: #1c1c20;
+    color: #9a9aa2;
+  }
+}
+
 * { box-sizing: border-box; }
 
 body {

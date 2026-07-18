@@ -4,6 +4,78 @@
   --text: #2b2b2b;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121214;
+    --text: #ececee;
+    --accent: #d36976;
+  }
+
+  .setup-screen,
+  .lobby-panel,
+  .howto,
+  .role-box,
+  .phase-panel,
+  .overlay-card {
+    background: #1c1c20;
+    box-shadow: none;
+    border: 1px solid #2c2c31;
+  }
+
+  .subtitle,
+  .online-status,
+  .game-hint,
+  .role-label,
+  .role-caution,
+  .phase-wait-text,
+  .result-order-label {
+    color: #9a9aa2;
+  }
+
+  .name-input,
+  .join-row input {
+    background: #1c1c20;
+    border-color: #2c2c31;
+    color: #ececee;
+  }
+
+  .host-wait {
+    border-bottom-color: #2c2c31;
+  }
+
+  .roster-item {
+    background: #26262b;
+  }
+
+  .host-controls {
+    border-top-color: #3a3a40;
+  }
+
+  .host-controls p {
+    color: #8a8a92;
+  }
+
+  .other-games {
+    border-top-color: #2c2c31;
+  }
+
+  .other-games p {
+    color: #9a9aa2;
+  }
+
+  .other-games a {
+    background: #26262b;
+  }
+
+  .other-games a:hover {
+    background: #2c2c31;
+  }
+
+  .site-footer {
+    color: #9a9aa2;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

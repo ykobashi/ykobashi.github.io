@@ -9,6 +9,27 @@
   --border: #dfeaee;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --card-bg: #1c1c20;
+    --card-text: #ececee;
+    --muted: #9a9aa2;
+    --border: #2c2c31;
+  }
+
+  .option-button {
+    background: #232328;
+  }
+
+  .option-button:hover {
+    background: #2c2c34;
+  }
+
+  .secondary-button:hover {
+    background: #232328;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

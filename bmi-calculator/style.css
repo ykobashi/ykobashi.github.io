@@ -9,6 +9,31 @@
   --radius: 10px;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #121214;
+    --color-text: #ececee;
+    --color-card: #1c1c20;
+    --color-border: #2c2c31;
+  }
+  .lead,
+  .result-label,
+  .note,
+  footer {
+    color: #9a9aa2;
+  }
+  .ad-slot {
+    background: #1c1c20;
+    color: #9a9aa2;
+  }
+  .formula {
+    background: #23233a;
+  }
+  .ref-table th {
+    background: #26262c;
+  }
+}
+
 * { box-sizing: border-box; }
 
 body {

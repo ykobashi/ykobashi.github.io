@@ -4,6 +4,65 @@
   --text: #2b2b2b;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121214;
+    --text: #ececee;
+  }
+  .ad-slot {
+    background: repeating-linear-gradient(45deg, #1c1c20, #1c1c20 10px, #232328 10px, #232328 20px);
+    color: #9a9aa2;
+  }
+  .setup-screen,
+  .lobby-panel,
+  .howto,
+  .theme-box,
+  .my-number-box,
+  .order-panel,
+  .overlay-card {
+    background: #1c1c20;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+  .name-input,
+  .join-row input {
+    background: #232328;
+    border-color: #3a3a40;
+    color: var(--text);
+  }
+  .host-wait {
+    border-bottom-color: #2c2c31;
+  }
+  .roster-item {
+    background: #232328;
+  }
+  .theme-label,
+  .my-number-label,
+  .theme-scale,
+  .game-hint,
+  .online-status,
+  .result-order-label {
+    color: #9a9aa2;
+  }
+  .online-error {
+    color: #ff7a70;
+  }
+  .other-games {
+    border-top-color: #2c2c31;
+  }
+  .other-games p {
+    color: #9a9aa2;
+  }
+  .other-games a {
+    background: #2c2c31;
+  }
+  .other-games a:hover {
+    background: #34343a;
+  }
+  .site-footer {
+    color: #9a9aa2;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

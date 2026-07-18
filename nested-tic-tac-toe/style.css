@@ -8,9 +8,50 @@
   --bg: #f4f1ea;
   --text: #2b2b2b;
   --active-bg: #fff4d6;
-  --black-win-bg: #e3e8ff;
-  --white-win-bg: #ffe6e0;
-  --draw-bg: #e6e6e6;
+  --black-win-bg: #c3cfff;
+  --white-win-bg: #ffceba;
+  --draw-bg: #d5d5d5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --board-bg: #2a2d33;
+    --line-color: #4a5262;
+    --meta-line-color: #6b7280;
+    --circle-color: #7c93ff;
+    --cross-color: #ff7a63;
+    --accent: #7c93ff;
+    --bg: #121214;
+    --text: #ececee;
+    --active-bg: #4a3f1f;
+    --black-win-bg: #2d3563;
+    --white-win-bg: #5c3624;
+    --draw-bg: #3a3a3a;
+  }
+  .subtitle,
+  .forced-hint,
+  .other-games p {
+    color: #9a9aa2;
+  }
+  .other-games {
+    border-top-color: #2c2c31;
+  }
+  .other-games a {
+    background: #232328;
+  }
+  .other-games a:hover {
+    background: #2c2c31;
+  }
+  .howto {
+    background: #1c1c20;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+  .overlay-card {
+    background: #1c1c20;
+  }
+  .site-footer {
+    color: #9a9aa2;
+  }
 }
 
 * {
@@ -169,14 +210,20 @@ main {
 
 .sub-board.won-black {
   background: var(--black-win-bg);
+  box-shadow: inset 0 0 0 3px var(--circle-color);
 }
 
 .sub-board.won-white {
   background: var(--white-win-bg);
+  box-shadow: inset 0 0 0 3px var(--cross-color);
 }
 
 .sub-board.drawn {
   background: var(--draw-bg);
+}
+
+.sub-board.decided .mini-cell::after {
+  opacity: 0.3;
 }
 
 .mini-cell {
@@ -212,13 +259,16 @@ main {
 
 .sub-winner-mark {
   position: absolute;
-  inset: 0;
+  inset: 10%;
+  border-radius: 50%;
   display: none;
   align-items: center;
   justify-content: center;
   font-size: 2.4rem;
   font-weight: bold;
   pointer-events: none;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .sub-board.decided .sub-winner-mark {

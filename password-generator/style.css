@@ -13,6 +13,40 @@
   --radius: 10px;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #121214;
+    --color-text: #ececee;
+    --color-card: #1c1c20;
+    --color-border: #2c2c31;
+  }
+  .lead,
+  .entropy-value,
+  footer {
+    color: #9a9aa2;
+  }
+  #password-output {
+    background: #232326;
+  }
+  #copy-btn {
+    background: #1c1c20;
+  }
+  #copy-btn:hover {
+    background: #26262c;
+  }
+  .strength-bar {
+    background: #2c2c31;
+  }
+  .info code,
+  .ref-table th {
+    background: #2c2c31;
+  }
+  .ad-slot {
+    background: #1c1c20;
+    color: #9a9aa2;
+  }
+}
+
 * { box-sizing: border-box; }
 
 body {

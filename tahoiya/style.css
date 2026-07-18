@@ -4,6 +4,77 @@
   --text: #2b2b2b;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121214;
+    --text: #ececee;
+    --accent: #d39d69;
+  }
+
+  .setup-screen,
+  .lobby-panel,
+  .howto,
+  .word-box,
+  .phase-panel,
+  .overlay-card {
+    background: #1c1c20;
+    box-shadow: none;
+    border: 1px solid #2c2c31;
+  }
+
+  .subtitle,
+  .online-status,
+  .game-hint,
+  .word-label,
+  .phase-hint,
+  .result-word-label,
+  .result-order-label,
+  .result-tally-meta {
+    color: #9a9aa2;
+  }
+
+  .name-input,
+  .join-row input,
+  .fake-textarea {
+    background: #1c1c20;
+    border-color: #2c2c31;
+    color: #ececee;
+  }
+
+  .host-wait {
+    border-bottom-color: #2c2c31;
+  }
+
+  .roster-item,
+  .result-tally-item {
+    background: #26262b;
+  }
+
+  .result-tally-real {
+    background: #3a2c14;
+  }
+
+  .other-games {
+    border-top-color: #2c2c31;
+  }
+
+  .other-games p {
+    color: #9a9aa2;
+  }
+
+  .other-games a {
+    background: #26262b;
+  }
+
+  .other-games a:hover {
+    background: #2c2c31;
+  }
+
+  .site-footer {
+    color: #9a9aa2;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

@@ -10,6 +10,18 @@
   --border: #e3ddf5;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --card-bg: #1c1c20;
+    --card-text: #ececee;
+    --border: #2c2c31;
+    --muted: #9a9aa2;
+  }
+  .secondary-button:hover {
+    background: rgba(123, 79, 224, 0.18);
+  }
+}
+
 * {
   box-sizing: border-box;
 }

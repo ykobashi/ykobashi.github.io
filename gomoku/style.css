@@ -8,6 +8,54 @@
   --text: #2b2b2b;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121214;
+    --text: #ececee;
+  }
+
+  .subtitle,
+  .online-status,
+  .other-games p,
+  .site-footer {
+    color: #9a9aa2;
+  }
+
+  .ad-slot {
+    background: repeating-linear-gradient(45deg, #1c1c20, #1c1c20 10px, #222226 10px, #222226 20px);
+    color: #9a9aa2;
+  }
+
+  .setup-screen,
+  .overlay-card,
+  .howto {
+    background: #1c1c20;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+
+  .join-row input {
+    background: #1c1c20;
+    color: #ececee;
+    border-color: #2c2c31;
+  }
+
+  .host-wait {
+    border-top-color: #2c2c31;
+  }
+
+  .other-games {
+    border-top-color: #2c2c31;
+  }
+
+  .other-games a {
+    background: #232328;
+  }
+
+  .other-games a:hover {
+    background: #2c2c31;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
