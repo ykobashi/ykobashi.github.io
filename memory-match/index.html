@@ -3,31 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>神経衰弱 | 無料で遊べるブラウザ記憶力ゲーム</title>
-<meta name="description" content="4x4・16枚のカードでペアを揃える無料の神経衰弱ゲーム。手数と経過時間を記録して記憶力を試せます。インストール不要、スマホ・PCどちらでも遊べます。">
-<meta property="og:title" content="神経衰弱 | 無料で遊べるブラウザ記憶力ゲーム">
-<meta property="og:description" content="4x4のカードをめくってペアを揃える無料の神経衰弱。手数と経過時間で記憶力を測定できます。">
+<title>神経衰弱 | 無料で遊べるブラウザ記憶力ゲーム(1人・2人・CPU・オンライン)</title>
+<meta name="description" content="4x4・16枚のカードでペアを揃える無料の神経衰弱ゲーム。1人でタイムアタック、友達と1台の端末で対戦、CPUと対戦、友達とオンライン対戦の4モードで遊べます。インストール不要、スマホ・PCどちらでも遊べます。">
+<meta property="og:title" content="神経衰弱 | 無料で遊べるブラウザ記憶力ゲーム(1人・2人・CPU・オンライン)">
+<meta property="og:description" content="4x4のカードをめくってペアを揃える無料の神経衰弱。1人プレイ・2人対戦・CPU対戦・オンライン対戦に対応。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ykobashi.github.io/memory-match/">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
 <header class="site-header">
   <h1>神経衰弱</h1>
-  <p class="subtitle">カードをめくってペアを揃えよう</p>
+  <p class="subtitle">1人でタイムアタック、友達と対戦、CPUと対戦、オンライン対戦!</p>
 </header>
 
 <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
 
 <main>
-  <section class="status-bar">
-    <div class="stat"><span class="stat-label">手数</span><span id="moves-count">0</span></div>
-    <div class="stat"><span class="stat-label">経過時間</span><span id="elapsed-time">00:00</span></div>
-    <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+  <section id="setup-screen" class="setup-screen">
+    <div id="mode-select" class="mode-select">
+      <h2>遊び方を選んでください</h2>
+      <div class="mode-buttons">
+        <button id="mode-solo-btn" class="mode-btn" type="button">1人で(タイムアタック)</button>
+        <button id="mode-local-btn" class="mode-btn" type="button">2人で対戦(この端末で交互に)</button>
+        <button id="mode-cpu-btn" class="mode-btn" type="button">CPUと対戦</button>
+        <button id="mode-online-btn" class="mode-btn" type="button">オンライン対戦(友達と)</button>
+      </div>
+    </div>
+
+    <div id="online-panel" class="online-panel hidden">
+      <button id="online-back-btn" class="link-btn" type="button">&laquo; 戻る</button>
+      <h2>オンライン対戦</h2>
+
+      <div class="online-choice">
+        <button id="host-btn" class="mode-btn" type="button">部屋を作る(招待する)</button>
+        <div class="join-row">
+          <input id="join-code-input" type="text" inputmode="latin" maxlength="6" placeholder="6桁のコード">
+          <button id="join-btn" class="mode-btn" type="button">参加する</button>
+        </div>
+      </div>
+
+      <div id="host-wait" class="host-wait hidden">
+        <p>このコードを友達に伝えてください:</p>
+        <div class="room-code" id="room-code-text">------</div>
+        <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+        <p id="online-status" class="online-status">相手の参加を待っています…</p>
+      </div>
+
+      <p id="online-error" class="online-error hidden"></p>
+    </div>
   </section>
 
-  <section class="board-wrapper">
-    <div id="board" class="board" role="grid" aria-label="神経衰弱カード盤面"></div>
+  <section id="game-area" class="game-area hidden">
+    <section id="scoreboard" class="scoreboard hidden">
+      <div id="score-player-0" class="score-item">
+        <span class="score-label" id="score-label-0">あなた</span>
+        <span class="score-value" id="score-value-0">0</span>
+      </div>
+      <div id="score-player-1" class="score-item">
+        <span class="score-label" id="score-label-1">相手</span>
+        <span class="score-value" id="score-value-1">0</span>
+      </div>
+    </section>
+
+    <section class="status-bar">
+      <div class="stat" id="moves-stat"><span class="stat-label">手数</span><span id="moves-count">0</span></div>
+      <div class="stat" id="time-stat"><span class="stat-label">経過時間</span><span id="elapsed-time">00:00</span></div>
+      <div class="stat hidden" id="turn-stat"><span class="stat-label">手番</span><span id="turn-text">-</span></div>
+      <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+    </section>
+
+    <p id="online-connection-status" class="online-status hidden"></p>
+
+    <section class="board-wrapper">
+      <div id="board" class="board" role="grid" aria-label="神経衰弱カード盤面"></div>
+    </section>
+
+    <button id="quit-online-btn" class="link-btn hidden" type="button">対戦をやめてモード選択に戻る</button>
   </section>
 
   <section id="result-overlay" class="overlay hidden">
@@ -50,10 +103,11 @@
   <section class="howto">
     <h2>遊び方</h2>
     <ul>
-      <li>カードをタップ(クリック)すると絵柄がめくれます。</li>
-      <li>2枚めくって絵柄が一致すればそのまま表向きのまま残ります。</li>
-      <li>一致しなければ少し経ってから2枚とも裏返ります。</li>
-      <li>全8ペア(16枚)を揃えるとクリアです。手数と経過時間が少ないほど好成績です。</li>
+      <li>「1人で」を選ぶと、タイムアタックでカードを揃えます。手数と経過時間が少ないほど好成績です。</li>
+      <li>「2人で対戦」を選ぶと、同じ端末を2人で交互に操作します。ペアが揃うと続けて自分の手番、揃わないと相手の手番に移ります。</li>
+      <li>「CPUと対戦」を選ぶと、あなたとCPUで対戦します。CPUは見たカードを一定確率で記憶しています。</li>
+      <li>「オンライン対戦」を選ぶと、友達と2台の端末でリアルタイムに対戦できます。「部屋を作る」で表示される6桁のコードを友達に伝え、友達は「参加する」からそのコードを入力すると接続されます。</li>
+      <li>全8ペア(16枚)を揃えるとクリア(対戦モードでは得点の多い方が勝ち)です。</li>
       <li>「最初から」ボタンでいつでも新しいカード配置に挑戦できます。</li>
     </ul>
   </section>
@@ -66,6 +120,8 @@
 </footer>
 
 <script src="logic.js"></script>
+<script src="peerjs.min.js"></script>
+<script src="net.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
