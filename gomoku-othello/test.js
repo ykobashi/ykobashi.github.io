@@ -12,6 +12,9 @@ const {
   checkWinAt,
   hasWin,
   isBoardFull,
+  scoreLine,
+  evaluatePlacement,
+  chooseAiMove,
 } = require('./logic.js');
 
 function makeBoard(size, stones) {
@@ -177,6 +180,61 @@ function makeBoard(size, stones) {
   small[1][0] = BLACK;
   small[1][1] = WHITE;
   assert.strictEqual(isBoardFull(small), true);
+}
+
+// chooseAiMove: 即勝ち(あと1手で5連になるならその手を打つ)
+// 盤端(col 0)から4連を並べ、開いている側を col 4 の1箇所だけに確定させる
+// (途中に相手石を置いて片側を塞ぐと、反転によって別の勝ち手が生まれてしまうため使わない)
+{
+  const board = makeBoard(13, [
+    [5, 0, WHITE],
+    [5, 1, WHITE],
+    [5, 2, WHITE],
+    [5, 3, WHITE],
+  ]);
+  const move = chooseAiMove(board, WHITE, BLACK);
+  assert.deepStrictEqual(move, { row: 5, col: 4 });
+}
+
+// chooseAiMove: 即ブロック(相手があと1手で5連になるならそこを先取りする)
+{
+  const board = makeBoard(13, [
+    [7, 0, BLACK],
+    [7, 1, BLACK],
+    [7, 2, BLACK],
+    [7, 3, BLACK],
+  ]);
+  const move = chooseAiMove(board, WHITE, BLACK);
+  assert.deepStrictEqual(move, { row: 7, col: 4 });
+}
+
+// chooseAiMove: 反転によって、置いた場所とは離れた位置に5連ができる勝ち手も検出できる
+// (applyMove + hasWin([placed, ...flipped]) 経由の検出。checkWinAt(placedのみ)では見つからない)
+{
+  const board = makeBoard(13, [
+    [0, 4, BLACK],
+    [1, 4, BLACK],
+    [2, 4, BLACK],
+    [3, 4, BLACK],
+    [4, 4, WHITE],
+    [4, 3, WHITE],
+    [4, 2, BLACK],
+  ]);
+  const move = chooseAiMove(board, BLACK, WHITE);
+  assert.deepStrictEqual(move, { row: 4, col: 5 });
+}
+
+// chooseAiMove: 返り値は常に合法手(canPlaceStoneを満たす)
+{
+  const board = makeBoard(13, [
+    [6, 6, BLACK],
+    [6, 7, WHITE],
+    [7, 6, WHITE],
+    [7, 7, BLACK],
+  ]);
+  const move = chooseAiMove(board, WHITE, BLACK);
+  assert.ok(move, '合法手が返る');
+  assert.strictEqual(canPlaceStone(board, move.row, move.col), true);
 }
 
 console.log('All tests passed');

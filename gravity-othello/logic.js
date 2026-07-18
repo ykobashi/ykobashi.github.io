@@ -142,6 +142,119 @@ function isBoardFull(board) {
   return board[0].every((cell) => cell !== EMPTY);
 }
 
+// ===== CPU対戦用: negamax + アルファベータ探索 =====
+
+const WIN_SCORE = 1000000;
+const SEARCH_DEPTH = 6;
+const COLUMN_ORDER = [3, 2, 4, 1, 5, 0, 6]; // 中央優先(枝刈り効率+中央価値)
+const WINDOW_TABLE = { 1: 1, 2: 10, 3: 50, 4: 100000 }; // 窓内の自石数→点
+
+// 合法列を中央優先順で返す
+function orderedColumns(board) {
+  return COLUMN_ORDER.filter((c) => canDropInColumn(board, c));
+}
+
+// 盤面を player 視点で評価する(player優勢ほど正の値になる反対称な評価関数)。
+// 全ての長さ4の窓(横24/縦21/斜め12+12=69窓)を走査し、
+//   窓に自石と相手石が混在 → 0(そのラインは死んでいる)
+//   相手石のみ+空 → -WINDOW_TABLE[相手石数]
+//   自石のみ+空 → +WINDOW_TABLE[自石数]
+// さらに中央列(col=3)の自石に+3/相手石に-3のボーナスを加える。
+function evaluateBoard(board, player) {
+  const opp = otherPlayer(player);
+  const rows = board.length;
+  const cols = board[0].length;
+  let score = 0;
+  const directions = [
+    [0, 1], // 横
+    [1, 0], // 縦
+    [1, 1], // 斜め(左上→右下)
+    [1, -1], // 斜め(右上→左下)
+  ];
+
+  for (const [dr, dc] of directions) {
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const er = r + dr * 3;
+        const ec = c + dc * 3;
+        if (er < 0 || er >= rows || ec < 0 || ec >= cols) continue;
+        let own = 0;
+        let opponent = 0;
+        for (let k = 0; k < 4; k++) {
+          const cell = board[r + dr * k][c + dc * k];
+          if (cell === player) own++;
+          else if (cell === opp) opponent++;
+        }
+        if (own > 0 && opponent > 0) continue;
+        if (own > 0) score += WINDOW_TABLE[own];
+        else if (opponent > 0) score -= WINDOW_TABLE[opponent];
+      }
+    }
+  }
+
+  for (let r = 0; r < rows; r++) {
+    const cell = board[r][3];
+    if (cell === player) score += 3;
+    else if (cell === opp) score -= 3;
+  }
+
+  return score;
+}
+
+// negamax探索(反対称評価なのでplayer視点で統一する)
+function negamax(board, depth, alpha, beta, player) {
+  const opp = otherPlayer(player);
+  const cols = orderedColumns(board);
+  if (depth === 0 || cols.length === 0) return evaluateBoard(board, player);
+
+  let best = -Infinity;
+  for (const col of cols) {
+    const { board: nb, row, flipped } = dropStone(board, col, player);
+    let val;
+    if (hasWin(nb, [{ row, col }, ...flipped])) {
+      val = WIN_SCORE - (SEARCH_DEPTH - depth); // 早い勝ちを優先
+    } else if (isBoardFull(nb)) {
+      val = 0;
+    } else {
+      val = -negamax(nb, depth - 1, -beta, -alpha, opp);
+    }
+    if (val > best) best = val;
+    if (best > alpha) alpha = best;
+    if (alpha >= beta) break; // 枝刈り
+  }
+  return best;
+}
+
+// CPU(aiPlayer)が次に落とすべき列を決める。humanPlayer引数はシグネチャ統一のために
+// 受け取るが、反対称評価により negamax 内では明示的に使用しない。
+function chooseAiMove(board, aiPlayer, humanPlayer) {
+  const cols = orderedColumns(board);
+  if (cols.length === 0) return null;
+
+  let bestCol = cols[0];
+  let bestScore = -Infinity;
+  let alpha = -Infinity;
+  const beta = Infinity;
+
+  for (const col of cols) {
+    const { board: nb, row, flipped } = dropStone(board, col, aiPlayer);
+    let val;
+    if (hasWin(nb, [{ row, col }, ...flipped])) {
+      val = WIN_SCORE;
+    } else if (isBoardFull(nb)) {
+      val = 0;
+    } else {
+      val = -negamax(nb, SEARCH_DEPTH - 1, -beta, -alpha, humanPlayer);
+    }
+    if (val > bestScore) {
+      bestScore = val;
+      bestCol = col;
+    }
+    if (val > alpha) alpha = val;
+  }
+  return { col: bestCol };
+}
+
 const GravityOthelloLogic = {
   ROWS,
   COLS,
@@ -149,6 +262,10 @@ const GravityOthelloLogic = {
   BLACK,
   WHITE,
   WIN_LENGTH,
+  WIN_SCORE,
+  SEARCH_DEPTH,
+  COLUMN_ORDER,
+  WINDOW_TABLE,
   createEmptyBoard,
   canDropInColumn,
   getDropRow,
@@ -158,6 +275,10 @@ const GravityOthelloLogic = {
   checkWinAt,
   hasWin,
   isBoardFull,
+  orderedColumns,
+  evaluateBoard,
+  negamax,
+  chooseAiMove,
 };
 
 if (typeof module !== 'undefined') {

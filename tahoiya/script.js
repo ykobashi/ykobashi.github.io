@@ -372,9 +372,9 @@
       btn.className = 'mode-btn entry-btn';
       btn.textContent = entry.text;
       btn.addEventListener('click', () => {
-        if (hasVoted) return;
         hasVoted = true;
-        Array.from(entriesListEl.children).forEach((c) => { c.disabled = true; });
+        Array.from(entriesListEl.children).forEach((c) => { c.classList.remove('selected'); });
+        btn.classList.add('selected');
         voteSubmittedStatus.classList.remove('hidden');
         conn.send({ type: 'vote', voterId: myId, votedEntryId: entry.id });
       });

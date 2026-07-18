@@ -8,6 +8,26 @@
   --radius: 10px;
 }
 
+:root[data-theme="dark"] {
+  --color-bg: #121214;
+  --color-text: #ececee;
+  --color-primary: #a78bfa;
+  --color-card: #1c1c20;
+  --color-border: #2c2c31;
+}
+:root[data-theme="dark"] .lead,
+:root[data-theme="dark"] .stat-label,
+:root[data-theme="dark"] footer {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .stat-card {
+  background: #1c1c20;
+}
+:root[data-theme="dark"] .ad-slot {
+  background: #1c1c20;
+  color: #9a9aa2;
+}
+
 * { box-sizing: border-box; }
 
 body {

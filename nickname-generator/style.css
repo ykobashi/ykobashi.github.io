@@ -9,6 +9,19 @@
   --border: #f3e2d3;
 }
 
+:root[data-theme="dark"] {
+  --card-bg: #1c1c20;
+  --card-text: #ececee;
+  --muted: #9a9aa2;
+  --border: #2c2c31;
+}
+:root[data-theme="dark"] .secondary-button:hover {
+  background: #2c2c31;
+}
+:root[data-theme="dark"] .nickname-list li {
+  background: #232328;
+}
+
 * {
   box-sizing: border-box;
 }

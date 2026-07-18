@@ -356,11 +356,9 @@
   }
 
   function castVote(votedForId, btnEl) {
-    if (myVoteCast) return;
     myVoteCast = true;
 
     Array.from(votingCandidatesEl.children).forEach((el) => {
-      el.disabled = true;
       el.classList.remove('selected');
     });
     if (btnEl) btnEl.classList.add('selected');

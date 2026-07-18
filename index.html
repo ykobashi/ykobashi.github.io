@@ -11,6 +11,8 @@
 <meta property="og:image" content="https://ykobashi.github.io/og-image.png">
 <meta property="og:url" content="https://ykobashi.github.io/">
 <link rel="canonical" href="https://ykobashi.github.io/">
+<script src="theme.js"></script>
+<link rel="stylesheet" href="theme-toggle.css">
 <style>
   :root {
     color-scheme: light dark;
@@ -21,15 +23,13 @@
     --accent: #3d5afe;
     --muted: #6b6b76;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #121214;
-      --fg: #ececee;
-      --card-bg: #1c1c20;
-      --card-border: #2c2c31;
-      --accent: #7c93ff;
-      --muted: #9a9aa2;
-    }
+  :root[data-theme="dark"] {
+    --bg: #121214;
+    --fg: #ececee;
+    --card-bg: #1c1c20;
+    --card-border: #2c2c31;
+    --accent: #7c93ff;
+    --muted: #9a9aa2;
   }
   * { box-sizing: border-box; }
   html {
@@ -219,6 +219,7 @@
 <meta name="google-adsense-account" content="ca-pub-2142740595477223">
 </head>
 <body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
 <header>
   <h1>ミニツール&ゲーム集</h1>
   <p>便利ツール・エンタメ診断・ゲームを、登録不要・完全無料でまとめて遊べます。</p>

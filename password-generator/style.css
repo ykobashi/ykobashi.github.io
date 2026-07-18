@@ -13,6 +13,38 @@
   --radius: 10px;
 }
 
+:root[data-theme="dark"] {
+  --color-bg: #121214;
+  --color-text: #ececee;
+  --color-card: #1c1c20;
+  --color-border: #2c2c31;
+}
+:root[data-theme="dark"] .lead,
+:root[data-theme="dark"] .entropy-value,
+:root[data-theme="dark"] footer {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] #password-output {
+  background: #232326;
+}
+:root[data-theme="dark"] #copy-btn {
+  background: #1c1c20;
+}
+:root[data-theme="dark"] #copy-btn:hover {
+  background: #26262c;
+}
+:root[data-theme="dark"] .strength-bar {
+  background: #2c2c31;
+}
+:root[data-theme="dark"] .info code,
+:root[data-theme="dark"] .ref-table th {
+  background: #2c2c31;
+}
+:root[data-theme="dark"] .ad-slot {
+  background: #1c1c20;
+  color: #9a9aa2;
+}
+
 * { box-sizing: border-box; }
 
 body {

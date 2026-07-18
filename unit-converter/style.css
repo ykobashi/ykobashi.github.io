@@ -8,6 +8,38 @@
   --radius: 10px;
 }
 
+:root[data-theme="dark"] {
+  --color-bg: #121214;
+  --color-text: #ececee;
+  --color-card: #1c1c20;
+  --color-border: #2c2c31;
+}
+:root[data-theme="dark"] .lead,
+:root[data-theme="dark"] .note,
+:root[data-theme="dark"] footer {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .tab {
+  background: #26262c;
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .input-group input,
+:root[data-theme="dark"] .input-group select,
+:root[data-theme="dark"] #swap-btn {
+  background: #1c1c20;
+  color: #ececee;
+}
+:root[data-theme="dark"] #swap-btn:hover {
+  background: #26262c;
+}
+:root[data-theme="dark"] .result {
+  background: #2a1f16;
+}
+:root[data-theme="dark"] .ad-slot {
+  background: #1c1c20;
+  color: #9a9aa2;
+}
+
 * { box-sizing: border-box; }
 
 body {

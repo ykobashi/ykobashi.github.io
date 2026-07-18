@@ -9,6 +9,29 @@
   --radius: 10px;
 }
 
+:root[data-theme="dark"] {
+  --color-bg: #121214;
+  --color-text: #ececee;
+  --color-card: #1c1c20;
+  --color-border: #2c2c31;
+}
+:root[data-theme="dark"] .lead,
+:root[data-theme="dark"] .result-label,
+:root[data-theme="dark"] .note,
+:root[data-theme="dark"] footer {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .ad-slot {
+  background: #1c1c20;
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .formula {
+  background: #23233a;
+}
+:root[data-theme="dark"] .ref-table th {
+  background: #26262c;
+}
+
 * { box-sizing: border-box; }
 
 body {

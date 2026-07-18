@@ -8,6 +8,16 @@
   --accent: #16a34a;
 }
 
+/* This page already uses a dark palette by default (regardless of system
+   preference), so the dark-mode override below intentionally keeps the
+   same neutral colors rather than changing them. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #10231a;
+    --text: #ecfdf5;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

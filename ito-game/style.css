@@ -4,6 +4,63 @@
   --text: #2b2b2b;
 }
 
+:root[data-theme="dark"] {
+  --bg: #121214;
+  --text: #ececee;
+}
+:root[data-theme="dark"] .ad-slot {
+  background: repeating-linear-gradient(45deg, #1c1c20, #1c1c20 10px, #232328 10px, #232328 20px);
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .setup-screen,
+:root[data-theme="dark"] .lobby-panel,
+:root[data-theme="dark"] .howto,
+:root[data-theme="dark"] .theme-box,
+:root[data-theme="dark"] .my-number-box,
+:root[data-theme="dark"] .order-panel,
+:root[data-theme="dark"] .overlay-card {
+  background: #1c1c20;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+:root[data-theme="dark"] .name-input,
+:root[data-theme="dark"] .join-row input {
+  background: #232328;
+  border-color: #3a3a40;
+  color: var(--text);
+}
+:root[data-theme="dark"] .host-wait {
+  border-bottom-color: #2c2c31;
+}
+:root[data-theme="dark"] .roster-item {
+  background: #232328;
+}
+:root[data-theme="dark"] .theme-label,
+:root[data-theme="dark"] .my-number-label,
+:root[data-theme="dark"] .theme-scale,
+:root[data-theme="dark"] .game-hint,
+:root[data-theme="dark"] .online-status,
+:root[data-theme="dark"] .result-order-label {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .online-error {
+  color: #ff7a70;
+}
+:root[data-theme="dark"] .other-games {
+  border-top-color: #2c2c31;
+}
+:root[data-theme="dark"] .other-games p {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .other-games a {
+  background: #2c2c31;
+}
+:root[data-theme="dark"] .other-games a:hover {
+  background: #34343a;
+}
+:root[data-theme="dark"] .site-footer {
+  color: #9a9aa2;
+}
+
 * {
   box-sizing: border-box;
 }

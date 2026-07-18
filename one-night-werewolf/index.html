@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../theme.js"></script>
+<link rel="stylesheet" href="../theme-toggle.css">
 <title>ワンナイト人狼(簡易版) | 短時間で遊べるオンライン人狼ゲーム</title>
 <meta name="description" content="役職を配って占い・議論・投票を1ラウンドで行う「ワンナイト人狼(簡易版)」。3人から8人まで友達とオンラインで無料で遊べます。会話は口頭やビデオ通話で行い、アプリは役職配布と占い結果・投票の集計だけを担当します。">
 <meta property="og:title" content="ワンナイト人狼(簡易版) | 短時間で遊べるオンライン人狼ゲーム">
@@ -10,7 +12,23 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://ykobashi.github.io/og-image.png">
 <meta property="og:url" content="https://ykobashi.github.io/one-night-werewolf/">
+<link rel="canonical" href="https://ykobashi.github.io/one-night-werewolf/">
 <link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Game",
+  "name": "ワンナイト人狼(簡易版)",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "description": "役職を配って占い・議論・投票を1ラウンドで行う「ワンナイト人狼(簡易版)」。3人から8人まで友達とオンラインで無料で遊べます。会話は口頭やビデオ通話で行い、アプリは役職配布と占い結果・投票の集計だけを担当します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
 <link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
 <link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script>
@@ -24,6 +42,7 @@
 <meta name="google-adsense-account" content="ca-pub-2142740595477223">
 </head>
 <body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
 <nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
 <header class="site-header">
   <h1>ワンナイト人狼(簡易版)</h1>
@@ -95,7 +114,7 @@
       <h3>投票フェーズ</h3>
       <p class="phase-wait-text">人狼だと思う人を1人タップして投票してください。</p>
       <div id="voting-candidates" class="candidate-list"></div>
-      <p id="voting-status" class="vote-status hidden">投票しました。ホストが集計するのを待っています…</p>
+      <p id="voting-status" class="vote-status hidden">投票しました。ホストが集計するまで選び直せます。</p>
       <div id="voting-host-controls" class="host-controls hidden">
         <p>ホスト操作</p>
         <p id="voting-progress" class="phase-wait-text"></p>

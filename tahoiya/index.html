@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../theme.js"></script>
+<link rel="stylesheet" href="../theme-toggle.css">
 <title>たほいや | 辞書の言葉を当てるオンライン嘘つきパーティーゲーム</title>
 <meta name="description" content="難読語のニセの意味をでっち上げて本物の定義に紛れ込ませ、みんなで本物を当て合うオンライン辞書ゲーム「たほいや」。3人から友達と無料で遊べます。出題者(ホスト)がお題の言葉を出し、他の参加者はもっともらしいニセ定義を投稿、全員で本物を推理します。">
 <meta property="og:title" content="たほいや | 辞書の言葉を当てるオンライン嘘つきパーティーゲーム">
@@ -10,7 +12,23 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://ykobashi.github.io/og-image.png">
 <meta property="og:url" content="https://ykobashi.github.io/tahoiya/">
+<link rel="canonical" href="https://ykobashi.github.io/tahoiya/">
 <link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Game",
+  "name": "たほいや",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "description": "難読語のニセの意味をでっち上げて本物の定義に紛れ込ませ、みんなで本物を当て合うオンライン辞書ゲーム「たほいや」。3人から友達と無料で遊べます。出題者(ホスト)がお題の言葉を出し、他の参加者はもっともらしいニセ定義を投稿、全員で本物を推理します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
 <link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
 <link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script>
@@ -24,6 +42,7 @@
 <meta name="google-adsense-account" content="ca-pub-2142740595477223">
 </head>
 <body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
 <nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
 <header class="site-header">
   <h1>たほいや</h1>
@@ -84,7 +103,7 @@
       <div id="guest-vote-box" class="hidden">
         <p class="phase-hint">本物の定義だと思うものを選んでタップしてください。</p>
         <div id="entries-list" class="entries-list"></div>
-        <p id="vote-submitted-status" class="online-status hidden">投票しました。他の人を待っています…</p>
+        <p id="vote-submitted-status" class="online-status hidden">投票しました。集計開始まで選び直せます。</p>
       </div>
       <div id="host-vote-box" class="hidden">
         <h3>投票状況</h3>
