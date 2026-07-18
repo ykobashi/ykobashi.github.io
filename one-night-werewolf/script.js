@@ -456,10 +456,9 @@
   }
 
   function onVote(votedForId, btnEl) {
-    if (hasVotedLocally) return;
     hasVotedLocally = true;
     Array.from(votingCandidatesEl.children).forEach((btn) => {
-      btn.disabled = true;
+      btn.classList.remove('voted');
     });
     if (btnEl) btnEl.classList.add('voted');
     votingStatus.classList.remove('hidden');

@@ -71,8 +71,8 @@
     $('tally-box').classList.toggle('hidden', !isHost); updateProgress();
   }
   function castVote(target, button) {
-    if (voted || phase !== 'voting') return;
-    voted = true; Array.from($('candidates').children).forEach((b) => { b.disabled = true; }); button.classList.add('selected'); $('vote-status').textContent = '投票しました。';
+    if (phase !== 'voting') return;
+    voted = true; Array.from($('candidates').children).forEach((b) => { b.classList.remove('selected'); }); button.classList.add('selected'); $('vote-status').textContent = '投票しました。（集計開始まで変更できます）';
     if (isHost) { votes[myId] = target; updateProgress(); } else conn.send({ type: 'vote', target });
   }
   function updateProgress() { if (isHost) $('progress').textContent = '投票: ' + Object.keys(votes).length + '/' + roster.length + '人'; }

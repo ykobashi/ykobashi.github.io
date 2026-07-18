@@ -370,6 +370,10 @@ main {
   white-space: normal;
 }
 
+.entry-btn.selected {
+  outline: 3px solid #333;
+}
+
 .overlay {
   position: fixed;
   inset: 0;
