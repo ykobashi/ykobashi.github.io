@@ -8,26 +8,24 @@
   --radius: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #121214;
-    --color-text: #ececee;
-    --color-primary: #a78bfa;
-    --color-card: #1c1c20;
-    --color-border: #2c2c31;
-  }
-  .lead,
-  .stat-label,
-  footer {
-    color: #9a9aa2;
-  }
-  .stat-card {
-    background: #1c1c20;
-  }
-  .ad-slot {
-    background: #1c1c20;
-    color: #9a9aa2;
-  }
+:root[data-theme="dark"] {
+  --color-bg: #121214;
+  --color-text: #ececee;
+  --color-primary: #a78bfa;
+  --color-card: #1c1c20;
+  --color-border: #2c2c31;
+}
+:root[data-theme="dark"] .lead,
+:root[data-theme="dark"] .stat-label,
+:root[data-theme="dark"] footer {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .stat-card {
+  background: #1c1c20;
+}
+:root[data-theme="dark"] .ad-slot {
+  background: #1c1c20;
+  color: #9a9aa2;
 }
 
 * { box-sizing: border-box; }

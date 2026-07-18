@@ -13,45 +13,56 @@
   --draw-bg: #d5d5d5;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --board-bg: #2a2d33;
-    --line-color: #4a5262;
-    --meta-line-color: #6b7280;
-    --circle-color: #7c93ff;
-    --cross-color: #ff7a63;
-    --accent: #7c93ff;
-    --bg: #121214;
-    --text: #ececee;
-    --active-bg: #4a3f1f;
-    --black-win-bg: #2d3563;
-    --white-win-bg: #5c3624;
-    --draw-bg: #3a3a3a;
-  }
-  .subtitle,
-  .forced-hint,
-  .other-games p {
-    color: #9a9aa2;
-  }
-  .other-games {
-    border-top-color: #2c2c31;
-  }
-  .other-games a {
-    background: #232328;
-  }
-  .other-games a:hover {
-    background: #2c2c31;
-  }
-  .howto {
-    background: #1c1c20;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  }
-  .overlay-card {
-    background: #1c1c20;
-  }
-  .site-footer {
-    color: #9a9aa2;
-  }
+:root[data-theme="dark"] {
+  --board-bg: #2a2d33;
+  --line-color: #4a5262;
+  --meta-line-color: #6b7280;
+  --circle-color: #7c93ff;
+  --cross-color: #ff7a63;
+  --accent: #7c93ff;
+  --bg: #121214;
+  --text: #ececee;
+  --active-bg: #4a3f1f;
+  --black-win-bg: #2d3563;
+  --white-win-bg: #5c3624;
+  --draw-bg: #3a3a3a;
+}
+:root[data-theme="dark"] .subtitle,
+:root[data-theme="dark"] .forced-hint,
+:root[data-theme="dark"] .online-status,
+:root[data-theme="dark"] .other-games p {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .other-games {
+  border-top-color: #2c2c31;
+}
+:root[data-theme="dark"] .other-games a {
+  background: #232328;
+}
+:root[data-theme="dark"] .other-games a:hover {
+  background: #2c2c31;
+}
+:root[data-theme="dark"] .howto {
+  background: #1c1c20;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+:root[data-theme="dark"] .overlay-card {
+  background: #1c1c20;
+}
+:root[data-theme="dark"] .site-footer {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .setup-screen {
+  background: #1c1c20;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+:root[data-theme="dark"] .join-row input {
+  background: #1c1c20;
+  color: #ececee;
+  border-color: #2c2c31;
+}
+:root[data-theme="dark"] .host-wait {
+  border-top-color: #2c2c31;
 }
 
 * {
@@ -110,6 +121,129 @@ main {
 
 .hidden {
   display: none !important;
+}
+
+.game-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.setup-screen {
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem 1.2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.setup-screen h2 {
+  margin-top: 0;
+  font-size: 1.15rem;
+}
+
+.mode-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  max-width: 320px;
+  margin: 1rem auto 0;
+}
+
+.mode-btn {
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.mode-btn:hover {
+  opacity: 0.9;
+}
+
+.mode-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.link-btn {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.3rem;
+}
+
+.online-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.join-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.join-row input {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 130px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.host-wait {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.room-code {
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin: 0.5rem 0;
+}
+
+.online-status {
+  color: #555;
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0;
+}
+
+.online-error {
+  color: #c0392b;
+  font-size: 0.9rem;
+  margin-top: 0.8rem;
+}
+
+#online-connection-status {
+  width: 100%;
+  text-align: center;
+  margin: 0 0 0.6rem;
+}
+
+#quit-online-btn {
+  margin-top: 0.8rem;
 }
 
 .status-bar {
@@ -188,6 +322,11 @@ main {
   max-width: 480px;
   aspect-ratio: 1 / 1;
   touch-action: manipulation;
+}
+
+.meta-board.thinking {
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 .sub-board {

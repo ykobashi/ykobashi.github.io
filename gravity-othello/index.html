@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>重力オセロ | コネクト4×オセロの新感覚対戦ゲーム(無料・2人対戦)</title>
-<meta name="description" content="コネクト4とオセロを掛け合わせたオリジナル対戦ゲーム「重力オセロ」。列を選んで石を落とすとオセロのように相手の石を挟んで反転させつつ、縦横斜めに4つ並べたら勝利。1台の端末で2人対戦できる無料ブラウザゲームです。">
-<meta property="og:title" content="重力オセロ | コネクト4×オセロの新感覚対戦ゲーム(無料・2人対戦)">
-<meta property="og:description" content="石を落として挟んで反転させつつ4つ並べたら勝ち。コネクト4とオセロを融合させたオリジナル対戦ゲームです。">
+<script src="../theme.js"></script>
+<link rel="stylesheet" href="../theme-toggle.css">
+<title>重力オセロ | コネクト4×オセロの新感覚対戦ゲーム(無料・2人対戦・CPU・オンライン)</title>
+<meta name="description" content="コネクト4とオセロを掛け合わせたオリジナル対戦ゲーム「重力オセロ」。列を選んで石を落とすとオセロのように相手の石を挟んで反転させつつ、縦横斜めに4つ並べたら勝利。1台の端末で2人対戦、CPU対戦、友達とのオンライン対戦にも対応した無料ブラウザゲームです。">
+<meta property="og:title" content="重力オセロ | コネクト4×オセロの新感覚対戦ゲーム(無料・2人対戦・CPU・オンライン)">
+<meta property="og:description" content="石を落として挟んで反転させつつ4つ並べたら勝ち。コネクト4とオセロを融合させたオリジナル対戦ゲーム。2人対戦・CPU対戦・オンライン対戦に対応。">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://ykobashi.github.io/og-image.png">
 <meta property="og:url" content="https://ykobashi.github.io/gravity-othello/">
@@ -19,7 +21,7 @@
   "name": "重力オセロ",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Any",
-  "description": "コネクト4とオセロを掛け合わせたオリジナル対戦ゲーム「重力オセロ」。列を選んで石を落とすとオセロのように相手の石を挟んで反転させつつ、縦横斜めに4つ並べたら勝利。1台の端末で2人対戦できる無料ブラウザゲームです。",
+  "description": "コネクト4とオセロを掛け合わせたオリジナル対戦ゲーム「重力オセロ」。列を選んで石を落とすとオセロのように相手の石を挟んで反転させつつ、縦横斜めに4つ並べたら勝利。1台の端末で2人対戦、CPU対戦、友達とのオンライン対戦にも対応した無料ブラウザゲームです。",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -40,30 +42,70 @@
 <meta name="google-adsense-account" content="ca-pub-2142740595477223">
 </head>
 <body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
 <nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
 <header class="site-header">
   <h1>重力オセロ</h1>
-  <p class="subtitle">コネクト4×オセロのオリジナル対戦ゲーム。列に石を落として挟んで反転させながら4連を狙おう(1台の端末で2人対戦)</p>
+  <p class="subtitle">コネクト4×オセロのオリジナル対戦ゲーム。列に石を落として挟んで反転させながら4連を狙おう(2人対戦・CPU対戦・オンライン対戦に対応)</p>
 </header>
 
 <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
 
 <main>
-  <section class="status-bar">
-    <div id="turn-indicator" class="turn-indicator">
-      <span class="stone-preview black"></span>
-      <span id="turn-text">黒番の手番です</span>
+  <section id="setup-screen" class="setup-screen">
+    <div id="mode-select" class="mode-select">
+      <h2>対戦相手を選んでください</h2>
+      <div class="mode-buttons">
+        <button id="mode-local-btn" class="mode-btn" type="button">2人で対戦(この端末で交互に)</button>
+        <button id="mode-cpu-btn" class="mode-btn" type="button">CPUと対戦</button>
+        <button id="mode-online-btn" class="mode-btn" type="button">オンライン対戦(友達と)</button>
+      </div>
     </div>
-    <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+
+    <div id="online-panel" class="online-panel hidden">
+      <button id="online-back-btn" class="link-btn" type="button">&laquo; 戻る</button>
+      <h2>オンライン対戦</h2>
+
+      <div class="online-choice">
+        <button id="host-btn" class="mode-btn" type="button">部屋を作る(招待する)</button>
+        <div class="join-row">
+          <input id="join-code-input" type="text" inputmode="latin" maxlength="6" placeholder="6桁のコード">
+          <button id="join-btn" class="mode-btn" type="button">参加する</button>
+        </div>
+      </div>
+
+      <div id="host-wait" class="host-wait hidden">
+        <p>このコードを友達に伝えてください:</p>
+        <div class="room-code" id="room-code-text">------</div>
+        <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+        <p id="online-status" class="online-status">相手の参加を待っています…</p>
+      </div>
+
+      <p id="online-error" class="online-error hidden"></p>
+    </div>
   </section>
 
-  <section class="stats-bar">
-    <div class="stat"><span class="stone-preview black small"></span><span id="black-count">0</span>個</div>
-    <div class="stat"><span class="stone-preview white small"></span><span id="white-count">0</span>個</div>
-  </section>
+  <section id="game-area" class="game-area hidden">
+    <section class="status-bar">
+      <div id="turn-indicator" class="turn-indicator">
+        <span class="stone-preview black"></span>
+        <span id="turn-text">黒番の手番です</span>
+      </div>
+      <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+    </section>
 
-  <section class="board-wrapper">
-    <div id="board" class="board" role="grid" aria-label="重力オセロ盤面"></div>
+    <section class="stats-bar">
+      <div class="stat"><span class="stone-preview black small"></span><span id="black-count">0</span>個</div>
+      <div class="stat"><span class="stone-preview white small"></span><span id="white-count">0</span>個</div>
+    </section>
+
+    <p id="online-connection-status" class="online-status hidden"></p>
+
+    <section class="board-wrapper">
+      <div id="board" class="board" role="grid" aria-label="重力オセロ盤面"></div>
+    </section>
+
+    <button id="quit-online-btn" class="link-btn hidden" type="button">対戦をやめてモード選択に戻る</button>
   </section>
 
   <section id="result-overlay" class="overlay hidden">
@@ -89,6 +131,8 @@
       <li><strong>反転:</strong> 石が着地すると、その石を起点に縦・横・斜めの8方向を確認し、相手の石が連続して並んだ先に自分の石があれば、間に挟まれた相手の石が全てオセロと同じルールで自分の色に反転します。</li>
       <li><strong>勝敗:</strong> 反転によって増えた石も含め、縦・横・斜めのいずれかで自分の色の石が4つ以上連続して並んだ瞬間に勝利です。盤面が全て埋まっても4連が成立しなければ引き分けになります。</li>
       <li>列の下の方に積んだ石も、横や斜めから挟まれると反転してしまいます。土台を築いたつもりが一気に相手の色に変わることもあるので油断できません。</li>
+      <li>「CPUと対戦」を選ぶと、あなた(黒・先手)とCPU(白)で対戦します。石を落とすとCPUが少し考えてから自動的に打ち返します。</li>
+      <li>「オンライン対戦」を選ぶと、友達と2台の端末でリアルタイムに対戦できます。「部屋を作る」を押すと表示される6桁のコードを友達に伝え、友達は「参加する」からそのコードを入力すると接続されます。部屋を作った人が黒(先手)になります。</li>
       <li>「最初から」ボタンでいつでも新しい対局を始められます。</li>
     </ul>
   </section>
@@ -102,6 +146,8 @@
 </footer>
 
 <script src="logic.js"></script>
+<script src="peerjs.min.js"></script>
+<script src="net.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

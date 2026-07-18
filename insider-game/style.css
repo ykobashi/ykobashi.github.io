@@ -4,74 +4,61 @@
   --text: #2b2b2b;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #121214;
-    --text: #ececee;
-    --accent: #a381da;
-  }
-
-  .setup-screen,
-  .lobby-panel,
-  .howto,
-  .role-box,
-  .voting-panel,
-  .overlay-card {
-    background: #1c1c20;
-    box-shadow: none;
-    border: 1px solid #2c2c31;
-  }
-
-  .subtitle,
-  .online-status,
-  .game-hint,
-  .role-label,
-  .topic-label,
-  .result-detail-label,
-  .result-correct-voters {
-    color: #9a9aa2;
-  }
-
-  .name-input,
-  .join-row input {
-    background: #1c1c20;
-    border-color: #2c2c31;
-    color: #ececee;
-  }
-
-  .host-wait,
-  .topic-box,
-  .host-tally-box {
-    border-color: #2c2c31;
-  }
-
-  .roster-item {
-    background: #26262b;
-  }
-
-  .voting-candidate-btn.selected {
-    outline-color: #ececee;
-  }
-
-  .other-games {
-    border-top-color: #2c2c31;
-  }
-
-  .other-games p {
-    color: #9a9aa2;
-  }
-
-  .other-games a {
-    background: #26262b;
-  }
-
-  .other-games a:hover {
-    background: #2c2c31;
-  }
-
-  .site-footer {
-    color: #9a9aa2;
-  }
+:root[data-theme="dark"] {
+  --bg: #121214;
+  --text: #ececee;
+  --accent: #a381da;
+}
+:root[data-theme="dark"] .setup-screen,
+:root[data-theme="dark"] .lobby-panel,
+:root[data-theme="dark"] .howto,
+:root[data-theme="dark"] .role-box,
+:root[data-theme="dark"] .voting-panel,
+:root[data-theme="dark"] .overlay-card {
+  background: #1c1c20;
+  box-shadow: none;
+  border: 1px solid #2c2c31;
+}
+:root[data-theme="dark"] .subtitle,
+:root[data-theme="dark"] .online-status,
+:root[data-theme="dark"] .game-hint,
+:root[data-theme="dark"] .role-label,
+:root[data-theme="dark"] .topic-label,
+:root[data-theme="dark"] .result-detail-label,
+:root[data-theme="dark"] .result-correct-voters {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .name-input,
+:root[data-theme="dark"] .join-row input {
+  background: #1c1c20;
+  border-color: #2c2c31;
+  color: #ececee;
+}
+:root[data-theme="dark"] .host-wait,
+:root[data-theme="dark"] .topic-box,
+:root[data-theme="dark"] .host-tally-box {
+  border-color: #2c2c31;
+}
+:root[data-theme="dark"] .roster-item {
+  background: #26262b;
+}
+:root[data-theme="dark"] .voting-candidate-btn.selected {
+  outline-color: #ececee;
+}
+:root[data-theme="dark"] .other-games {
+  border-top-color: #2c2c31;
+}
+:root[data-theme="dark"] .other-games p {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .other-games a {
+  background: #26262b;
+}
+:root[data-theme="dark"] .other-games a:hover {
+  background: #2c2c31;
+}
+:root[data-theme="dark"] .site-footer {
+  color: #9a9aa2;
 }
 
 * {

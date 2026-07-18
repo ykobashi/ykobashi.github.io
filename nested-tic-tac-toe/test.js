@@ -14,6 +14,9 @@ const {
   playMove,
   checkBigWinner,
   isGameOver,
+  generateMoves,
+  evaluateState,
+  chooseAiMove,
 } = require('./logic.js');
 
 // otherPlayer
@@ -157,6 +160,65 @@ const {
   assert.strictEqual(isGameOver(game), false);
   for (let i = 0; i < 9; i++) game.bigBoard[i] = i % 2 === 0 ? BLACK : DRAW;
   assert.strictEqual(isGameOver(game), true);
+}
+
+// chooseAiMove: 小盤を勝ち切ってメタ盤の3連(勝利)を完成させる手があれば即座に選ぶ
+{
+  const state = {
+    subBoards: createGame().subBoards.map((b) => b.slice()),
+    bigBoard: [WHITE, DRAW, BLACK, BLACK, WHITE, DRAW, DRAW, BLACK, EMPTY],
+  };
+  state.subBoards[8] = [WHITE, WHITE, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY];
+  const move = chooseAiMove(state, 8, WHITE, BLACK);
+  assert.deepStrictEqual(move, { sub: 8, cell: 2 }, '小盤8を勝ち切ってメタ盤の対角線(0,4,8)を完成させる手を選ぶ');
+}
+
+// chooseAiMove: 相手が次に小盤を取るとメタ盤の3連(勝利)になる局面ではそれを阻止する
+{
+  const state = {
+    subBoards: createGame().subBoards.map((b) => b.slice()),
+    bigBoard: [BLACK, DRAW, WHITE, WHITE, BLACK, DRAW, DRAW, WHITE, EMPTY],
+  };
+  state.subBoards[8] = [BLACK, BLACK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY];
+  const move = chooseAiMove(state, null, WHITE, BLACK);
+  assert.deepStrictEqual(move, { sub: 8, cell: 2 }, '黒の小盤8即勝ち(メタ対角線0,4,8完成)を阻止する手を選ぶ');
+}
+
+// chooseAiMove: forced が渡された小盤以外の手を返さない(forced未考慮のバグ回帰)
+{
+  const game = createGame();
+  const forced = 3;
+  const move = chooseAiMove(game, forced, WHITE, BLACK);
+  assert.ok(move, 'forcedがあっても合法手を返す');
+  assert.strictEqual(move.sub, forced, 'forcedで指定された小盤以外には打たない');
+  assert.strictEqual(canPlaceAt(game, forced, move.sub, move.cell), true, '返り値は渡したforcedに対して合法');
+}
+
+// chooseAiMove: forced=null かつ複数の小盤が合法な局面でも例外なく合法手を返す
+{
+  const game = createGame();
+  game.bigBoard = [BLACK, WHITE, DRAW, BLACK, WHITE, DRAW, EMPTY, EMPTY, EMPTY];
+  const move = chooseAiMove(game, null, WHITE, BLACK);
+  assert.ok(move, '自由選択の局面でも手を返す');
+  assert.strictEqual(canPlaceAt(game, null, move.sub, move.cell), true, '返り値は合法手');
+  assert.ok([6, 7, 8].includes(move.sub), '決着済みでない小盤(6,7,8)のいずれかに打つ');
+}
+
+// generateMoves: forcedがあればその小盤のマスのみを返す
+{
+  const game = createGame();
+  const moves = generateMoves(game, 4);
+  assert.strictEqual(moves.length, 9);
+  assert.ok(moves.every((m) => m.sub === 4));
+}
+
+// evaluateState: 反対称性(player視点の評価は相手視点の評価の符号反転と一致する)
+{
+  const state = {
+    subBoards: createGame().subBoards.map((b) => b.slice()),
+    bigBoard: [BLACK, EMPTY, EMPTY, EMPTY, WHITE, EMPTY, EMPTY, EMPTY, EMPTY],
+  };
+  assert.strictEqual(evaluateState(state, BLACK), -evaluateState(state, WHITE));
 }
 
 console.log('All tests passed');

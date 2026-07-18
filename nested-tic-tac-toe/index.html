@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>入れ子○×ゲーム | 3×3が入れ子になった新感覚○×対戦(無料・2人対戦)</title>
-<meta name="description" content="3×3の小盤が3×3に並んだ入れ子構造の○×ゲーム(Ultimate Tic-Tac-Toe)。置いたマスの位置が相手の打つべき小盤を決める先読み勝負。小盤を3つ獲得して大盤の3並びを目指そう。1台の端末で2人対戦できる無料ブラウザゲームです。">
-<meta property="og:title" content="入れ子○×ゲーム | 3×3が入れ子になった新感覚○×対戦(無料・2人対戦)">
-<meta property="og:description" content="置いた位置が相手の打つ小盤を決める、入れ子構造の○×ゲーム。小盤を3つ獲得して大盤の3並びを目指そう。">
+<script src="../theme.js"></script>
+<link rel="stylesheet" href="../theme-toggle.css">
+<title>入れ子○×ゲーム | 3×3が入れ子になった新感覚○×対戦(無料・2人対戦・CPU・オンライン)</title>
+<meta name="description" content="3×3の小盤が3×3に並んだ入れ子構造の○×ゲーム(Ultimate Tic-Tac-Toe)。置いたマスの位置が相手の打つべき小盤を決める先読み勝負。小盤を3つ獲得して大盤の3並びを目指そう。1台の端末で2人対戦、CPU(コンピューター)と対戦、友達とオンラインで対戦もできる無料ブラウザゲームです。">
+<meta property="og:title" content="入れ子○×ゲーム | 3×3が入れ子になった新感覚○×対戦(無料・2人対戦・CPU・オンライン)">
+<meta property="og:description" content="置いた位置が相手の打つ小盤を決める、入れ子構造の○×ゲーム。2人対戦・CPU対戦・オンライン対戦に対応。小盤を3つ獲得して大盤の3並びを目指そう。">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://ykobashi.github.io/og-image.png">
 <meta property="og:url" content="https://ykobashi.github.io/nested-tic-tac-toe/">
@@ -19,7 +21,7 @@
   "name": "入れ子○×ゲーム",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Any",
-  "description": "3×3の小盤が3×3に並んだ入れ子構造の○×ゲーム(Ultimate Tic-Tac-Toe)。置いたマスの位置が相手の打つべき小盤を決める先読み勝負。小盤を3つ獲得して大盤の3並びを目指そう。1台の端末で2人対戦できる無料ブラウザゲームです。",
+  "description": "3×3の小盤が3×3に並んだ入れ子構造の○×ゲーム(Ultimate Tic-Tac-Toe)。置いたマスの位置が相手の打つべき小盤を決める先読み勝負。小盤を3つ獲得して大盤の3並びを目指そう。1台の端末で2人対戦、CPU対戦、オンライン対戦ができる無料ブラウザゲームです。",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -40,27 +42,67 @@
 <meta name="google-adsense-account" content="ca-pub-2142740595477223">
 </head>
 <body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
 <nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
 <header class="site-header">
   <h1>入れ子○×ゲーム</h1>
-  <p class="subtitle">3×3の小盤が入れ子になった○×ゲーム。置いた位置が相手の打つ小盤を決める先読み勝負(1台の端末で2人対戦)</p>
+  <p class="subtitle">3×3の小盤が入れ子になった○×ゲーム。置いた位置が相手の打つ小盤を決める先読み勝負(2人対戦・CPU対戦・オンライン対戦)</p>
 </header>
 
 <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
 
 <main>
-  <section class="status-bar">
-    <div id="turn-indicator" class="turn-indicator">
-      <span class="stone-preview black"></span>
-      <span id="turn-text">○番の手番です</span>
+  <section id="setup-screen" class="setup-screen">
+    <div id="mode-select" class="mode-select">
+      <h2>対戦相手を選んでください</h2>
+      <div class="mode-buttons">
+        <button id="mode-local-btn" class="mode-btn" type="button">2人で対戦(この端末で交互に)</button>
+        <button id="mode-cpu-btn" class="mode-btn" type="button">CPUと対戦</button>
+        <button id="mode-online-btn" class="mode-btn" type="button">オンライン対戦(友達と)</button>
+      </div>
     </div>
-    <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+
+    <div id="online-panel" class="online-panel hidden">
+      <button id="online-back-btn" class="link-btn" type="button">&laquo; 戻る</button>
+      <h2>オンライン対戦</h2>
+
+      <div class="online-choice">
+        <button id="host-btn" class="mode-btn" type="button">部屋を作る(招待する)</button>
+        <div class="join-row">
+          <input id="join-code-input" type="text" inputmode="latin" maxlength="6" placeholder="6桁のコード">
+          <button id="join-btn" class="mode-btn" type="button">参加する</button>
+        </div>
+      </div>
+
+      <div id="host-wait" class="host-wait hidden">
+        <p>このコードを友達に伝えてください:</p>
+        <div class="room-code" id="room-code-text">------</div>
+        <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+        <p id="online-status" class="online-status">相手の参加を待っています…</p>
+      </div>
+
+      <p id="online-error" class="online-error hidden"></p>
+    </div>
   </section>
 
-  <p id="forced-hint" class="forced-hint">どの小盤にも置けます</p>
+  <section id="game-area" class="game-area hidden">
+    <section class="status-bar">
+      <div id="turn-indicator" class="turn-indicator">
+        <span class="stone-preview black"></span>
+        <span id="turn-text">○番の手番です</span>
+      </div>
+      <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+    </section>
 
-  <section class="board-wrapper">
-    <div id="meta-board" class="meta-board" role="grid" aria-label="入れ子○×盤面"></div>
+    <p id="forced-hint" class="forced-hint">どの小盤にも置けます</p>
+
+    <p id="online-connection-status" class="online-status hidden"></p>
+
+    <section class="board-wrapper">
+      <div id="meta-board" class="meta-board" role="grid" aria-label="入れ子○×盤面"></div>
+    </section>
+
+    <button id="quit-online-btn" class="link-btn hidden" type="button">対戦をやめてモード選択に戻る</button>
   </section>
 
   <section id="result-overlay" class="overlay hidden">
@@ -86,6 +128,9 @@
       <li><strong>手番制限:</strong> 自分が置いたマスの「小盤内での位置」が、次に相手が打つべき小盤を指定します。例えば小盤の右上マスに置くと、相手は大盤の右上にある小盤に打たなければなりません。ただしその小盤がすでに決着済み(勝敗確定または満杯)の場合のみ、相手はどの小盤にでも自由に置けます。</li>
       <li><strong>勝敗:</strong> 小盤で3つ並べるとその小盤を獲得できます(以後そのマスには置けません)。大盤上で獲得した小盤が縦・横・斜めのいずれかに3つ並んだら勝利です。全ての小盤が決着しても大盤に3つ並ばなければ引き分けになります。</li>
       <li>次に打てる小盤は盤面上でハイライト表示されます。自分の一手が相手の選択肢を狭める「送り先」になるため、目先の3並びだけでなく数手先の展開まで読む先読み勝負が楽しめます。</li>
+      <li>「2人で対戦」を選ぶと、同じ端末を2人で交互に操作して対戦します(○が先手)。</li>
+      <li>「CPUと対戦」を選ぶと、あなた(○・先手)とCPU(×)で対戦します。手を打つとCPUが少し考えてから自動的に打ち返します。</li>
+      <li>「オンライン対戦」を選ぶと、友達と2台の端末でリアルタイムに対戦できます。「部屋を作る」を押すと表示される6桁のコードを友達に伝え、友達は「参加する」からそのコードを入力すると接続されます。部屋を作った人が○(先手)になります。</li>
       <li>「最初から」ボタンでいつでも新しい対局を始められます。</li>
     </ul>
   </section>
@@ -99,6 +144,8 @@
 </footer>
 
 <script src="logic.js"></script>
+<script src="peerjs.min.js"></script>
+<script src="net.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

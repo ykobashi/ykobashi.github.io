@@ -9,28 +9,26 @@
   --radius: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #121214;
-    --color-text: #ececee;
-    --color-card: #1c1c20;
-    --color-border: #2c2c31;
-  }
-  .lead,
-  .result-total,
-  footer {
-    color: #9a9aa2;
-  }
-  .advanced summary {
-    color: #d4d4d8;
-  }
-  .ad-slot {
-    background: #1c1c20;
-    color: #9a9aa2;
-  }
-  .formula {
-    background: #17332a;
-  }
+:root[data-theme="dark"] {
+  --color-bg: #121214;
+  --color-text: #ececee;
+  --color-card: #1c1c20;
+  --color-border: #2c2c31;
+}
+:root[data-theme="dark"] .lead,
+:root[data-theme="dark"] .result-total,
+:root[data-theme="dark"] footer {
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .advanced summary {
+  color: #d4d4d8;
+}
+:root[data-theme="dark"] .ad-slot {
+  background: #1c1c20;
+  color: #9a9aa2;
+}
+:root[data-theme="dark"] .formula {
+  background: #17332a;
 }
 
 * { box-sizing: border-box; }
