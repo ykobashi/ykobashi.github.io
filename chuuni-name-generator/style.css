@@ -1,4 +1,26 @@
 :root {
+  color-scheme: light dark;
+  --bg-a: #f6f1ff;
+  --bg-b: #e5d9ff;
+  --card-bg: #ffffff;
+  --card-text: #2b1d45;
+  --accent: #8a12a8;
+  --accent-dark: #671080;
+  --muted: #685a82;
+  --border: #c8b8e6;
+  --glow: #b21bd6;
+  --body-text: #2b1d45;
+  --subtitle: #5e4b84;
+  --input-bg: #f8f4ff;
+  --input-text: #2b1d45;
+  --input-placeholder: #7c72a8;
+  --list-text: #2b1d45;
+  --ad-bg: rgba(83, 48, 130, 0.08);
+  --ad-border: rgba(83, 48, 130, 0.3);
+  --subtle-text: rgba(43, 29, 69, 0.6);
+}
+
+:root[data-theme="dark"] {
   --bg-a: #000000;
   --bg-b: #3a0ca3;
   --card-bg: #14102b;
@@ -8,6 +30,15 @@
   --muted: #a79ccf;
   --border: #3c2f6e;
   --glow: #ff2fd0;
+  --body-text: #e8e2ff;
+  --subtitle: #c9b8ff;
+  --input-bg: #1e1740;
+  --input-text: #ffffff;
+  --input-placeholder: #7c72a8;
+  --list-text: #ffffff;
+  --ad-bg: rgba(255, 255, 255, 0.05);
+  --ad-border: rgba(255, 255, 255, 0.25);
+  --subtle-text: rgba(255, 255, 255, 0.45);
 }
 
 * {
@@ -18,7 +49,7 @@ body {
   margin: 0;
   font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
   background: radial-gradient(circle at top, var(--bg-b), var(--bg-a));
-  color: #e8e2ff;
+  color: var(--body-text);
   min-height: 100vh;
   padding-bottom: 40px;
 }
@@ -37,7 +68,7 @@ body {
 
 .subtitle {
   margin: 0;
-  color: #c9b8ff;
+  color: var(--subtitle);
   font-size: 0.95rem;
 }
 
@@ -73,12 +104,12 @@ input[type="text"] {
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 1rem;
-  background: #1e1740;
-  color: #fff;
+  background: var(--input-bg);
+  color: var(--input-text);
 }
 
 input[type="text"]::placeholder {
-  color: #7c72a8;
+  color: var(--input-placeholder);
 }
 
 button {
@@ -89,7 +120,7 @@ button {
   padding: 14px;
   margin-top: 16px;
   background: linear-gradient(90deg, var(--accent), var(--glow));
-  color: #fff;
+  color: var(--list-text);
   font-weight: bold;
   transition: filter 0.15s ease;
 }
@@ -125,7 +156,7 @@ button:hover {
   font-size: 1.15rem;
   font-weight: bold;
   color: #fff;
-  background: #1e1740;
+  background: var(--input-bg);
   text-shadow: 0 0 8px rgba(255, 47, 208, 0.6);
 }
 
@@ -153,20 +184,20 @@ button:hover {
 
 .ad-slot {
   min-height: 90px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px dashed rgba(255, 255, 255, 0.25);
+  background: var(--ad-bg);
+  border: 1px dashed var(--ad-border);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--subtle-text);
   font-size: 0.8rem;
   margin-bottom: 20px;
 }
 
 .site-footer {
   text-align: center;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--subtle-text);
   font-size: 0.8rem;
   margin-top: 20px;
 }
