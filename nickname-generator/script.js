@@ -66,15 +66,7 @@
   shareButton.addEventListener("click", function () {
     if (!lastNicknames.length) return;
     const text = `【あだ名ジェネレーター】${lastName}さんのあだ名候補は「${lastNicknames.slice(0, 3).join("」「")}」など! あなたも診断してみよう!`;
-    const shareUrl = location.href;
-
-    if (navigator.share) {
-      navigator.share({ title: "あだ名ジェネレーター", text, url: shareUrl }).catch(function () {
-        openTwitterIntent(text, shareUrl);
-      });
-    } else {
-      openTwitterIntent(text, shareUrl);
-    }
+    openTwitterIntent(text, location.href);
   });
 
   function openTwitterIntent(text, shareUrl) {

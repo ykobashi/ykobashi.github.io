@@ -105,15 +105,7 @@
   shareButton.addEventListener("click", function () {
     if (!lastResult) return;
     const text = `【性格タイプ診断】私は「${lastResult.name}」でした。${lastResult.description} あなたも診断してみよう!`;
-    const shareUrl = location.href;
-
-    if (navigator.share) {
-      navigator.share({ title: "簡易性格タイプ診断", text, url: shareUrl }).catch(function () {
-        openTwitterIntent(text, shareUrl);
-      });
-    } else {
-      openTwitterIntent(text, shareUrl);
-    }
+    openTwitterIntent(text, location.href);
   });
 
   function openTwitterIntent(text, shareUrl) {

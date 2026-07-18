@@ -69,15 +69,7 @@
     if (!lastResult) return;
     const { name, result } = lastResult;
     const text = `【前世診断】${name}さんの前世は「${result.era}の${result.job}」でした。${result.flavor}。あなたも診断してみよう!`;
-    const shareUrl = location.href;
-
-    if (navigator.share) {
-      navigator.share({ title: "前世診断", text, url: shareUrl }).catch(function () {
-        openTwitterIntent(text, shareUrl);
-      });
-    } else {
-      openTwitterIntent(text, shareUrl);
-    }
+    openTwitterIntent(text, location.href);
   });
 
   function openTwitterIntent(text, shareUrl) {

@@ -68,15 +68,7 @@
     if (!lastResults.length) return;
     const topName = lastResults[0].full;
     const text = `【厨二病風二つ名メーカー】私の二つ名は「${topName}」に覚醒した…! あなたも覚醒させてみよう!`;
-    const shareUrl = location.href;
-
-    if (navigator.share) {
-      navigator.share({ title: "厨二病風二つ名メーカー", text, url: shareUrl }).catch(function () {
-        openTwitterIntent(text, shareUrl);
-      });
-    } else {
-      openTwitterIntent(text, shareUrl);
-    }
+    openTwitterIntent(text, location.href);
   });
 
   function openTwitterIntent(text, shareUrl) {

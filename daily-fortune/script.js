@@ -91,15 +91,7 @@
     if (!lastResult) return;
     const displayName = lastResult.name === "ゲスト" ? "" : `${lastResult.name}さんの`;
     const text = `【今日の運勢】${displayName}総合運は「${lastResult.overall}」でした。${lastResult.overallComment} あなたも診断してみよう!`;
-    const shareUrl = location.href;
-
-    if (navigator.share) {
-      navigator.share({ title: "今日の運勢おみくじ", text, url: shareUrl }).catch(function () {
-        openTwitterIntent(text, shareUrl);
-      });
-    } else {
-      openTwitterIntent(text, shareUrl);
-    }
+    openTwitterIntent(text, location.href);
   });
 
   function openTwitterIntent(text, shareUrl) {
