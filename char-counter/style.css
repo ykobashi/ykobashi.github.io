@@ -105,3 +105,19 @@ footer {
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .stat-value { font-size: 1.2rem; }
 }
+
+.site-nav {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+.site-nav a {
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.8;
+}
+.site-nav a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
