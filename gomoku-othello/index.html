@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>五目オセロ | 五目並べ×オセロの新感覚対戦ゲーム(無料・2人対戦)</title>
+<meta name="description" content="五目並べとオセロを掛け合わせたオリジナル対戦ゲーム「五目オセロ」。石を置くとオセロのように相手の石を挟んで反転させつつ、五目並べのように5つ並べたら勝利。1台の端末で2人対戦できる無料ブラウザゲームです。">
+<meta property="og:title" content="五目オセロ | 五目並べ×オセロの新感覚対戦ゲーム(無料・2人対戦)">
+<meta property="og:description" content="石を挟んで反転させつつ5つ並べたら勝ち。五目並べとオセロを融合させたオリジナル対戦ゲームです。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/gomoku-othello/">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>五目オセロ</h1>
+  <p class="subtitle">五目並べ×オセロのオリジナル対戦ゲーム。石を挟んで反転させながら5連を狙おう(1台の端末で2人対戦)</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section class="status-bar">
+    <div id="turn-indicator" class="turn-indicator">
+      <span class="stone-preview black"></span>
+      <span id="turn-text">黒番の手番です</span>
+    </div>
+    <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+  </section>
+
+  <section class="stats-bar">
+    <div class="stat"><span class="stone-preview black small"></span><span id="black-count">0</span>個</div>
+    <div class="stat"><span class="stone-preview white small"></span><span id="white-count">0</span>個</div>
+  </section>
+
+  <section class="board-wrapper">
+    <div id="board" class="board" role="grid" aria-label="五目オセロ盤面"></div>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text">勝負あり!</p>
+      <button id="play-again-btn" class="reset-btn" type="button">もう一度遊ぶ</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../memory-match/index.html">神経衰弱</a></li>
+          <li><a href="../game-2048/index.html">2048</a></li>
+          <li><a href="../lights-out/index.html">ライツアウト</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方(ルール)</h2>
+    <ul>
+      <li><strong>設置:</strong> 黒と白が交互に、盤面の空いているマスに自由に石を置けます(オセロと違い、挟める場所にしか置けないという制限はありません)。</li>
+      <li><strong>反転:</strong> 石を置くと、その石を起点に縦・横・斜めの8方向を確認し、相手の石が連続して並んだ先に自分の石があれば、間に挟まれた相手の石が全てオセロと同じルールで自分の色に反転します。</li>
+      <li><strong>勝敗:</strong> 反転によって増えた石も含め、縦・横・斜めのいずれかで自分の色の石が5つ以上連続して並んだ瞬間に勝利です。盤面が全て埋まっても5連が成立しなければ引き分けになります。</li>
+      <li>自分の並びも相手に挟まれると反転してしまうので、4連を作っても油断できません。逆に相手の石を反転させて一気に5連を完成させる大逆転も狙えます。</li>
+      <li>「最初から」ボタンでいつでも新しい対局を始められます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 五目オセロ</p>
+  <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

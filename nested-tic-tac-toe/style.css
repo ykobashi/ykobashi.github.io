@@ -1,0 +1,360 @@
+:root {
+  --board-bg: #eef1f5;
+  --line-color: #b8c0cc;
+  --meta-line-color: #333a44;
+  --circle-color: #3d5afe;
+  --cross-color: #e0553f;
+  --accent: #3d5afe;
+  --bg: #f4f1ea;
+  --text: #2b2b2b;
+  --active-bg: #fff4d6;
+  --black-win-bg: #e3e8ff;
+  --white-win-bg: #ffe6e0;
+  --draw-bg: #e6e6e6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
+}
+
+.site-header {
+  text-align: center;
+  padding: 1.2rem 1rem 0.4rem;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.subtitle {
+  margin: 0.3rem 0 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.ad-slot {
+  width: 100%;
+  max-width: 640px;
+  min-height: 60px;
+  margin: 0.8rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(45deg, #eee, #eee 10px, #e2e2e2 10px, #e2e2e2 20px);
+  color: #999;
+  font-size: 0.8rem;
+  border-radius: 6px;
+}
+
+main {
+  width: 100%;
+  max-width: 640px;
+  padding: 0 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.status-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.turn-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: bold;
+}
+
+.stone-preview {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.stone-preview.black::before {
+  content: "○";
+  color: var(--circle-color);
+}
+
+.stone-preview.white::before {
+  content: "×";
+  color: var(--cross-color);
+}
+
+.reset-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.reset-btn:hover {
+  opacity: 0.9;
+}
+
+.forced-hint {
+  width: 100%;
+  text-align: center;
+  margin: 0 0 0.6rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.board-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.meta-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 6px;
+  background: var(--meta-line-color);
+  border: 4px solid var(--meta-line-color);
+  border-radius: 6px;
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 1 / 1;
+  touch-action: manipulation;
+}
+
+.sub-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  background: var(--board-bg);
+  transition: background 0.15s ease;
+}
+
+.sub-board.active {
+  background: var(--active-bg);
+  box-shadow: inset 0 0 0 3px var(--accent);
+}
+
+.sub-board.decided .mini-cell {
+  pointer-events: none;
+}
+
+.sub-board.won-black {
+  background: var(--black-win-bg);
+}
+
+.sub-board.won-white {
+  background: var(--white-win-bg);
+}
+
+.sub-board.drawn {
+  background: var(--draw-bg);
+}
+
+.mini-cell {
+  position: relative;
+  border-right: 1px solid var(--line-color);
+  border-bottom: 1px solid var(--line-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-cell::after {
+  content: "";
+  font-size: clamp(1rem, 6vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1;
+  transform: scale(0);
+  transition: transform 0.12s ease-out;
+}
+
+.mini-cell.black::after {
+  content: "○";
+  color: var(--circle-color);
+  transform: scale(1);
+}
+
+.mini-cell.white::after {
+  content: "×";
+  color: var(--cross-color);
+  transform: scale(1);
+}
+
+.sub-winner-mark {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.sub-board.decided .sub-winner-mark {
+  display: flex;
+}
+
+.sub-winner-mark.black {
+  color: var(--circle-color);
+}
+
+.sub-winner-mark.white {
+  color: var(--cross-color);
+}
+
+.sub-winner-mark.draw {
+  color: #aaa;
+  font-size: 1.6rem;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  max-width: 90%;
+  width: 360px;
+  position: relative;
+  z-index: 1001;
+}
+
+.result-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0 0 1rem;
+}
+
+.other-games {
+  margin-top: 1.2rem;
+  border-top: 1px solid #ddd;
+  padding-top: 1rem;
+}
+
+.other-games p {
+  margin: 0 0 0.5rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.other-games ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.other-games a {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background: #f0f0f0;
+  border-radius: 6px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.other-games a:hover {
+  background: #e2e2e2;
+}
+
+.howto {
+  width: 100%;
+  margin-top: 2rem;
+  background: #fff;
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.howto h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.howto ul {
+  padding-left: 1.2rem;
+  line-height: 1.6;
+}
+
+.site-footer {
+  margin-top: auto;
+  padding: 1rem;
+  color: #888;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 480px) {
+  .site-header h1 {
+    font-size: 1.4rem;
+  }
+  .overlay-card {
+    padding: 1.2rem 1rem;
+  }
+  .sub-winner-mark {
+    font-size: 1.8rem;
+  }
+}
+
+.site-nav {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+.site-nav a {
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.8;
+}
+.site-nav a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}

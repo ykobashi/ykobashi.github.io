@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>重力オセロ | コネクト4×オセロの新感覚対戦ゲーム(無料・2人対戦)</title>
+<meta name="description" content="コネクト4とオセロを掛け合わせたオリジナル対戦ゲーム「重力オセロ」。列を選んで石を落とすとオセロのように相手の石を挟んで反転させつつ、縦横斜めに4つ並べたら勝利。1台の端末で2人対戦できる無料ブラウザゲームです。">
+<meta property="og:title" content="重力オセロ | コネクト4×オセロの新感覚対戦ゲーム(無料・2人対戦)">
+<meta property="og:description" content="石を落として挟んで反転させつつ4つ並べたら勝ち。コネクト4とオセロを融合させたオリジナル対戦ゲームです。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/gravity-othello/">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>重力オセロ</h1>
+  <p class="subtitle">コネクト4×オセロのオリジナル対戦ゲーム。列に石を落として挟んで反転させながら4連を狙おう(1台の端末で2人対戦)</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section class="status-bar">
+    <div id="turn-indicator" class="turn-indicator">
+      <span class="stone-preview black"></span>
+      <span id="turn-text">黒番の手番です</span>
+    </div>
+    <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+  </section>
+
+  <section class="stats-bar">
+    <div class="stat"><span class="stone-preview black small"></span><span id="black-count">0</span>個</div>
+    <div class="stat"><span class="stone-preview white small"></span><span id="white-count">0</span>個</div>
+  </section>
+
+  <section class="board-wrapper">
+    <div id="board" class="board" role="grid" aria-label="重力オセロ盤面"></div>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text">勝負あり!</p>
+      <button id="play-again-btn" class="reset-btn" type="button">もう一度遊ぶ</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../gomoku-othello/index.html">五目オセロ</a></li>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../memory-match/index.html">神経衰弱</a></li>
+          <li><a href="../game-2048/index.html">2048</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方(ルール)</h2>
+    <ul>
+      <li><strong>設置:</strong> 黒と白が交互に、7列×6段の盤に石を落とします。列を選ぶと、その列の一番下の空きマスまで石が落下します(コネクト4と同じ、行を自由に指定することはできません)。</li>
+      <li><strong>反転:</strong> 石が着地すると、その石を起点に縦・横・斜めの8方向を確認し、相手の石が連続して並んだ先に自分の石があれば、間に挟まれた相手の石が全てオセロと同じルールで自分の色に反転します。</li>
+      <li><strong>勝敗:</strong> 反転によって増えた石も含め、縦・横・斜めのいずれかで自分の色の石が4つ以上連続して並んだ瞬間に勝利です。盤面が全て埋まっても4連が成立しなければ引き分けになります。</li>
+      <li>列の下の方に積んだ石も、横や斜めから挟まれると反転してしまいます。土台を築いたつもりが一気に相手の色に変わることもあるので油断できません。</li>
+      <li>「最初から」ボタンでいつでも新しい対局を始められます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 重力オセロ</p>
+  <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

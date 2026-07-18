@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>入れ子○×ゲーム | 3×3が入れ子になった新感覚○×対戦(無料・2人対戦)</title>
+<meta name="description" content="3×3の小盤が3×3に並んだ入れ子構造の○×ゲーム(Ultimate Tic-Tac-Toe)。置いたマスの位置が相手の打つべき小盤を決める先読み勝負。小盤を3つ獲得して大盤の3並びを目指そう。1台の端末で2人対戦できる無料ブラウザゲームです。">
+<meta property="og:title" content="入れ子○×ゲーム | 3×3が入れ子になった新感覚○×対戦(無料・2人対戦)">
+<meta property="og:description" content="置いた位置が相手の打つ小盤を決める、入れ子構造の○×ゲーム。小盤を3つ獲得して大盤の3並びを目指そう。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/nested-tic-tac-toe/">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>入れ子○×ゲーム</h1>
+  <p class="subtitle">3×3の小盤が入れ子になった○×ゲーム。置いた位置が相手の打つ小盤を決める先読み勝負(1台の端末で2人対戦)</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section class="status-bar">
+    <div id="turn-indicator" class="turn-indicator">
+      <span class="stone-preview black"></span>
+      <span id="turn-text">○番の手番です</span>
+    </div>
+    <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+  </section>
+
+  <p id="forced-hint" class="forced-hint">どの小盤にも置けます</p>
+
+  <section class="board-wrapper">
+    <div id="meta-board" class="meta-board" role="grid" aria-label="入れ子○×盤面"></div>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text">勝負あり!</p>
+      <button id="play-again-btn" class="reset-btn" type="button">もう一度遊ぶ</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../gomoku-othello/index.html">五目オセロ</a></li>
+          <li><a href="../gravity-othello/index.html">重力オセロ</a></li>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../game-2048/index.html">2048</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方(ルール)</h2>
+    <ul>
+      <li><strong>盤面:</strong> 3×3の小盤が3×3に並んだ大盤(小盤9個・計81マス)に、○と×が交互にマスを埋めていきます。</li>
+      <li><strong>手番制限:</strong> 自分が置いたマスの「小盤内での位置」が、次に相手が打つべき小盤を指定します。例えば小盤の右上マスに置くと、相手は大盤の右上にある小盤に打たなければなりません。ただしその小盤がすでに決着済み(勝敗確定または満杯)の場合のみ、相手はどの小盤にでも自由に置けます。</li>
+      <li><strong>勝敗:</strong> 小盤で3つ並べるとその小盤を獲得できます(以後そのマスには置けません)。大盤上で獲得した小盤が縦・横・斜めのいずれかに3つ並んだら勝利です。全ての小盤が決着しても大盤に3つ並ばなければ引き分けになります。</li>
+      <li>次に打てる小盤は盤面上でハイライト表示されます。自分の一手が相手の選択肢を狭める「送り先」になるため、目先の3並びだけでなく数手先の展開まで読む先読み勝負が楽しめます。</li>
+      <li>「最初から」ボタンでいつでも新しい対局を始められます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 入れ子○×ゲーム</p>
+  <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
