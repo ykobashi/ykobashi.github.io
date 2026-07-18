@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>たほいや | 辞書の言葉を当てるオンライン嘘つきパーティーゲーム</title>
+<meta name="description" content="難読語のニセの意味をでっち上げて本物の定義に紛れ込ませ、みんなで本物を当て合うオンライン辞書ゲーム「たほいや」。3人から友達と無料で遊べます。出題者(ホスト)がお題の言葉を出し、他の参加者はもっともらしいニセ定義を投稿、全員で本物を推理します。">
+<meta property="og:title" content="たほいや | 辞書の言葉を当てるオンライン嘘つきパーティーゲーム">
+<meta property="og:description" content="難読語のニセ定義をでっち上げて本物に紛れ込ませる、辞書系ウソ当てパーティーゲーム。友達と3人からオンラインで無料プレイ。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/tahoiya/">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>たほいや</h1>
+  <p class="subtitle">難読語のニセ定義をでっち上げて、本物を当て合おう。友達とオンラインで3人から。</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section id="setup-screen" class="setup-screen">
+    <h2>参加準備</h2>
+    <input id="name-input" class="name-input" type="text" maxlength="10" placeholder="ニックネーム">
+
+    <div class="online-choice">
+      <button id="host-btn" class="mode-btn" type="button">部屋を作る(招待する)</button>
+      <div class="join-row">
+        <input id="join-code-input" type="text" inputmode="latin" maxlength="6" placeholder="6桁のコード">
+        <button id="join-btn" class="mode-btn" type="button">参加する</button>
+      </div>
+    </div>
+
+    <p id="online-error" class="online-error hidden"></p>
+  </section>
+
+  <section id="lobby-panel" class="lobby-panel hidden">
+    <div id="host-wait" class="host-wait hidden">
+      <p>このコードを友達に伝えてください:</p>
+      <div class="room-code" id="room-code-text">------</div>
+      <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+    </div>
+    <p id="online-status" class="online-status"></p>
+    <h3>参加者</h3>
+    <ul id="roster-list" class="roster"></ul>
+    <button id="start-btn" class="mode-btn hidden" type="button" disabled>ゲーム開始(3人以上で押せます)</button>
+  </section>
+
+  <section id="game-area" class="game-area hidden">
+    <div class="word-box">
+      <p class="word-label">お題の言葉</p>
+      <p id="word-title" class="word-title"></p>
+    </div>
+
+    <section id="submit-phase" class="phase-panel hidden">
+      <div id="guest-submit-box" class="hidden">
+        <p class="phase-hint">この言葉の本物らしいニセの定義を考えて送信してください。</p>
+        <textarea id="fake-definition-input" class="fake-textarea" maxlength="120" placeholder="ニセの定義を入力…"></textarea>
+        <button id="submit-fake-btn" class="mode-btn" type="button">送信</button>
+        <p id="fake-submitted-status" class="online-status hidden">送信しました。他の人の回答を待っています…</p>
+      </div>
+      <div id="host-collect-box" class="hidden">
+        <h3>回収状況</h3>
+        <ul id="collection-list" class="roster"></ul>
+        <button id="collect-next-btn" class="mode-btn" type="button" disabled>全員分揃ったので次へ</button>
+      </div>
+    </section>
+
+    <section id="voting-phase" class="phase-panel hidden">
+      <div id="guest-vote-box" class="hidden">
+        <p class="phase-hint">本物の定義だと思うものを選んでタップしてください。</p>
+        <div id="entries-list" class="entries-list"></div>
+        <p id="vote-submitted-status" class="online-status hidden">投票しました。他の人を待っています…</p>
+      </div>
+      <div id="host-vote-box" class="hidden">
+        <h3>投票状況</h3>
+        <p id="vote-progress-text" class="online-status"></p>
+        <button id="tally-btn" class="mode-btn" type="button" disabled>集計する</button>
+      </div>
+    </section>
+
+    <p id="game-connection-status" class="online-error hidden"></p>
+    <button id="quit-btn" class="link-btn" type="button">やめて最初からやり直す</button>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p class="result-word-label">お題の言葉</p>
+      <p id="result-word" class="result-word"></p>
+      <p class="result-order-label">本物の定義</p>
+      <p id="result-real-definition" class="result-real-definition"></p>
+      <p id="result-correct-voters" class="result-correct-voters"></p>
+      <p id="result-most-deceptive" class="result-most-deceptive"></p>
+      <p class="result-order-label">全員の回答と投票結果</p>
+      <ul id="result-tally-list" class="result-tally-list"></ul>
+      <button id="play-again-btn" class="reset-btn hidden" type="button">もう一度遊ぶ(同じ部屋で)</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../ito-game/index.html">ito(イト)</a></li>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../memory-match/index.html">神経衰弱</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方</h2>
+    <ul>
+      <li>ホストが「部屋を作る」を押すと6桁のコードが表示されます。友達はそのコードを「参加する」から入力すると同じ部屋に入れます(3人以上で開始可能)。</li>
+      <li>このゲームではホストが出題者固定です。ゲームを始めると、ホストには言葉と本物の定義が、他の参加者には言葉だけが表示されます。</li>
+      <li>ホスト以外の参加者は、その言葉の本物らしいニセの定義を考えて送信します。ホストは全員の回答が揃うのを確認し、「全員分揃ったので次へ」で進めます。</li>
+      <li>本物の定義とニセの定義がシャッフルされて全員に一覧表示されます(誰が書いたかは伏せられます)。ホスト以外の参加者は、本物だと思うものを1つ選んで投票します。</li>
+      <li>ホストは投票が出揃ったのを確認し、「集計する」で結果発表に進みます。正解した人、それぞれの定義を書いた人、最も多くの人を騙した人がわかります。</li>
+      <li>結果画面のホストの「もう一度遊ぶ」で、同じ部屋のまま新しい言葉で再戦できます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 たほいや</p>
+  <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="peerjs.min.js"></script>
+<script src="net.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

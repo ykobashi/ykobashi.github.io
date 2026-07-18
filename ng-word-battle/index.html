@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NGワード対戦 | 自分の単語をうっかり言わせ合うオンラインパーティーゲーム</title>
+<meta name="description" content="全員にこっそり配られたNGワードを、他の人にうっかり言わせたら勝ち。自分の単語だけは自分に見えないので油断禁物。2人から友達とオンラインで無料で遊べます。会話は口頭やビデオ通話で行い、アプリは単語の配布と判定だけを担当します。">
+<meta property="og:title" content="NGワード対戦 | 自分の単語をうっかり言わせ合うオンラインパーティーゲーム">
+<meta property="og:description" content="全員にこっそり配られたNGワードを、会話の中でうっかり言わせたら勝ち。友達と2人からオンラインで無料プレイ。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/ng-word-battle/">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>NGワード対戦</h1>
+  <p class="subtitle">自分だけ知らないNGワードを、会話の中でうっかり言わせ合おう。友達とオンラインで2人から。</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section id="setup-screen" class="setup-screen">
+    <h2>参加準備</h2>
+    <input id="name-input" class="name-input" type="text" maxlength="10" placeholder="ニックネーム">
+
+    <div class="online-choice">
+      <button id="host-btn" class="mode-btn" type="button">部屋を作る(招待する)</button>
+      <div class="join-row">
+        <input id="join-code-input" type="text" inputmode="latin" maxlength="6" placeholder="6桁のコード">
+        <button id="join-btn" class="mode-btn" type="button">参加する</button>
+      </div>
+    </div>
+
+    <p id="online-error" class="online-error hidden"></p>
+  </section>
+
+  <section id="lobby-panel" class="lobby-panel hidden">
+    <div id="host-wait" class="host-wait hidden">
+      <p>このコードを友達に伝えてください:</p>
+      <div class="room-code" id="room-code-text">------</div>
+      <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+    </div>
+    <p id="online-status" class="online-status"></p>
+    <h3>参加者</h3>
+    <ul id="roster-list" class="roster"></ul>
+    <button id="start-btn" class="mode-btn hidden" type="button" disabled>ゲーム開始(2人以上で押せます)</button>
+  </section>
+
+  <section id="game-area" class="game-area hidden">
+    <div class="word-panel">
+      <h3>あなた以外の単語一覧</h3>
+      <p class="game-hint">この中の誰かが会話の中で自分のNGワードをうっかり言ったら、すぐに「キャッチ!」を押してください。あなた自身の単語はここには表示されません。</p>
+      <ul id="word-list" class="word-list"></ul>
+    </div>
+
+    <p id="game-connection-status" class="online-error hidden"></p>
+    <button id="quit-btn" class="link-btn" type="button">やめて最初からやり直す</button>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text"></p>
+      <p class="result-order-label">単語一覧(答え合わせ)</p>
+      <ul id="result-word-list" class="result-word-list"></ul>
+      <button id="play-again-btn" class="reset-btn hidden" type="button">もう一度遊ぶ(同じ部屋で)</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../ito-game/index.html">ito(イト)</a></li>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../memory-match/index.html">神経衰弱</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方</h2>
+    <ul>
+      <li>ホストが「部屋を作る」を押すと6桁のコードが表示されます。友達はそのコードを「参加する」から入力すると同じ部屋に入れます(2人以上で開始可能)。</li>
+      <li>ゲームを始めると、参加者全員に別々の単語(NGワード)がこっそり配られます。自分の単語だけは自分には表示されません。他の人の単語は「あなた以外の単語一覧」で確認できます。</li>
+      <li>あとは自由に雑談してください。誰かが自分に配られた単語をうっかり口にしてしまうことがあります。</li>
+      <li>誰かが単語を言うのを聞いたら、その人の名前の横にある「キャッチ!」を誰でも押せます。最初に押された1件だけが勝利として認定されます。</li>
+      <li>キャッチが成立すると、全員に結果と単語の答え合わせが表示されます。</li>
+      <li>このゲームには順位や得点の記録はありません。結果画面のホストの「もう一度遊ぶ」で、同じ部屋のまま新しい単語で再戦できます。</li>
+      <li>会話はアプリ内では行いません。対面またはビデオ通話・電話をつなぎながら遊んでください。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 NGワード対戦</p>
+  <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="peerjs.min.js"></script>
+<script src="net.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

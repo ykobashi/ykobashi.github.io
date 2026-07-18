@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ワンナイト人狼(簡易版) | 短時間で遊べるオンライン人狼ゲーム</title>
+<meta name="description" content="役職を配って占い・議論・投票を1ラウンドで行う「ワンナイト人狼(簡易版)」。3人から8人まで友達とオンラインで無料で遊べます。会話は口頭やビデオ通話で行い、アプリは役職配布と占い結果・投票の集計だけを担当します。">
+<meta property="og:title" content="ワンナイト人狼(簡易版) | 短時間で遊べるオンライン人狼ゲーム">
+<meta property="og:description" content="役職を配って占い・議論・投票を1ラウンドで行う協力・推理パーティーゲーム。友達と3人からオンラインで無料プレイ。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/one-night-werewolf/">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>ワンナイト人狼(簡易版)</h1>
+  <p class="subtitle">役職を配って、占って、話し合って、投票しよう。友達とオンラインで3人から。</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section id="setup-screen" class="setup-screen">
+    <h2>参加準備</h2>
+    <input id="name-input" class="name-input" type="text" maxlength="10" placeholder="ニックネーム">
+
+    <div class="online-choice">
+      <button id="host-btn" class="mode-btn" type="button">部屋を作る(招待する)</button>
+      <div class="join-row">
+        <input id="join-code-input" type="text" inputmode="latin" maxlength="6" placeholder="6桁のコード">
+        <button id="join-btn" class="mode-btn" type="button">参加する</button>
+      </div>
+    </div>
+
+    <p id="online-error" class="online-error hidden"></p>
+  </section>
+
+  <section id="lobby-panel" class="lobby-panel hidden">
+    <div id="host-wait" class="host-wait hidden">
+      <p>このコードを友達に伝えてください:</p>
+      <div class="room-code" id="room-code-text">------</div>
+      <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+    </div>
+    <p id="online-status" class="online-status"></p>
+    <h3>参加者</h3>
+    <ul id="roster-list" class="roster"></ul>
+    <button id="start-btn" class="mode-btn hidden" type="button" disabled>ゲーム開始(3人以上で押せます)</button>
+  </section>
+
+  <section id="game-area" class="game-area hidden">
+    <div class="role-box">
+      <p class="role-label">あなたの役職</p>
+      <p id="role-value" class="role-value">--</p>
+    </div>
+    <p class="role-caution">自分の役職や占い結果は、他の人に画面を見せずに秘密にしておきましょう。</p>
+
+    <div id="seer-phase-panel" class="phase-panel hidden">
+      <h3>占いフェーズ</h3>
+      <div id="seer-picker" class="hidden">
+        <p>占う相手をタップしてください(1人だけ)</p>
+        <div id="seer-candidates" class="candidate-list"></div>
+        <p id="seer-result-text" class="seer-result-text hidden"></p>
+      </div>
+      <p id="seer-wait-text" class="phase-wait-text hidden">占い師が占い中です…しばらくお待ちください。</p>
+      <div id="seer-host-controls" class="host-controls hidden">
+        <p>ホスト操作</p>
+        <button id="seer-next-btn" class="mode-btn" type="button">次へ(討論フェーズへ)</button>
+      </div>
+    </div>
+
+    <div id="discussion-phase-panel" class="phase-panel hidden">
+      <h3>討論フェーズ</h3>
+      <p class="phase-wait-text">口頭やビデオ通話・電話で自由に話し合ってください。数字ではなく、誰が人狼か推理して発言しましょう。</p>
+      <p id="discussion-timer" class="discussion-timer">03:00</p>
+      <div id="discussion-host-controls" class="host-controls hidden">
+        <p>ホスト操作</p>
+        <button id="discussion-next-btn" class="mode-btn" type="button">投票へ進む</button>
+      </div>
+    </div>
+
+    <div id="voting-phase-panel" class="phase-panel hidden">
+      <h3>投票フェーズ</h3>
+      <p class="phase-wait-text">人狼だと思う人を1人タップして投票してください。</p>
+      <div id="voting-candidates" class="candidate-list"></div>
+      <p id="voting-status" class="vote-status hidden">投票しました。ホストが集計するのを待っています…</p>
+      <div id="voting-host-controls" class="host-controls hidden">
+        <p>ホスト操作</p>
+        <p id="voting-progress" class="phase-wait-text"></p>
+        <button id="voting-tally-btn" class="mode-btn" type="button">集計する</button>
+      </div>
+    </div>
+
+    <p id="game-connection-status" class="online-error hidden"></p>
+    <button id="quit-btn" class="link-btn" type="button">やめて最初からやり直す</button>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text"></p>
+      <p id="result-winner" class="result-winner"></p>
+      <p class="result-order-label">投票結果</p>
+      <ol id="result-votes" class="result-order"></ol>
+      <p class="result-order-label">全員の役職</p>
+      <ol id="result-roles" class="result-order"></ol>
+      <button id="play-again-btn" class="reset-btn hidden" type="button">もう一度遊ぶ(同じ部屋で)</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../ito-game/index.html">ito(イト)</a></li>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../memory-match/index.html">神経衰弱</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方</h2>
+    <ul>
+      <li>ホストが「部屋を作る」を押すと6桁のコードが表示されます。友達はそのコードを「参加する」から入力すると同じ部屋に入れます(3人以上で開始可能、8人まで)。</li>
+      <li>ゲームを始めると、各自だけに「人狼」「占い師」「村人」のいずれかの役職がこっそり配られます。自分の役職は他の人に見せないでください。</li>
+      <li>占いフェーズでは、占い師だけが1人を選んで人狼かどうかを占うことができます。結果は占い師の画面にだけ表示され、他の人には分かりません。</li>
+      <li>討論フェーズでは、誰が人狼か口頭やビデオ通話・電話で自由に話し合ってください。このアプリの中にチャット機能はありません。すべての会話は対面またはビデオ通話・電話で行ってください。</li>
+      <li>投票フェーズでは、全員(人狼も含む)が人狼だと思う人に1票投票します。同数だった場合はランダムに1人が選ばれます。</li>
+      <li>結果画面では、追放された人と、参加者全員の役職、投票結果、そして人狼陣営と村人陣営のどちらが勝ったかが全員の画面に表示されます。</li>
+      <li>結果画面のホストの「もう一度遊ぶ」で、同じ部屋のまま新しい役職を配って再戦できます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 ワンナイト人狼(簡易版)</p>
+  <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="peerjs.min.js"></script>
+<script src="net.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
