@@ -2,8 +2,6 @@
 (function () {
   "use strict";
 
-  const REPO_URL = "https://ykobashi.github.io/past-life-diagnosis/";
-
   const form = document.getElementById("diagnosis-form");
   const nameInput = document.getElementById("name-input");
   const birthdateInput = document.getElementById("birthdate-input");
@@ -26,12 +24,23 @@
     const result = diagnosePastLife(name, birthdate);
     lastResult = { name, result };
     renderResult(name, result);
+    updateUrlParams({ name, i: result.index });
   });
 
   retryButton.addEventListener("click", function () {
     resultSection.hidden = true;
+    updateUrlParams(null);
     document.getElementById("form-section").scrollIntoView({ behavior: "smooth" });
   });
+
+  function updateUrlParams(params) {
+    if (!params) {
+      history.replaceState(null, "", location.pathname);
+      return;
+    }
+    const search = new URLSearchParams(params).toString();
+    history.replaceState(null, "", `${location.pathname}?${search}`);
+  }
 
   function renderResult(name, result) {
     resultHeadline.textContent = `${name}さんの前世は「${result.era}の${result.job}」`;
@@ -60,18 +69,32 @@
     if (!lastResult) return;
     const { name, result } = lastResult;
     const text = `【前世診断】${name}さんの前世は「${result.era}の${result.job}」でした。${result.flavor}。あなたも診断してみよう!`;
+    const shareUrl = location.href;
 
     if (navigator.share) {
-      navigator.share({ title: "前世診断", text, url: REPO_URL }).catch(function () {
-        openTwitterIntent(text);
+      navigator.share({ title: "前世診断", text, url: shareUrl }).catch(function () {
+        openTwitterIntent(text, shareUrl);
       });
     } else {
-      openTwitterIntent(text);
+      openTwitterIntent(text, shareUrl);
     }
   });
 
-  function openTwitterIntent(text) {
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(REPO_URL)}`;
+  function openTwitterIntent(text, shareUrl) {
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
+
+  // シェアされたURL(?name=...&i=...)から結果を復元して表示する
+  (function restoreFromUrl() {
+    const params = new URLSearchParams(location.search);
+    const name = params.get("name");
+    const index = parseInt(params.get("i"), 10);
+    if (!name || !Number.isInteger(index) || !PAST_LIVES[index]) return;
+
+    nameInput.value = name;
+    const result = { ...PAST_LIVES[index], index };
+    lastResult = { name, result };
+    renderResult(name, result);
+  })();
 })();

@@ -2,8 +2,6 @@
 (function () {
   "use strict";
 
-  const REPO_URL = "https://ykobashi.github.io/nickname-generator/";
-
   const form = document.getElementById("generator-form");
   const nameInput = document.getElementById("name-input");
   const resultSection = document.getElementById("result-section");
@@ -23,12 +21,23 @@
     lastName = name;
     lastNicknames = nicknames;
     renderResult(name, nicknames);
+    updateUrlParams({ name });
   });
 
   retryButton.addEventListener("click", function () {
     resultSection.hidden = true;
+    updateUrlParams(null);
     document.getElementById("form-section").scrollIntoView({ behavior: "smooth" });
   });
+
+  function updateUrlParams(params) {
+    if (!params) {
+      history.replaceState(null, "", location.pathname);
+      return;
+    }
+    const search = new URLSearchParams(params).toString();
+    history.replaceState(null, "", `${location.pathname}?${search}`);
+  }
 
   function renderResult(name, nicknames) {
     nicknameList.innerHTML = "";
@@ -57,18 +66,32 @@
   shareButton.addEventListener("click", function () {
     if (!lastNicknames.length) return;
     const text = `【あだ名ジェネレーター】${lastName}さんのあだ名候補は「${lastNicknames.slice(0, 3).join("」「")}」など! あなたも診断してみよう!`;
+    const shareUrl = location.href;
 
     if (navigator.share) {
-      navigator.share({ title: "あだ名ジェネレーター", text, url: REPO_URL }).catch(function () {
-        openTwitterIntent(text);
+      navigator.share({ title: "あだ名ジェネレーター", text, url: shareUrl }).catch(function () {
+        openTwitterIntent(text, shareUrl);
       });
     } else {
-      openTwitterIntent(text);
+      openTwitterIntent(text, shareUrl);
     }
   });
 
-  function openTwitterIntent(text) {
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(REPO_URL)}`;
+  function openTwitterIntent(text, shareUrl) {
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
+
+  // シェアされたURL(?name=...)から結果を復元して表示する
+  (function restoreFromUrl() {
+    const params = new URLSearchParams(location.search);
+    const sharedName = params.get("name");
+    if (!sharedName) return;
+
+    const { nicknames } = generateNicknames(sharedName);
+    lastName = sharedName;
+    lastNicknames = nicknames;
+    nameInput.value = sharedName;
+    renderResult(sharedName, nicknames);
+  })();
 })();

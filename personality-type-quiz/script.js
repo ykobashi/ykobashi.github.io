@@ -2,8 +2,6 @@
 (function () {
   "use strict";
 
-  const REPO_URL = "https://ykobashi.github.io/personality-type-quiz/";
-
   const quizSection = document.getElementById("quiz-section");
   const progressLabel = document.getElementById("progress-label");
   const questionContainer = document.getElementById("question-container");
@@ -60,6 +58,16 @@
     lastResult = result;
     quizSection.hidden = true;
     renderResult(result);
+    updateUrlParams({ a1: result.axis1, a2: result.axis2 });
+  }
+
+  function updateUrlParams(params) {
+    if (!params) {
+      history.replaceState(null, "", location.pathname);
+      return;
+    }
+    const search = new URLSearchParams(params).toString();
+    history.replaceState(null, "", `${location.pathname}?${search}`);
   }
 
   function renderResult(result) {
@@ -89,6 +97,7 @@
     lastResult = null;
     resultSection.hidden = true;
     quizSection.hidden = false;
+    updateUrlParams(null);
     renderQuestion();
     quizSection.scrollIntoView({ behavior: "smooth" });
   });
@@ -96,20 +105,37 @@
   shareButton.addEventListener("click", function () {
     if (!lastResult) return;
     const text = `【性格タイプ診断】私は「${lastResult.name}」でした。${lastResult.description} あなたも診断してみよう!`;
+    const shareUrl = location.href;
 
     if (navigator.share) {
-      navigator.share({ title: "簡易性格タイプ診断", text, url: REPO_URL }).catch(function () {
-        openTwitterIntent(text);
+      navigator.share({ title: "簡易性格タイプ診断", text, url: shareUrl }).catch(function () {
+        openTwitterIntent(text, shareUrl);
       });
     } else {
-      openTwitterIntent(text);
+      openTwitterIntent(text, shareUrl);
     }
   });
 
-  function openTwitterIntent(text) {
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(REPO_URL)}`;
+  function openTwitterIntent(text, shareUrl) {
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
-  renderQuestion();
+  // シェアされたURL(?a1=...&a2=...)から結果を復元して表示する
+  (function restoreFromUrl() {
+    const params = new URLSearchParams(location.search);
+    const axis1 = parseInt(params.get("a1"), 10);
+    const axis2 = parseInt(params.get("a2"), 10);
+    const isValidAxis = (v) => Number.isInteger(v) && v >= 0 && v <= 5;
+    if (!isValidAxis(axis1) || !isValidAxis(axis2)) {
+      renderQuestion();
+      return;
+    }
+
+    const type = determineType(axis1, axis2);
+    const result = { ...type, axis1, axis2 };
+    lastResult = result;
+    quizSection.hidden = true;
+    renderResult(result);
+  })();
 })();

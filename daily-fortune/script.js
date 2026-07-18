@@ -2,8 +2,6 @@
 (function () {
   "use strict";
 
-  const REPO_URL = "https://ykobashi.github.io/daily-fortune/";
-
   const todayLabel = document.getElementById("today-label");
   const form = document.getElementById("fortune-form");
   const nameInput = document.getElementById("name-input");
@@ -26,12 +24,23 @@
     const result = getDailyFortune(name, todayStr);
     lastResult = result;
     renderResult(result);
+    updateUrlParams({ name, date: todayStr });
   });
 
   retryButton.addEventListener("click", function () {
     resultSection.hidden = true;
+    updateUrlParams(null);
     document.getElementById("form-section").scrollIntoView({ behavior: "smooth" });
   });
+
+  function updateUrlParams(params) {
+    if (!params) {
+      history.replaceState(null, "", location.pathname);
+      return;
+    }
+    const search = new URLSearchParams(params).toString();
+    history.replaceState(null, "", `${location.pathname}?${search}`);
+  }
 
   function renderResult(result) {
     overallFortuneEl.textContent = result.overall;
@@ -82,18 +91,32 @@
     if (!lastResult) return;
     const displayName = lastResult.name === "ゲスト" ? "" : `${lastResult.name}さんの`;
     const text = `【今日の運勢】${displayName}総合運は「${lastResult.overall}」でした。${lastResult.overallComment} あなたも診断してみよう!`;
+    const shareUrl = location.href;
 
     if (navigator.share) {
-      navigator.share({ title: "今日の運勢おみくじ", text, url: REPO_URL }).catch(function () {
-        openTwitterIntent(text);
+      navigator.share({ title: "今日の運勢おみくじ", text, url: shareUrl }).catch(function () {
+        openTwitterIntent(text, shareUrl);
       });
     } else {
-      openTwitterIntent(text);
+      openTwitterIntent(text, shareUrl);
     }
   });
 
-  function openTwitterIntent(text) {
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(REPO_URL)}`;
+  function openTwitterIntent(text, shareUrl) {
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
+
+  // シェアされたURL(?name=...&date=...)から結果を復元して表示する
+  (function restoreFromUrl() {
+    const params = new URLSearchParams(location.search);
+    const sharedDate = params.get("date");
+    if (!sharedDate) return;
+
+    const sharedName = params.get("name") || "";
+    nameInput.value = sharedName;
+    const result = getDailyFortune(sharedName, sharedDate);
+    lastResult = result;
+    renderResult(result);
+  })();
 })();
