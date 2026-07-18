@@ -10,6 +10,7 @@
   // --- DOM要素 ---
   const setupScreen = document.getElementById('setup-screen');
   const modeSelect = document.getElementById('mode-select');
+  const modeLocalBtn = document.getElementById('mode-local-btn');
   const modeCpuBtn = document.getElementById('mode-cpu-btn');
   const modeOnlineBtn = document.getElementById('mode-online-btn');
 
@@ -43,7 +44,7 @@
   let aiThinking = false;
   const cellEls = [];
 
-  // mode: 'cpu' | 'online'
+  // mode: 'local' | 'cpu' | 'online'
   let mode = null;
   // online専用
   let onlinePeer = null;
@@ -78,6 +79,8 @@
 
     if (mode === 'online') {
       turnTextEl.textContent = currentPlayer === myColor ? 'あなたの番です' : '相手の番です…';
+    } else if (mode === 'local') {
+      turnTextEl.textContent = (currentPlayer === BLACK ? '黒' : '白') + '番の手番です';
     } else if (currentPlayer === BLACK) {
       turnTextEl.textContent = 'あなたの番です(黒)';
     } else {
@@ -105,6 +108,9 @@
   function resultMessageFor(winner) {
     if (mode === 'online') {
       return winner === myColor ? 'あなたの勝ちです!' : '相手の勝ちです';
+    }
+    if (mode === 'local') {
+      return (winner === BLACK ? '黒' : '白') + 'の勝ちです!';
     }
     return winner === BLACK ? 'あなたの勝ちです!' : 'CPUの勝ちです';
   }
@@ -145,6 +151,13 @@
       return;
     }
 
+    if (mode === 'local') {
+      if (placeAndCheck(row, col, currentPlayer)) return;
+      currentPlayer = GomokuLogic.otherPlayer(currentPlayer);
+      updateTurnIndicator();
+      return;
+    }
+
     // CPUモード
     if (aiThinking || currentPlayer !== BLACK) return;
     if (placeAndCheck(row, col, BLACK)) return;
@@ -176,10 +189,17 @@
     resetBoardState();
   }
 
+  function restartLocalGame() {
+    mode = 'local';
+    resetBoardState();
+  }
+
   function requestRestart() {
     if (mode === 'online') {
       resetBoardState();
       sendToPeer({ type: 'reset' });
+    } else if (mode === 'local') {
+      restartLocalGame();
     } else {
       restartCpuGame();
     }
@@ -209,6 +229,13 @@
     joinBtn.disabled = false;
     joinCodeInput.disabled = false;
   }
+
+  modeLocalBtn.addEventListener('click', () => {
+    mode = 'local';
+    setupScreen.classList.add('hidden');
+    gameArea.classList.remove('hidden');
+    restartLocalGame();
+  });
 
   modeCpuBtn.addEventListener('click', () => {
     mode = 'cpu';
