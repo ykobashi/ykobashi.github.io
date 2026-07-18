@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NGワードゲーム(タブー) | NGワードを使わずに説明するオンライン早押しパーティーゲーム</title>
+<meta name="description" content="NGワード(禁止ワード)3つを使わずにお題を説明するタブー形式のパーティーゲーム。出題者が10問を何秒で説明しきれるかを競うタイムアタック。友達と2人からオンラインで無料で遊べます。会話は口頭やビデオ通話で行い、アプリはお題の配布とタイム計測・ランキングだけを担当します。">
+<meta property="og:title" content="NGワードゲーム(タブー) | NGワードを使わずに説明するオンライン早押しパーティーゲーム">
+<meta property="og:description" content="NGワード3つを使わずにお題を説明するタブー形式のパーティーゲーム。10問のタイムアタックを友達と2人からオンラインで無料プレイ。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/taboo-word-game/">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>NGワードゲーム(タブー)</h1>
+  <p class="subtitle">NGワードを使わずにお題を説明しよう。10問のタイムアタックで友達とオンライン対戦。</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section id="setup-screen" class="setup-screen">
+    <h2>参加準備</h2>
+    <input id="name-input" class="name-input" type="text" maxlength="10" placeholder="ニックネーム">
+
+    <div class="online-choice">
+      <button id="host-btn" class="mode-btn" type="button">部屋を作る(招待する)</button>
+      <div class="join-row">
+        <input id="join-code-input" type="text" inputmode="latin" maxlength="6" placeholder="6桁のコード">
+        <button id="join-btn" class="mode-btn" type="button">参加する</button>
+      </div>
+    </div>
+
+    <p id="online-error" class="online-error hidden"></p>
+  </section>
+
+  <section id="lobby-panel" class="lobby-panel hidden">
+    <div id="host-wait" class="host-wait hidden">
+      <p>このコードを友達に伝えてください:</p>
+      <div class="room-code" id="room-code-text">------</div>
+      <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+    </div>
+    <p id="online-status" class="online-status"></p>
+    <h3>参加者</h3>
+    <ul id="roster-list" class="roster"></ul>
+    <button id="start-btn" class="mode-btn hidden" type="button" disabled>ゲーム開始(2人以上で押せます)</button>
+  </section>
+
+  <section id="describer-select" class="describer-select hidden">
+    <h2>誰が出題するか選ぶ</h2>
+    <p class="game-hint">出題者を1人選んでください。選ばれた人にはNGワード付きのお題が届きます。</p>
+    <div id="describer-candidates" class="describer-candidates"></div>
+    <p id="describer-wait-message" class="online-status hidden">ホストが出題者を選んでいます…</p>
+  </section>
+
+  <section id="game-area" class="game-area hidden">
+    <div class="attempt-status">
+      <div class="stat">
+        <span class="stat-label">出題者</span>
+        <span id="attempt-describer-name" class="stat-value">--</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">進捗</span>
+        <span id="attempt-progress" class="stat-value">0 / 10</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">経過時間</span>
+        <span id="attempt-timer" class="stat-value">00:00</span>
+      </div>
+    </div>
+
+    <div id="describer-panel" class="describer-panel hidden">
+      <p class="current-word-label">お題</p>
+      <p id="current-word" class="current-word">--</p>
+      <p class="banned-words-label">NGワード(この3語を言わずに説明してください)</p>
+      <ul id="banned-words-list" class="banned-words-list"></ul>
+      <button id="correct-btn" class="correct-btn" type="button">正解!</button>
+    </div>
+
+    <div id="guesser-panel" class="guesser-panel hidden">
+      <p class="guesser-headline">出題者の説明を聞いて当ててください</p>
+      <p>お題とNGワードは出題者の画面にだけ表示されています。口頭やビデオ通話で答えを言い合いましょう。</p>
+      <p>NGワードを言ってしまったかどうかはアプリでは判定しません。自己申告で進めてください。</p>
+    </div>
+
+    <p id="game-connection-status" class="online-error hidden"></p>
+    <button id="quit-btn" class="link-btn" type="button">やめて最初からやり直す</button>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text"></p>
+      <p class="leaderboard-label">ランキング(速い順)</p>
+      <ol id="leaderboard-list" class="leaderboard"></ol>
+      <button id="play-again-btn" class="reset-btn hidden" type="button">別の人が挑戦する</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../ito-game/index.html">ito(イト)</a></li>
+          <li><a href="../gomoku/index.html">五目並べ</a></li>
+          <li><a href="../memory-match/index.html">神経衰弱</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方</h2>
+    <ul>
+      <li>ホストが「部屋を作る」を押すと6桁のコードが表示されます。友達はそのコードを「参加する」から入力すると同じ部屋に入れます(2人以上で開始可能)。</li>
+      <li>ホストが「ゲーム開始」を押すと、まず今回の「出題者」を1人選びます(自分自身を選ぶこともできます)。</li>
+      <li>出題者の画面にだけ、お題の単語と、説明の際に使ってはいけない「NGワード」が3つ表示されます。他の参加者には見えません。</li>
+      <li>出題者はNGワードを使わずにお題を口頭やビデオ通話で説明し、他の参加者が答えを当てます。当たったら出題者が「正解!」ボタンを押して次のお題に進みます。</li>
+      <li>これを全10問繰り返し、10問目に正解した時点までの合計タイムが記録されます。タイムが短いほど好成績です。</li>
+      <li>NGワードを言ってしまったかどうかはアプリでは自動判定しません。参加者同士の自己申告(honor system)で進めてください。</li>
+      <li>結果画面には今回のタイムと、同じ部屋でのこれまでの挑戦者のランキングが表示されます。ホストの「別の人が挑戦する」で、別の出題者を選んで再挑戦できます。ランキングはページを再読み込みするとリセットされます。</li>
+      <li>会話(お題の説明や回答)はアプリ内では行いません。対面またはビデオ通話・電話をつなぎながら遊んでください。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 NGワードゲーム(タブー)</p>
+  <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="peerjs.min.js"></script>
+<script src="net.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
