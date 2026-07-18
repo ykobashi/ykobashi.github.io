@@ -24,23 +24,12 @@
     const result = diagnosePastLife(name, birthdate);
     lastResult = { name, result };
     renderResult(name, result);
-    updateUrlParams({ name, i: result.index });
   });
 
   retryButton.addEventListener("click", function () {
     resultSection.hidden = true;
-    updateUrlParams(null);
     document.getElementById("form-section").scrollIntoView({ behavior: "smooth" });
   });
-
-  function updateUrlParams(params) {
-    if (!params) {
-      history.replaceState(null, "", location.pathname);
-      return;
-    }
-    const search = new URLSearchParams(params).toString();
-    history.replaceState(null, "", `${location.pathname}?${search}`);
-  }
 
   function renderResult(name, result) {
     resultHeadline.textContent = `${name}さんの前世は「${result.era}の${result.job}」`;
@@ -76,17 +65,4 @@
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
-
-  // シェアされたURL(?name=...&i=...)から結果を復元して表示する
-  (function restoreFromUrl() {
-    const params = new URLSearchParams(location.search);
-    const name = params.get("name");
-    const index = parseInt(params.get("i"), 10);
-    if (!name || !Number.isInteger(index) || !PAST_LIVES[index]) return;
-
-    nameInput.value = name;
-    const result = { ...PAST_LIVES[index], index };
-    lastResult = { name, result };
-    renderResult(name, result);
-  })();
 })();

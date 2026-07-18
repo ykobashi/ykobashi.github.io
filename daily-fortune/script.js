@@ -24,23 +24,12 @@
     const result = getDailyFortune(name, todayStr);
     lastResult = result;
     renderResult(result);
-    updateUrlParams({ name, date: todayStr });
   });
 
   retryButton.addEventListener("click", function () {
     resultSection.hidden = true;
-    updateUrlParams(null);
     document.getElementById("form-section").scrollIntoView({ behavior: "smooth" });
   });
-
-  function updateUrlParams(params) {
-    if (!params) {
-      history.replaceState(null, "", location.pathname);
-      return;
-    }
-    const search = new URLSearchParams(params).toString();
-    history.replaceState(null, "", `${location.pathname}?${search}`);
-  }
 
   function renderResult(result) {
     overallFortuneEl.textContent = result.overall;
@@ -98,17 +87,4 @@
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
-
-  // シェアされたURL(?name=...&date=...)から結果を復元して表示する
-  (function restoreFromUrl() {
-    const params = new URLSearchParams(location.search);
-    const sharedDate = params.get("date");
-    if (!sharedDate) return;
-
-    const sharedName = params.get("name") || "";
-    nameInput.value = sharedName;
-    const result = getDailyFortune(sharedName, sharedDate);
-    lastResult = result;
-    renderResult(result);
-  })();
 })();

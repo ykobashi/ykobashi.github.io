@@ -21,23 +21,12 @@
     lastName = name;
     lastNicknames = nicknames;
     renderResult(name, nicknames);
-    updateUrlParams({ name });
   });
 
   retryButton.addEventListener("click", function () {
     resultSection.hidden = true;
-    updateUrlParams(null);
     document.getElementById("form-section").scrollIntoView({ behavior: "smooth" });
   });
-
-  function updateUrlParams(params) {
-    if (!params) {
-      history.replaceState(null, "", location.pathname);
-      return;
-    }
-    const search = new URLSearchParams(params).toString();
-    history.replaceState(null, "", `${location.pathname}?${search}`);
-  }
 
   function renderResult(name, nicknames) {
     nicknameList.innerHTML = "";
@@ -73,17 +62,4 @@
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
-
-  // シェアされたURL(?name=...)から結果を復元して表示する
-  (function restoreFromUrl() {
-    const params = new URLSearchParams(location.search);
-    const sharedName = params.get("name");
-    if (!sharedName) return;
-
-    const { nicknames } = generateNicknames(sharedName);
-    lastName = sharedName;
-    lastNicknames = nicknames;
-    nameInput.value = sharedName;
-    renderResult(sharedName, nicknames);
-  })();
 })();
