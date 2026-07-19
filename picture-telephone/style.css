@@ -1,74 +1,193 @@
-:root{--accent:#de6b35;--bg:#fff6ed;--text:#2b2521}
- :root[data-theme="dark"]{--bg:#121214;--text:#ececee;--accent:#ff9a68}
- *{box-sizing:border-box}
- body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;display:flex;flex-direction:column;align-items:center}
+:root{
+  --accent:#de6b35;
+  --accent2:#2f6f8f;
+  --grad:linear-gradient(120deg, var(--accent), var(--accent2));
+  --btn-c1:var(--accent);
+  --btn-c2:var(--accent2);
+  --btn-grad:linear-gradient(120deg, var(--btn-c1), var(--btn-c2));
+  --bg:#fff6ed;
+  --text:#2b2521;
+  --card-bg:#fff;
+  --card-border:#e6dccc;
+  --muted:#666;
+  --danger:#c0392b;
+  --hero-grid:rgba(20,20,40,0.05);
+}
+:root[data-theme="dark"]{
+  --bg:#121214;
+  --text:#ececee;
+  --accent:#ff9a68;
+  --accent2:#6ec6e0;
+  /* ボタンの塗りは文字用のaccentよりトーンを落として、暗い背景で発光しすぎないようにする */
+  --btn-c1:#de6b35;
+  --btn-c2:#2f6f8f;
+  --card-bg:#1c1c20;
+  --card-border:#303037;
+  --muted:#aaa;
+  --danger:#ff8f7a;
+  --hero-grid:rgba(255,255,255,0.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle, var(--hero-grid) 1px, transparent 1px),
+    radial-gradient(900px circle at 15% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    radial-gradient(800px circle at 100% 10%, color-mix(in srgb, var(--accent2) 9%, transparent), transparent 55%);
+  background-size:22px 22px, auto, auto;
+  background-attachment:fixed;
+  color:var(--text);
+  font-family:"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
 .site-nav{width:100%;padding:.6rem 1rem}
-.site-nav a,footer a{color:inherit}
+.site-nav a{
+  display:inline-flex;
+  align-items:center;
+  color:var(--text);
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:999px;
+  padding:.35rem .9rem;
+  text-decoration:none;
+  transition:border-color .15s ease, transform .15s ease;
+}
+.site-nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+footer a{color:inherit}
 .site-header{text-align:center;padding:1rem}
-.site-header h1{margin:0;font-size:1.8rem}
-.subtitle,.muted{color:#666}
+.site-header h1{
+  margin:0;
+  font-size:1.8rem;
+  font-weight:800;
+  letter-spacing:-0.01em;
+  background:var(--grad);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.subtitle,.muted{color:var(--muted)}
 .ad-slot{width:100%;max-width:640px;min-height:60px;margin:.8rem auto}
 main{width:100%;max-width:540px;padding:0 1rem 2rem}
 .hidden{display:none!important}
-.panel,.overlay-card{width:100%;background:#fff;border-radius:14px;padding:1.3rem;margin-bottom:1rem;text-align:center;box-shadow:0 2px 8px #00000012}
-:root[data-theme="dark"] .panel,:root[data-theme="dark"] .overlay-card{background:#1c1c20;border:1px solid #303037;box-shadow:none}
-:root[data-theme="dark"] .subtitle,:root[data-theme="dark"] .muted,:root[data-theme="dark"] .hint{color:#aaa}
-.text-input,.join-row input{width:100%;max-width:280px;padding:.7rem;border:1px solid #bbb;border-radius:8px;font:inherit;text-align:center}
-:root[data-theme="dark"] input{background:#26262b;color:#eee;border-color:#444}
+.panel,.overlay-card{
+  width:100%;
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:14px;
+  padding:1.3rem;
+  margin-bottom:1rem;
+  text-align:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.06);
+}
+.text-input,.join-row input{
+  width:100%;
+  max-width:280px;
+  padding:.7rem;
+  border:1px solid var(--card-border);
+  border-radius:8px;
+  background:var(--card-bg);
+  color:var(--text);
+  font:inherit;
+  text-align:center;
+}
 .online-choice{display:flex;flex-direction:column;align-items:center;gap:1rem}
 .join-row{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
 .join-row input{max-width:140px;text-transform:uppercase;letter-spacing:.12em}
-.primary-btn{padding:.7rem 1rem;border:0;border-radius:8px;background:var(--accent);color:#fff;font-weight:bold;cursor:pointer}
-.primary-btn:disabled{opacity:.45;cursor:not-allowed}
+.primary-btn{
+  padding:.7rem 1rem;
+  border:0;
+  border-radius:8px;
+  background:var(--btn-grad);
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.primary-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
+}
+.primary-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 .link-btn{border:0;background:none;color:var(--accent);text-decoration:underline;cursor:pointer;padding:.6rem}
-.host-wait{border-bottom:1px solid #ddd;padding-bottom:1rem}
+.host-wait{border-bottom:1px solid var(--card-border);padding-bottom:1rem}
 .room-code{font-size:2rem;font-weight:bold;letter-spacing:.2em;color:var(--accent)}
 .roster{list-style:none;padding:0}
-.roster li{padding:.5rem;margin:.35rem 0;background:#fff1e4;border-radius:7px}
-:root[data-theme="dark"] .roster li{background:#29292f}
-.error{color:#c0392b}
+.roster li{padding:.5rem;margin:.35rem 0;background:color-mix(in srgb, var(--accent) 8%, var(--card-bg));border-radius:7px}
+.error{color:var(--danger)}
 .game-area{width:100%}
-.hint{line-height:1.6;color:#555}
+.hint{line-height:1.6;color:var(--muted)}
 .game-area .text-input{display:block;margin:1rem auto}
-#drawing-canvas,.preview-canvas,.result-canvas{display:block;width:min(100%,320px);height:auto;aspect-ratio:1;margin:1rem auto;border:2px solid #bbb;border-radius:8px;background:#fff;touch-action:none}
+#drawing-canvas,.preview-canvas,.result-canvas{display:block;width:min(100%,320px);height:auto;aspect-ratio:1;margin:1rem auto;border:2px solid var(--card-border);border-radius:8px;background:#fff;touch-action:none}
 .canvas-actions,.pager{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap}
-.progress{margin:1rem 0;padding:.7rem;background:#fff1e4;border-radius:8px}
-:root[data-theme="dark"] .progress{background:#29292f}
+.progress{margin:1rem 0;padding:.7rem;background:color-mix(in srgb, var(--accent) 8%, var(--card-bg));border-radius:8px}
 .overlay{position:fixed;inset:0;z-index:1000;background:#0009;padding:1rem;display:flex;justify-content:center;align-items:center}
 .overlay-card{max-width:520px;max-height:92vh;overflow-y:auto;margin:0}
 .chain-label{font-weight:bold;color:var(--accent)}
 .reveal-steps{display:flex;flex-direction:column;gap:.7rem;margin-bottom:1rem}
-.reveal-step{text-align:left;padding:.8rem;background:#fff6ed;border-radius:8px}
+.reveal-step{text-align:left;padding:.8rem;background:color-mix(in srgb, var(--accent) 6%, var(--card-bg));border-radius:8px}
 .reveal-step p{margin:.2rem 0;line-height:1.5}
-.reveal-author{font-size:.85rem;font-weight:bold;color:#777}
-:root[data-theme="dark"] .reveal-step{background:#29292f}
-.other-games{border-top:1px solid #ddd;margin-top:1rem;padding-top:1rem}
+.reveal-author{font-size:.85rem;font-weight:bold;color:var(--muted)}
+.other-games{border-top:1px solid var(--card-border);margin-top:1rem;padding-top:1rem}
 .other-games a{color:var(--accent)}
 .howto ul{text-align:left;line-height:1.7;padding-left:1.3rem}
-footer{margin-top:auto;text-align:center;color:#777;font-size:.8rem;padding:1rem}
-@media(max-width:480px){.site-header h1{font-size:1.45rem}
-.panel{padding:1rem}
-.overlay-card{padding:1rem}
+footer{margin-top:auto;text-align:center;color:var(--muted);font-size:.8rem;padding:1rem}
+@media(max-width:480px){
+  .site-header h1{font-size:1.45rem}
+  .panel{padding:1rem}
+  .overlay-card{padding:1rem}
 }
 
 /* 「みんなで遊ぶ」各ゲームで共通の、開始前・ロビー画面レイアウト。 */
-.setup-screen,.lobby-panel{width:100%;padding:1.5rem 1.2rem;margin-bottom:1rem;border-radius:12px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);text-align:center}
+.setup-screen,.lobby-panel{
+  width:100%;
+  padding:1.5rem 1.2rem;
+  margin-bottom:1rem;
+  border-radius:12px;
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  box-shadow:0 4px 16px rgba(0,0,0,.06);
+  text-align:center;
+}
 .setup-screen h2,.lobby-panel h3{margin-top:0;font-size:1.15rem}
-.name-input{display:block;width:100%;max-width:260px;margin:.5rem auto 1.2rem;padding:.6rem .7rem;border:1px solid #ccc;border-radius:6px;font:inherit;text-align:center}
-.mode-btn{padding:.8rem 1rem;border:0;border-radius:8px;background:var(--accent);color:#fff;font-size:1rem;font-weight:bold;cursor:pointer}
-.mode-btn:hover{opacity:.9}
-.mode-btn:disabled{opacity:.5;cursor:not-allowed}
+.name-input{
+  display:block;
+  width:100%;
+  max-width:260px;
+  margin:.5rem auto 1.2rem;
+  padding:.6rem .7rem;
+  border:1px solid var(--card-border);
+  border-radius:6px;
+  background:var(--card-bg);
+  color:var(--text);
+  font:inherit;
+  text-align:center;
+}
+.mode-btn{
+  padding:.8rem 1rem;
+  border:0;
+  border-radius:8px;
+  background:var(--btn-grad);
+  color:#fff;
+  font-size:1rem;
+  font-weight:bold;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.mode-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
+}
+.mode-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
 .online-choice{margin-top:1rem}
 .join-row{align-items:center}
 .join-row input{width:130px;max-width:none;padding:.6rem .7rem;border-radius:6px;letter-spacing:.15em}
 .host-wait{margin-bottom:1rem}
 .room-code{margin:.5rem 0}
-.online-status{margin:.5rem 0 0;color:#555;font-size:.9rem}
-.online-error{margin-top:.8rem;color:#c0392b;font-size:.9rem}
+.online-status{margin:.5rem 0 0;color:var(--muted);font-size:.9rem}
+.online-error{margin-top:.8rem;color:var(--danger);font-size:.9rem}
 .roster{display:flex;flex-direction:column;gap:.4rem;margin:.5rem 0 1rem}
-.roster-item{margin:0;padding:.5rem .8rem;border-radius:6px;background:#f4f1ea;font-weight:bold}
-:root[data-theme="dark"] .setup-screen,:root[data-theme="dark"] .lobby-panel{border:1px solid #2c2c31;background:#1c1c20;box-shadow:none}
-:root[data-theme="dark"] .name-input,:root[data-theme="dark"] .join-row input{border-color:#2c2c31;background:#1c1c20;color:#ececee}
-:root[data-theme="dark"] .online-status{color:#9a9aa2}
-:root[data-theme="dark"] .host-wait{border-bottom-color:#2c2c31}
-:root[data-theme="dark"] .roster-item{background:#26262b}
+.roster-item{margin:0;padding:.5rem .8rem;border-radius:6px;background:color-mix(in srgb, var(--accent) 8%, var(--card-bg));font-weight:bold}

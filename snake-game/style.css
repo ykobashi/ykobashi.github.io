@@ -6,6 +6,15 @@
   --food-color: #ef4444;
   --text: #ecfdf5;
   --accent: #16a34a;
+  --accent2: #a3e635;
+  --grad: linear-gradient(120deg, var(--accent), var(--accent2));
+  --btn-c1: var(--accent);
+  --btn-c2: var(--accent2);
+  --btn-grad: linear-gradient(120deg, var(--btn-c1), var(--btn-c2));
+  --card-bg: #16321f;
+  --card-border: #1c3d26;
+  --muted: #86efac;
+  --hero-grid: rgba(255, 255, 255, 0.06);
 }
 
 /* This page already uses a dark palette by default (regardless of system
@@ -25,7 +34,13 @@
 body {
   margin: 0;
   font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, var(--hero-grid) 1px, transparent 1px),
+    radial-gradient(900px circle at 15% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    radial-gradient(800px circle at 100% 10%, color-mix(in srgb, var(--accent2) 9%, transparent), transparent 55%);
+  background-size: 22px 22px, auto, auto;
+  background-attachment: fixed;
   color: var(--text);
   display: flex;
   flex-direction: column;
@@ -41,11 +56,17 @@ body {
 .site-header h1 {
   margin: 0;
   font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .subtitle {
   margin: 0.3rem 0 0;
-  color: #86efac;
+  color: var(--muted);
   font-size: 0.95rem;
 }
 
@@ -58,7 +79,7 @@ body {
   align-items: center;
   justify-content: center;
   background: repeating-linear-gradient(45deg, #16321f, #16321f 10px, #1c3d26 10px, #1c3d26 20px);
-  color: #6b8f7a;
+  color: var(--muted);
   font-size: 0.8rem;
   border-radius: 6px;
 }
@@ -92,21 +113,23 @@ main {
 .stat-label {
   font-size: 0.75rem;
   font-weight: normal;
-  color: #86efac;
+  color: var(--muted);
 }
 
 .reset-btn {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 6px;
-  background: var(--accent);
+  background: var(--btn-grad);
   color: #fff;
   font-size: 0.9rem;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .reset-btn:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
 }
 
 .board-wrapper {
@@ -142,10 +165,16 @@ main {
   height: 48px;
   border-radius: 8px;
   border: none;
-  background: var(--accent);
+  background: var(--btn-grad);
   color: #fff;
   font-size: 1.1rem;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dir-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
 }
 
 .dir-btn:active {
@@ -167,7 +196,8 @@ main {
 }
 
 .overlay-card {
-  background: #16321f;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 1.5rem 2rem;
   text-align: center;
@@ -185,20 +215,20 @@ main {
 }
 
 .result-detail {
-  color: #86efac;
+  color: var(--muted);
   margin: 0 0 1rem;
 }
 
 .other-games {
   margin-top: 1.2rem;
-  border-top: 1px solid #1c3d26;
+  border-top: 1px solid var(--card-border);
   padding-top: 1rem;
 }
 
 .other-games p {
   margin: 0 0 0.5rem;
   font-weight: bold;
-  color: #bbf7d0;
+  color: var(--muted);
 }
 
 .other-games ul {
@@ -214,21 +244,25 @@ main {
 .other-games a {
   display: inline-block;
   padding: 0.4rem 0.8rem;
-  background: #1c3d26;
-  border-radius: 6px;
-  color: #4ade80;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  color: var(--accent);
   text-decoration: none;
   font-size: 0.85rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
 .other-games a:hover {
-  background: #234a2e;
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .howto {
   width: 100%;
   margin-top: 2rem;
-  background: #16321f;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   padding: 1rem 1.2rem;
   border-radius: 8px;
 }
@@ -241,13 +275,12 @@ main {
 .howto ul {
   padding-left: 1.2rem;
   line-height: 1.6;
-  color: #d1fae5;
 }
 
 .site-footer {
   margin-top: auto;
   padding: 1rem;
-  color: #6b8f7a;
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
@@ -267,11 +300,17 @@ main {
   box-sizing: border-box;
 }
 .site-nav a {
-  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
   text-decoration: none;
-  opacity: 0.8;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 .site-nav a:hover {
-  opacity: 1;
-  text-decoration: underline;
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }

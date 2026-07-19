@@ -1,6 +1,6 @@
 # ykobashi.github.io
 
-日本語ユーザー向けの「ミニツール&ゲーム集」。GitHub Pagesでホストする静的サイト（ビルド工程なし、フレームワーク不使用）。Google AdSenseで収益化している個人開発プロジェクト。
+日本語ユーザー向けの「AsobiLabo」。GitHub Pagesでホストする静的サイト（ビルド工程なし、フレームワーク不使用）。Google AdSenseで収益化している個人開発プロジェクト。
 
 - 公開URL: https://ykobashi.github.io/
 - トップページ [index.html](index.html) が全ツール・ゲームへのハブ（カード一覧）

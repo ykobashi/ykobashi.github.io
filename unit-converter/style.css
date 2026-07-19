@@ -3,21 +3,30 @@
   --color-text: #1f2933;
   --color-primary: #ea580c;
   --color-primary-dark: #c2410c;
+  --accent2: #0d9488;
+  --grad: linear-gradient(120deg, var(--color-primary), var(--accent2));
+  --btn-c1: var(--color-primary);
+  --btn-c2: var(--accent2);
+  --btn-grad: linear-gradient(120deg, var(--btn-c1), var(--btn-c2));
   --color-card: #ffffff;
   --color-border: #d7dde3;
+  --muted: #6b7280;
+  --hero-grid: rgba(20, 20, 40, 0.05);
   --radius: 10px;
 }
 
 :root[data-theme="dark"] {
   --color-bg: #121214;
   --color-text: #ececee;
+  --color-primary: #fb923c;
+  --accent2: #2dd4bf;
+  /* ボタンの塗りは文字用のaccentよりトーンを落として、暗い背景で発光しすぎないようにする */
+  --btn-c1: #ea580c;
+  --btn-c2: #0d9488;
   --color-card: #1c1c20;
   --color-border: #2c2c31;
-}
-:root[data-theme="dark"] .lead,
-:root[data-theme="dark"] .note,
-:root[data-theme="dark"] footer {
-  color: #9a9aa2;
+  --muted: #9a9aa2;
+  --hero-grid: rgba(255, 255, 255, 0.06);
 }
 :root[data-theme="dark"] .tab {
   background: #26262c;
@@ -37,7 +46,6 @@
 }
 :root[data-theme="dark"] .ad-slot {
   background: #1c1c20;
-  color: #9a9aa2;
 }
 
 * { box-sizing: border-box; }
@@ -45,14 +53,29 @@
 body {
   margin: 0;
   font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
-  background: var(--color-bg);
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(circle, var(--hero-grid) 1px, transparent 1px),
+    radial-gradient(900px circle at 15% -10%, color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 55%),
+    radial-gradient(800px circle at 100% 10%, color-mix(in srgb, var(--accent2) 9%, transparent), transparent 55%);
+  background-size: 22px 22px, auto, auto;
+  background-attachment: fixed;
   color: var(--color-text);
   line-height: 1.7;
 }
 
 header { padding: 2rem 1rem 1rem; text-align: center; }
-header h1 { margin: 0 0 0.5rem; font-size: 1.8rem; }
-.lead { color: #4b5563; margin: 0; }
+header h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.lead { color: var(--muted); margin: 0; }
 
 main {
   max-width: 680px;
@@ -62,6 +85,7 @@ main {
 
 .calculator {
   background: var(--color-card);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 1.5rem;
   box-shadow: 0 2px 10px rgba(0,0,0,0.06);
@@ -87,9 +111,9 @@ main {
 }
 
 .tab.active {
-  background: var(--color-primary);
+  background: var(--btn-grad);
   color: #fff;
-  border-color: var(--color-primary);
+  border-color: transparent;
 }
 
 .convert-row {
@@ -148,13 +172,14 @@ main {
   background: #eef1f4;
   border: 1px dashed var(--color-border);
   border-radius: var(--radius);
-  color: #9ca3af;
+  color: var(--muted);
   font-size: 0.85rem;
   margin: 1.5rem 0;
 }
 
 .info {
   background: var(--color-card);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 1.5rem;
   box-shadow: 0 2px 10px rgba(0,0,0,0.06);
@@ -171,12 +196,12 @@ main {
   text-align: center;
 }
 
-.note { font-size: 0.85rem; color: #6b7280; }
+.note { font-size: 0.85rem; color: var(--muted); }
 
 footer {
   text-align: center;
   padding: 1.5rem;
-  color: #9ca3af;
+  color: var(--muted);
   font-size: 0.85rem;
 }
 
@@ -203,11 +228,17 @@ footer {
   box-sizing: border-box;
 }
 .site-nav a {
+  display: inline-flex;
+  align-items: center;
   color: inherit;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
   text-decoration: none;
-  opacity: 0.8;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 .site-nav a:hover {
-  opacity: 1;
-  text-decoration: underline;
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
 }
