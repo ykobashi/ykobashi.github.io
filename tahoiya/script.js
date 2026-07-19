@@ -67,8 +67,8 @@
   let currentEntries = null; // ホストのみが保持する authorId込みのフルバージョン [{id,text,authorId}]
   let votes = {}; // ホストのみが保持する { voterId: votedEntryId }
 
-  let hasSubmittedFake = false; // ゲスト側: 送信済みか
-  let hasVoted = false; // ゲスト側: 投票済みか
+  let hasSubmittedFake = false; // 送信済みか(ホスト自身も含む)
+  let hasVoted = false; // 投票済みか(ホスト自身も含む)
 
   function describePeerError(err) {
     if (err && err.type === 'peer-unavailable') return 'そのコードの部屋が見つかりませんでした。コードを確認してください。';
@@ -83,10 +83,6 @@
     hostBtn.disabled = false;
     joinBtn.disabled = false;
     joinCodeInput.disabled = false;
-  }
-
-  function nonHostRoster() {
-    return roster.filter((p) => p.id !== HOST_ID);
   }
 
   function nameFor(id, rosterForNames) {
@@ -215,8 +211,7 @@
     if (data.type === 'submit-fake') {
       fakeSubmissions = fakeSubmissions.filter((f) => f.authorId !== peerId);
       fakeSubmissions.push({ authorId: peerId, text: data.text });
-      renderCollectionList();
-      net.broadcast({ type: 'progress', submitted: fakeSubmissions.length, total: nonHostRoster().length });
+      broadcastFakeProgress();
       return;
     }
     if (data.type === 'vote') {
@@ -303,14 +298,9 @@
     submitFakeBtn.disabled = false;
     fakeSubmittedStatus.classList.add('hidden');
 
-    if (isHost) {
-      guestSubmitBox.classList.add('hidden');
-      hostCollectBox.classList.remove('hidden');
-      renderCollectionList();
-    } else {
-      guestSubmitBox.classList.remove('hidden');
-      hostCollectBox.classList.add('hidden');
-    }
+    guestSubmitBox.classList.remove('hidden');
+    hostCollectBox.classList.toggle('hidden', !isHost);
+    if (isHost) renderCollectionList();
   }
 
   submitFakeBtn.addEventListener('click', () => {
@@ -321,12 +311,23 @@
     submitFakeBtn.disabled = true;
     fakeSubmittedStatus.textContent = '送信しました。他の人の回答を待っています…';
     fakeSubmittedStatus.classList.remove('hidden');
-    conn.send({ type: 'submit-fake', text });
+    if (isHost) {
+      fakeSubmissions = fakeSubmissions.filter((f) => f.authorId !== myId);
+      fakeSubmissions.push({ authorId: myId, text });
+      broadcastFakeProgress();
+    } else {
+      conn.send({ type: 'submit-fake', text });
+    }
   });
+
+  function broadcastFakeProgress() {
+    renderCollectionList();
+    net.broadcast({ type: 'progress', submitted: fakeSubmissions.length, total: roster.length });
+  }
 
   function renderCollectionList() {
     collectionList.innerHTML = '';
-    nonHostRoster().forEach((p) => {
+    roster.forEach((p) => {
       const submitted = fakeSubmissions.some((f) => f.authorId === p.id);
       const li = document.createElement('li');
       li.className = 'roster-item';
@@ -353,15 +354,10 @@
     hasVoted = false;
     voteSubmittedStatus.classList.add('hidden');
 
-    if (isHost) {
-      guestVoteBox.classList.add('hidden');
-      hostVoteBox.classList.remove('hidden');
-      renderVoteProgress();
-    } else {
-      guestVoteBox.classList.remove('hidden');
-      hostVoteBox.classList.add('hidden');
-      renderEntriesList(entries);
-    }
+    guestVoteBox.classList.remove('hidden');
+    hostVoteBox.classList.toggle('hidden', !isHost);
+    if (isHost) renderVoteProgress();
+    renderEntriesList(entries);
   }
 
   function renderEntriesList(entries) {
@@ -376,14 +372,19 @@
         Array.from(entriesListEl.children).forEach((c) => { c.classList.remove('selected'); });
         btn.classList.add('selected');
         voteSubmittedStatus.classList.remove('hidden');
-        conn.send({ type: 'vote', voterId: myId, votedEntryId: entry.id });
+        if (isHost) {
+          votes[myId] = entry.id;
+          renderVoteProgress();
+        } else {
+          conn.send({ type: 'vote', voterId: myId, votedEntryId: entry.id });
+        }
       });
       entriesListEl.appendChild(btn);
     });
   }
 
   function renderVoteProgress() {
-    const total = nonHostRoster().length;
+    const total = roster.length;
     const submitted = Object.keys(votes).length;
     voteProgressText.textContent = submitted + '/' + total + ' 人が投票済みです。';
     tallyBtn.disabled = submitted === 0;
