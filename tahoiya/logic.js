@@ -1,6 +1,6 @@
 // logic.js - たほいや(辞書ゲーム) 純粋関数ロジック(DOM操作なし)
 
-const MIN_PLAYERS = 3;
+const MIN_PLAYERS = 2;
 
 // 本物の定義を示す authorId の目印(実在プレイヤーのidとは重複しない特別な値)
 const REAL_AUTHOR = 'REAL';

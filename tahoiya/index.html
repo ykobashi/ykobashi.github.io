@@ -6,9 +6,9 @@
 <script src="../theme.js"></script>
 <link rel="stylesheet" href="../theme-toggle.css">
 <title>たほいや | 辞書の言葉を当てるオンライン嘘つきパーティーゲーム</title>
-<meta name="description" content="難読語のニセの意味をでっち上げて本物の定義に紛れ込ませ、みんなで本物を当て合うオンライン辞書ゲーム「たほいや」。3人から友達と無料で遊べます。お題はアプリが自動で選ぶので、ホストも含めた全員がもっともらしいニセ定義を投稿し合って本物を推理します。">
+<meta name="description" content="難読語のニセの意味をでっち上げて本物の定義に紛れ込ませ、みんなで本物を当て合うオンライン辞書ゲーム「たほいや」。2人から友達と無料で遊べます。お題はアプリが自動で選ぶので、ホストも含めた全員がもっともらしいニセ定義を投稿し合って本物を推理します。">
 <meta property="og:title" content="たほいや | 辞書の言葉を当てるオンライン嘘つきパーティーゲーム">
-<meta property="og:description" content="難読語のニセ定義をでっち上げて本物に紛れ込ませる、辞書系ウソ当てパーティーゲーム。友達と3人からオンラインで無料プレイ。">
+<meta property="og:description" content="難読語のニセ定義をでっち上げて本物に紛れ込ませる、辞書系ウソ当てパーティーゲーム。友達と2人からオンラインで無料プレイ。">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://ykobashi.github.io/og-image.png">
 <meta property="og:url" content="https://ykobashi.github.io/tahoiya/">
@@ -21,7 +21,7 @@
   "name": "たほいや",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Any",
-  "description": "難読語のニセの意味をでっち上げて本物の定義に紛れ込ませ、みんなで本物を当て合うオンライン辞書ゲーム「たほいや」。3人から友達と無料で遊べます。お題はアプリが自動で選ぶので、ホストも含めた全員がもっともらしいニセ定義を投稿し合って本物を推理します。",
+  "description": "難読語のニセの意味をでっち上げて本物の定義に紛れ込ませ、みんなで本物を当て合うオンライン辞書ゲーム「たほいや」。2人から友達と無料で遊べます。お題はアプリが自動で選ぶので、ホストも含めた全員がもっともらしいニセ定義を投稿し合って本物を推理します。",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -46,7 +46,7 @@
 <nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
 <header class="site-header">
   <h1>たほいや</h1>
-  <p class="subtitle">難読語のニセ定義をでっち上げて、本物を当て合おう。友達とオンラインで3人から。</p>
+  <p class="subtitle">難読語のニセ定義をでっち上げて、本物を当て合おう。友達とオンラインで2人から。</p>
 </header>
 
 <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
@@ -76,7 +76,7 @@
     <p id="online-status" class="online-status"></p>
     <h3>参加者</h3>
     <ul id="roster-list" class="roster"></ul>
-    <button id="start-btn" class="mode-btn hidden" type="button" disabled>ゲーム開始(3人以上で押せます)</button>
+    <button id="start-btn" class="mode-btn hidden" type="button" disabled>ゲーム開始(2人以上で押せます)</button>
   </section>
 
   <section id="game-area" class="game-area hidden">
@@ -109,6 +109,7 @@
         <h3>回収状況</h3>
         <ul id="collection-list" class="roster"></ul>
         <button id="collect-next-btn" class="mode-btn" type="button" disabled>全員分揃ったので次へ</button>
+        <button id="reroll-word-btn" class="link-btn" type="button">別の単語にする</button>
       </div>
     </section>
 
@@ -154,7 +155,7 @@
   <section class="howto">
     <h2>遊び方</h2>
     <ul>
-      <li>ホストが「部屋を作る」を押すと6桁のコードが表示されます。友達はそのコードを「参加する」から入力すると同じ部屋に入れます(3人以上で開始可能)。</li>
+      <li>ホストが「部屋を作る」を押すと6桁のコードが表示されます。友達はそのコードを「参加する」から入力すると同じ部屋に入れます(2人以上で開始可能)。</li>
       <li>お題の言葉と本物の定義はアプリが自動で選びます。誰か1人が答えを知っているわけではないので、ホストを含めた全員が毎回プレイヤーとして参加できます。</li>
       <li>言葉が表示されたら、全員がその言葉の本物らしいニセの定義を考えて送信します。ホストは全員の回答が揃うのを確認し、「全員分揃ったので次へ」で進めます。</li>
       <li>本物の定義とニセの定義がシャッフルされて全員に一覧表示されます(誰が書いたかは伏せられます)。全員が、本物だと思うものを1つ選んで投票します。</li>

@@ -34,6 +34,7 @@
   const hostCollectBox = document.getElementById('host-collect-box');
   const collectionList = document.getElementById('collection-list');
   const collectNextBtn = document.getElementById('collect-next-btn');
+  const rerollWordBtn = document.getElementById('reroll-word-btn');
 
   const votingPhase = document.getElementById('voting-phase');
   const guestVoteBox = document.getElementById('guest-vote-box');
@@ -260,7 +261,13 @@
     fakeSubmissions = [];
     currentEntries = null;
     votes = {};
-    currentWordEntry = TahoiyaLogic.pickWordEntry(Math.random);
+
+    const previousWord = currentWordEntry ? currentWordEntry.word : null;
+    let nextEntry = TahoiyaLogic.pickWordEntry(Math.random);
+    for (let guard = 0; nextEntry.word === previousWord && guard < 20; guard++) {
+      nextEntry = TahoiyaLogic.pickWordEntry(Math.random);
+    }
+    currentWordEntry = nextEntry;
 
     net.broadcast({ type: 'word', word: currentWordEntry.word });
     enterSubmitPhase(currentWordEntry.word);
@@ -272,6 +279,11 @@
   });
 
   playAgainBtn.addEventListener('click', () => {
+    if (!isHost) return;
+    hostStartRound();
+  });
+
+  rerollWordBtn.addEventListener('click', () => {
     if (!isHost) return;
     hostStartRound();
   });
