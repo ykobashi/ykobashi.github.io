@@ -30,6 +30,7 @@
   const fakeDefinitionInput = document.getElementById('fake-definition-input');
   const submitFakeBtn = document.getElementById('submit-fake-btn');
   const fakeSubmittedStatus = document.getElementById('fake-submitted-status');
+  const templateHintButtons = document.querySelectorAll('#template-hint-list .template-btn');
   const hostCollectBox = document.getElementById('host-collect-box');
   const collectionList = document.getElementById('collection-list');
   const collectNextBtn = document.getElementById('collect-next-btn');
@@ -302,6 +303,20 @@
     hostCollectBox.classList.toggle('hidden', !isHost);
     if (isHost) renderCollectionList();
   }
+
+  // 辞書っぽい言い回しのテンプレートを、カーソル位置に挿入する
+  templateHintButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const text = btn.dataset.template;
+      const el = fakeDefinitionInput;
+      const start = el.selectionStart;
+      const end = el.selectionEnd;
+      el.value = el.value.slice(0, start) + text + el.value.slice(end);
+      const pos = start + text.length;
+      el.focus();
+      el.setSelectionRange(pos, pos);
+    });
+  });
 
   submitFakeBtn.addEventListener('click', () => {
     const text = fakeDefinitionInput.value.trim();
