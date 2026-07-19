@@ -1,1 +1,176 @@
-:root{--accent:#8d3f7a;--bg:#f7f2ec;--card:#fff;--text:#29252b;--muted:#66606a;--line:#e3d9df}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;font-family:"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--text)}.site-nav{width:100%;padding:.7rem 1rem;font-size:.85rem}.site-nav a,footer a{color:inherit}.site-header{text-align:center;padding:.8rem 1rem}.site-header h1{margin:0;font-size:1.8rem}.subtitle,.status,.label{color:var(--muted)}.subtitle{margin:.35rem 0 0}main{width:100%;max-width:560px;padding:1rem 1rem 2rem}.hidden{display:none!important}.panel,.role-box,.turn-box{width:100%;margin:0 0 1rem;padding:1.25rem;border-radius:12px;background:var(--card);box-shadow:0 1px 4px #00000012;text-align:center}.panel h2,.panel h3{margin-top:0}.text-input{padding:.65rem .75rem;border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--text);font:inherit;text-align:center}.panel>.text-input{width:min(100%,260px);display:block;margin:.5rem auto 1rem}.primary{border:0;border-radius:8px;padding:.75rem 1rem;background:var(--accent);color:#fff;font:inherit;font-weight:bold;cursor:pointer}.primary:disabled{opacity:.5;cursor:not-allowed}.secondary{border:1px solid var(--accent);border-radius:8px;padding:.75rem 1rem;background:transparent;color:var(--accent);font:inherit;font-weight:bold;cursor:pointer}.link-button{border:0;padding:.35rem;background:none;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer}.online-choice{display:flex;flex-direction:column;align-items:center;gap:1rem}.join-row{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem}.join-row .text-input{width:140px;text-transform:uppercase;letter-spacing:.14em}.error{min-height:1.2em;color:#be3131}.host-code{padding-bottom:1rem;border-bottom:1px solid var(--line)}.room-code{color:var(--accent);font-size:2rem;font-weight:bold;letter-spacing:.2em}.roster{padding:0;list-style:none}.roster li{margin:.35rem 0;padding:.5rem;border-radius:6px;background:var(--bg);font-weight:bold}.game{display:flex;flex-direction:column;align-items:center}.role-box{margin-bottom:.7rem}.role-box p{margin:.25rem}.role-box #role-title{font-weight:bold}.topic{font-size:1.7rem;font-weight:bold;color:var(--accent);word-break:break-all}.turn-box{padding:.8rem;margin-bottom:.7rem}canvas{width:min(100%,320px);height:auto;aspect-ratio:1;border:3px solid var(--accent);border-radius:8px;background:#fff;touch-action:none;cursor:crosshair;box-shadow:0 2px 8px #0002}.drawing-controls{display:flex;gap:.6rem;margin:.8rem 0}.candidates{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem}.candidates button{border:0;border-radius:8px;padding:.55rem .8rem;background:var(--accent);color:#fff;font:inherit;font-weight:bold;cursor:pointer}.candidates button.selected{outline:3px solid var(--text)}.host-tally{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line)}#guess-controls{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem}#guess-controls .text-input{min-width:200px}.overlay{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#0009}.overlay-card{width:390px;max-width:90%;max-height:85vh;overflow:auto;padding:1.5rem;border-radius:12px;background:var(--card);text-align:center}.result-title{font-size:1.35rem;font-weight:bold}.result-topic{margin:.3rem 0 1rem;color:var(--accent);font-size:1.5rem;font-weight:bold}.counts{display:inline-block;margin:.3rem auto 1.2rem;text-align:left}.howto{text-align:left}.howto h2{text-align:center}.howto li{margin:.5rem 0;line-height:1.55}footer{margin-top:auto;padding:1.2rem;color:var(--muted);font-size:.82rem;text-align:center}:root[data-theme="dark"]{--bg:#151418;--card:#211f25;--text:#f0edf2;--muted:#bbb3bd;--line:#3a3540;--accent:#dc78b7}:root[data-theme="dark"] canvas{background:#fff}:root[data-theme="dark"] .roster li{background:#2b2830}@media(max-width:480px){.site-header h1{font-size:1.45rem}.panel{padding:1rem}.room-code{font-size:1.7rem}.drawing-controls{width:100%;justify-content:center;gap:.4rem}.drawing-controls button{padding:.65rem .55rem;font-size:.9rem}}
+:root{
+  --accent:#8d3f7a;
+  --accent2:#e0973c;
+  --grad:linear-gradient(120deg, var(--accent), var(--accent2));
+  --btn-c1:var(--accent);
+  --btn-c2:var(--accent2);
+  --btn-grad:linear-gradient(120deg, var(--btn-c1), var(--btn-c2));
+  --bg:#f7f2ec;
+  --card-bg:#fff;
+  --text:#29252b;
+  --muted:#66606a;
+  --card-border:#e3d9df;
+  --danger:#be3131;
+  --hero-grid:rgba(20,20,40,0.05);
+}
+:root[data-theme="dark"]{
+  --accent:#dc78b7;
+  --accent2:#ffcb7a;
+  /* ボタンの塗りは文字用のaccentよりトーンを落として、暗い背景で発光しすぎないようにする */
+  --btn-c1:#8d3f7a;
+  --btn-c2:#e0973c;
+  --bg:#151418;
+  --card-bg:#211f25;
+  --text:#f0edf2;
+  --muted:#bbb3bd;
+  --card-border:#3a3540;
+  --danger:#ff8f7a;
+  --hero-grid:rgba(255,255,255,0.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  font-family:"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle, var(--hero-grid) 1px, transparent 1px),
+    radial-gradient(900px circle at 15% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    radial-gradient(800px circle at 100% 10%, color-mix(in srgb, var(--accent2) 9%, transparent), transparent 55%);
+  background-size:22px 22px, auto, auto;
+  background-attachment:fixed;
+  color:var(--text);
+}
+.site-nav{width:100%;padding:.7rem 1rem;font-size:.85rem}
+.site-nav a{
+  display:inline-flex;
+  align-items:center;
+  color:var(--text);
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:999px;
+  padding:.35rem .9rem;
+  text-decoration:none;
+  transition:border-color .15s ease, transform .15s ease;
+}
+.site-nav a:hover{border-color:var(--accent);transform:translateY(-1px)}
+footer a{color:inherit}
+.site-header{text-align:center;padding:.8rem 1rem}
+.site-header h1{
+  margin:0;
+  font-size:1.8rem;
+  font-weight:800;
+  letter-spacing:-0.01em;
+  background:var(--grad);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.subtitle,.status,.label{color:var(--muted)}
+.subtitle{margin:.35rem 0 0}
+main{width:100%;max-width:560px;padding:1rem 1rem 2rem}
+.hidden{display:none!important}
+.panel,.role-box,.turn-box{
+  width:100%;
+  margin:0 0 1rem;
+  padding:1.25rem;
+  border-radius:12px;
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  box-shadow:0 4px 16px rgba(0,0,0,.06);
+  text-align:center;
+}
+.panel h2,.panel h3{margin-top:0}
+.text-input{
+  padding:.65rem .75rem;
+  border:1px solid var(--card-border);
+  border-radius:7px;
+  background:var(--card-bg);
+  color:var(--text);
+  font:inherit;
+  text-align:center;
+}
+.panel>.text-input{width:min(100%,260px);display:block;margin:.5rem auto 1rem}
+.primary{
+  border:0;
+  border-radius:8px;
+  padding:.75rem 1rem;
+  background:var(--btn-grad);
+  color:#fff;
+  font:inherit;
+  font-weight:bold;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.primary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
+}
+.primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.secondary{
+  border:1px solid var(--accent);
+  border-radius:8px;
+  padding:.75rem 1rem;
+  background:transparent;
+  color:var(--accent);
+  font:inherit;
+  font-weight:bold;
+  cursor:pointer;
+}
+.link-button{border:0;padding:.35rem;background:none;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer}
+.online-choice{display:flex;flex-direction:column;align-items:center;gap:1rem}
+.join-row{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem}
+.join-row .text-input{width:140px;text-transform:uppercase;letter-spacing:.14em}
+.error{min-height:1.2em;color:var(--danger)}
+.host-code{padding-bottom:1rem;border-bottom:1px solid var(--card-border)}
+.room-code{color:var(--accent);font-size:2rem;font-weight:bold;letter-spacing:.2em}
+.roster{padding:0;list-style:none}
+.roster li{margin:.35rem 0;padding:.5rem;border-radius:6px;background:color-mix(in srgb, var(--accent) 8%, var(--card-bg));font-weight:bold}
+.game{display:flex;flex-direction:column;align-items:center}
+.role-box{margin-bottom:.7rem}
+.role-box p{margin:.25rem}
+.role-box #role-title{font-weight:bold}
+.topic{font-size:1.7rem;font-weight:bold;color:var(--accent);word-break:break-all}
+.turn-box{padding:.8rem;margin-bottom:.7rem}
+canvas{width:min(100%,320px);height:auto;aspect-ratio:1;border:3px solid var(--accent);border-radius:8px;background:#fff;touch-action:none;cursor:crosshair;box-shadow:0 2px 8px #0002}
+.drawing-controls{display:flex;gap:.6rem;margin:.8rem 0}
+.candidates{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem}
+.candidates button{
+  border:0;
+  border-radius:8px;
+  padding:.55rem .8rem;
+  background:var(--btn-grad);
+  color:#fff;
+  font:inherit;
+  font-weight:bold;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.candidates button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
+}
+.candidates button.selected{outline:3px solid var(--text)}
+.host-tally{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--card-border)}
+#guess-controls{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem}
+#guess-controls .text-input{min-width:200px}
+.overlay{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#0009}
+.overlay-card{width:390px;max-width:90%;max-height:85vh;overflow:auto;padding:1.5rem;border-radius:12px;background:var(--card-bg);border:1px solid var(--card-border);text-align:center}
+.result-title{font-size:1.35rem;font-weight:bold}
+.result-topic{margin:.3rem 0 1rem;color:var(--accent);font-size:1.5rem;font-weight:bold}
+.counts{display:inline-block;margin:.3rem auto 1.2rem;text-align:left}
+.howto{text-align:left}
+.howto h2{text-align:center}
+.howto li{margin:.5rem 0;line-height:1.55}
+footer{margin-top:auto;padding:1.2rem;color:var(--muted);font-size:.82rem;text-align:center}
+:root[data-theme="dark"] canvas{background:#fff}
+@media(max-width:480px){
+  .site-header h1{font-size:1.45rem}
+  .panel{padding:1rem}
+  .room-code{font-size:1.7rem}
+  .drawing-controls{width:100%;justify-content:center;gap:.4rem}
+  .drawing-controls button{padding:.65rem .55rem;font-size:.9rem}
+}

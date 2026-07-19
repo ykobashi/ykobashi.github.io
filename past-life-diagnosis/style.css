@@ -5,9 +5,15 @@
   --card-bg: #ffffff;
   --card-text: #2a2140;
   --accent: #7b4fe0;
+  --accent2: #e0489f;
+  --grad: linear-gradient(120deg, var(--accent), var(--accent2));
+  --btn-c1: var(--accent);
+  --btn-c2: var(--accent2);
+  --btn-grad: linear-gradient(120deg, var(--btn-c1), var(--btn-c2));
   --accent-dark: #5a35b0;
   --muted: #6b6280;
   --border: #e3ddf5;
+  --hero-grid: rgba(255, 255, 255, 0.05);
 }
 
 :root[data-theme="dark"] {
@@ -15,6 +21,7 @@
   --card-text: #ececee;
   --border: #2c2c31;
   --muted: #9a9aa2;
+  --hero-grid: rgba(255, 255, 255, 0.07);
 }
 :root[data-theme="dark"] .secondary-button:hover {
   background: rgba(123, 79, 224, 0.18);
@@ -27,7 +34,12 @@
 body {
   margin: 0;
   font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
-  background: linear-gradient(160deg, var(--bg-gradient-a), var(--bg-gradient-b));
+  background-color: var(--bg-gradient-b);
+  background-image:
+    radial-gradient(circle, var(--hero-grid) 1px, transparent 1px),
+    linear-gradient(160deg, var(--bg-gradient-a), var(--bg-gradient-b));
+  background-size: 22px 22px, auto;
+  background-attachment: fixed;
   color: #f5f3ff;
   min-height: 100vh;
   padding-bottom: 40px;
@@ -41,7 +53,12 @@ body {
 .site-header h1 {
   margin: 0 0 8px;
   font-size: 2rem;
-  letter-spacing: 0.05em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .subtitle {
@@ -59,6 +76,7 @@ main {
 .card {
   background: var(--card-bg);
   color: var(--card-text);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 20px;
@@ -92,14 +110,22 @@ button {
   font-size: 1rem;
   padding: 14px;
   margin-top: 16px;
-  background: var(--accent);
+  background: var(--btn-grad);
   color: #fff;
   font-weight: bold;
-  transition: background 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 button:hover {
-  background: var(--accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .secondary-button {
@@ -196,11 +222,17 @@ button:hover {
   box-sizing: border-box;
 }
 .site-nav a {
-  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  color: var(--card-text);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
   text-decoration: none;
-  opacity: 0.8;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 .site-nav a:hover {
-  opacity: 1;
-  text-decoration: underline;
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }

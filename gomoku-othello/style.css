@@ -4,55 +4,34 @@
   --black-stone: #1a1a1a;
   --white-stone: #f5f5f5;
   --accent: #d97b29;
+  --accent2: #2fa87a;
+  --grad: linear-gradient(120deg, var(--accent), var(--accent2));
+  --btn-c1: var(--accent);
+  --btn-c2: var(--accent2);
+  --btn-grad: linear-gradient(120deg, var(--btn-c1), var(--btn-c2));
   --bg: #f4f1ea;
   --text: #2b2b2b;
+  --card-bg: #ffffff;
+  --card-border: #e6e2d8;
+  --muted: #6b6b66;
+  --hero-grid: rgba(20, 20, 40, 0.05);
 }
 
 :root[data-theme="dark"] {
+  --accent: #f0954a;
+  --accent2: #45c99a;
+  /* ボタンの塗りは文字用のaccentよりトーンを落として、暗い背景で発光しすぎないようにする */
+  --btn-c1: #d97b29;
+  --btn-c2: #2fa87a;
   --bg: #121214;
   --text: #ececee;
-}
-:root[data-theme="dark"] .subtitle,
-:root[data-theme="dark"] .stats-bar,
-:root[data-theme="dark"] .online-status {
-  color: #9a9aa2;
-}
-:root[data-theme="dark"] .setup-screen {
-  background: #1c1c20;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-}
-:root[data-theme="dark"] .join-row input {
-  background: #1c1c20;
-  color: #ececee;
-  border-color: #2c2c31;
-}
-:root[data-theme="dark"] .host-wait {
-  border-top-color: #2c2c31;
+  --card-bg: #1c1c20;
+  --card-border: #2c2c31;
+  --muted: #9a9aa2;
+  --hero-grid: rgba(255, 255, 255, 0.06);
 }
 :root[data-theme="dark"] .ad-slot {
   background: repeating-linear-gradient(45deg, #1c1c20, #1c1c20 10px, #232328 10px, #232328 20px);
-  color: #9a9aa2;
-}
-:root[data-theme="dark"] .overlay-card {
-  background: #1c1c20;
-}
-:root[data-theme="dark"] .other-games {
-  border-top-color: #2c2c31;
-}
-:root[data-theme="dark"] .other-games p {
-  color: #9a9aa2;
-}
-:root[data-theme="dark"] .other-games a {
-  background: #2c2c31;
-}
-:root[data-theme="dark"] .other-games a:hover {
-  background: #34343a;
-}
-:root[data-theme="dark"] .howto {
-  background: #1c1c20;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-:root[data-theme="dark"] .site-footer {
   color: #9a9aa2;
 }
 
@@ -63,7 +42,13 @@
 body {
   margin: 0;
   font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, var(--hero-grid) 1px, transparent 1px),
+    radial-gradient(900px circle at 15% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    radial-gradient(800px circle at 100% 10%, color-mix(in srgb, var(--accent2) 9%, transparent), transparent 55%);
+  background-size: 22px 22px, auto, auto;
+  background-attachment: fixed;
   color: var(--text);
   display: flex;
   flex-direction: column;
@@ -79,11 +64,17 @@ body {
 .site-header h1 {
   margin: 0;
   font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .subtitle {
   margin: 0.3rem 0 0;
-  color: #555;
+  color: var(--muted);
   font-size: 0.95rem;
 }
 
@@ -123,9 +114,10 @@ main {
 
 .setup-screen {
   width: 100%;
-  background: #fff;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   padding: 1.5rem 1.2rem;
   margin-bottom: 1rem;
   text-align: center;
@@ -148,20 +140,24 @@ main {
   padding: 0.8rem 1rem;
   border: none;
   border-radius: 8px;
-  background: var(--accent);
+  background: var(--btn-grad);
   color: #fff;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .mode-btn:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
 }
 
 .mode-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .link-btn {
@@ -192,8 +188,10 @@ main {
 
 .join-row input {
   padding: 0.6rem 0.7rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--card-border);
   border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
   font-size: 1rem;
   width: 130px;
   text-align: center;
@@ -204,7 +202,7 @@ main {
 .host-wait {
   margin-top: 1.2rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--card-border);
 }
 
 .room-code {
@@ -216,7 +214,7 @@ main {
 }
 
 .online-status {
-  color: #555;
+  color: var(--muted);
   font-size: 0.9rem;
   margin: 0.5rem 0 0;
 }
@@ -277,14 +275,16 @@ main {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 6px;
-  background: var(--accent);
+  background: var(--btn-grad);
   color: #fff;
   font-size: 0.9rem;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .reset-btn:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
 }
 
 .stats-bar {
@@ -294,7 +294,7 @@ main {
   justify-content: center;
   margin-bottom: 0.8rem;
   font-size: 0.9rem;
-  color: #555;
+  color: var(--muted);
 }
 
 .stat {
@@ -381,7 +381,8 @@ main {
 }
 
 .overlay-card {
-  background: #fff;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
   padding: 1.5rem 2rem;
   text-align: center;
@@ -399,14 +400,14 @@ main {
 
 .other-games {
   margin-top: 1.2rem;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--card-border);
   padding-top: 1rem;
 }
 
 .other-games p {
   margin: 0 0 0.5rem;
   font-weight: bold;
-  color: #555;
+  color: var(--muted);
 }
 
 .other-games ul {
@@ -422,24 +423,28 @@ main {
 .other-games a {
   display: inline-block;
   padding: 0.4rem 0.8rem;
-  background: #f0f0f0;
-  border-radius: 6px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
   color: var(--accent);
   text-decoration: none;
   font-size: 0.85rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
 .other-games a:hover {
-  background: #e2e2e2;
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
 .howto {
   width: 100%;
   margin-top: 2rem;
-  background: #fff;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   padding: 1rem 1.2rem;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .howto h2 {
@@ -455,7 +460,7 @@ main {
 .site-footer {
   margin-top: auto;
   padding: 1rem;
-  color: #888;
+  color: var(--muted);
   font-size: 0.8rem;
 }
 
@@ -475,11 +480,17 @@ main {
   box-sizing: border-box;
 }
 .site-nav a {
-  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
   text-decoration: none;
-  opacity: 0.8;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 .site-nav a:hover {
-  opacity: 1;
-  text-decoration: underline;
+  border-color: var(--accent);
+  transform: translateY(-1px);
 }
