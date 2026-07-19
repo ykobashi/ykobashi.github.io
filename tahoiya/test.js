@@ -115,6 +115,9 @@ WORD_BANK.forEach((entry) => {
 {
   let roster = [];
   roster = addPlayer(roster, { id: 'host', name: 'ホスト' });
+  assert.strictEqual(roster.length, 1);
+  assert.strictEqual(hasMinPlayers(roster, MIN_PLAYERS), false); // 1人ではまだ足りない(MIN=2)
+
   roster = addPlayer(roster, { id: 'p1', name: 'ゲスト1' });
   assert.strictEqual(roster.length, 2);
 
@@ -123,13 +126,17 @@ WORD_BANK.forEach((entry) => {
   assert.strictEqual(roster.length, 2);
   assert.strictEqual(roster.find((p) => p.id === 'p1').name, 'ゲスト1');
 
-  assert.strictEqual(hasMinPlayers(roster, MIN_PLAYERS), false); // 2人ではまだ足りない(MIN=3)
+  assert.strictEqual(hasMinPlayers(roster, MIN_PLAYERS), true); // 2人で開始可能
 
   roster = addPlayer(roster, { id: 'p2', name: 'ゲスト2' });
   assert.strictEqual(hasMinPlayers(roster, MIN_PLAYERS), true);
 
   roster = removePlayer(roster, 'p1');
   assert.strictEqual(roster.length, 2);
+  assert.strictEqual(hasMinPlayers(roster, MIN_PLAYERS), true);
+
+  roster = removePlayer(roster, 'p2');
+  assert.strictEqual(roster.length, 1);
   assert.strictEqual(hasMinPlayers(roster, MIN_PLAYERS), false);
 }
 
