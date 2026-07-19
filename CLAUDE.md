@@ -80,6 +80,7 @@ node bmi-calculator/test.js
 | [word-wolf](word-wolf/) | ワードウルフ。少数派だけ違うお題を配られ、会話と投票で人狼を探すゲーム（3人〜） |
 | [word-detective](word-detective/) | ワード探偵。全員に別々の単語を配り、YES/NOの質問で相手の単語を当てる推理ゲーム（2人〜） |
 | [drawing-wolf](drawing-wolf/) | お絵描き人狼。お題を知らない人狼を絵と投票で見つけるゲーム（3人〜） |
+| [accomplice-drawing](accomplice-drawing/) | 共犯ドローイング。同じお題を持つ2人の共犯を、3ターンの絵と投票から見つけるゲーム（4人〜） |
 | [picture-telephone](picture-telephone/) | お絵描き伝言ゲーム。文章と絵を交互に伝えて変化を楽しむゲーム（2人〜） |
 | [ai-nickname-game](ai-nickname-game/) | AIあだ名当てゲーム。AIが名付けたキャラの本当のあだ名をニセのあだ名に紛れ込ませて当てるウソ当てゲーム（2人〜、8ラウンド制で得点を競う） |
 

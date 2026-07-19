@@ -1,0 +1,22 @@
+const assert = require('assert');
+const L = require('./logic');
+const ids = ['host', 'a', 'b', 'c'];
+
+assert.strictEqual(L.MIN_PLAYERS, 4); assert.strictEqual(L.ROUNDS, 3);
+assert(L.TOPIC_BANK.length >= 30); assert.strictEqual(new Set(L.TOPIC_BANK).size, L.TOPIC_BANK.length); assert(L.TOPIC_BANK.every((x) => x.trim()));
+const original = ids.slice(); const shuffled = L.shuffle(ids, () => 0); assert.deepStrictEqual(ids, original); assert.deepStrictEqual(shuffled.slice().sort(), ids.slice().sort());
+const pair = L.assignAccomplicePair(ids, () => 0); assert.strictEqual(pair.length, 2); assert.notStrictEqual(pair[0], pair[1]); assert(pair.every((id) => ids.includes(id))); assert.deepStrictEqual(ids, original);
+assert.throws(() => L.assignAccomplicePair(['a'])); assert.throws(() => L.assignAccomplicePair(['a', 'a'])); assert.throws(() => L.assignAccomplicePair(['a', ''])); assert.throws(() => L.assignAccomplicePair(['a', 2]));
+const topics = L.distributeTopics(ids, ['a', 'c'], () => 0); assert.deepStrictEqual(Object.keys(topics), ids); assert.strictEqual(topics.a, topics.c); assert.strictEqual(new Set(ids.map((id) => topics[id])).size, 3); assert.deepStrictEqual(ids, original);
+const maxIds = Array.from({ length: L.TOPIC_BANK.length + 1 }, (_, i) => `p${i}`); assert.strictEqual(Object.keys(L.distributeTopics(maxIds, ['p0', 'p1'], () => 0)).length, maxIds.length);
+assert.throws(() => L.distributeTopics(['a', 'a'], ['a', 'b'])); assert.throws(() => L.distributeTopics(ids, ['a', 'z'])); assert.throws(() => L.distributeTopics(ids, ['a', 'a'])); assert.throws(() => L.distributeTopics(ids, ['a', 'b'], Math.random, ['x', 'y'])); assert.throws(() => L.distributeTopics(ids, ['a', 'b'], Math.random, ['x', 'x', 'y'])); assert.throws(() => L.distributeTopics(ids, ['a', 'b'], Math.random, ['x', '', 'y']));
+const weird = ['a|雪', '"b,[]']; const key = L.pairKey(...weird); assert.strictEqual(key, L.pairKey(weird[1], weird[0])); assert.deepStrictEqual(L.parsePairKey(key), weird.slice().sort()); assert.throws(() => L.pairKey('a', 'a')); assert.throws(() => L.parsePairKey('{}')); assert.throws(() => L.parsePairKey(JSON.stringify(['b', 'a'])));
+const ab = L.pairKey('a', 'b'); const ac = L.pairKey('a', 'c');
+let tally = L.tallyPairVotes({ host: ['a', 'b'], a: ['b', 'a'], b: ['a', 'c'] }); assert.strictEqual(tally.counts[ab], 2); assert.deepStrictEqual(tally.selectedIds, [ab]); assert.strictEqual(tally.isTie, false);
+tally = L.tallyPairVotes({ host: ['a', 'b'], a: ['a', 'c'] }); assert.strictEqual(tally.isTie, true); assert.strictEqual(tally.selectedIds.length, 2); assert.deepStrictEqual(L.tallyPairVotes({}).selectedIds, []);
+assert.throws(() => L.tallyPairVotes({ a: ['x'] })); assert.throws(() => L.tallyPairVotes({ a: ['x', 'x'] })); assert.throws(() => L.tallyPairVotes(null));
+assert.strictEqual(L.checkAllyFound(['a', 'b'], { a: ['b', 'a'], b: ['a', 'b'] }), true); assert.strictEqual(L.checkAllyFound(['a', 'b'], { a: ['a', 'b'] }), false); assert.strictEqual(L.checkAllyFound(['a', 'b'], { a: ['a', 'c'], b: ['a', 'c'] }), false);
+assert.strictEqual(L.checkCaught(L.tallyPairVotes({ a: ['a', 'b'], b: ['a', 'b'], c: ['a', 'c'] }), ab), true); assert.strictEqual(L.checkCaught(L.tallyPairVotes({ a: ['a', 'b'], b: ['a', 'c'] }), ab), false); assert.strictEqual(L.checkCaught(L.tallyPairVotes({ a: ['a', 'c'] }), ab), false); assert.strictEqual(L.checkCaught(L.tallyPairVotes({}), ab), false);
+assert.strictEqual(L.determineWinner({ allyFound: true, caught: false }), 'accomplice'); [[false,false],[false,true],[true,true]].forEach(([allyFound,caught]) => assert.strictEqual(L.determineWinner({ allyFound, caught }), 'citizens'));
+let roster = []; roster = L.addPlayer(roster, { id: 'a' }); assert.strictEqual(L.addPlayer(roster, { id: 'a' }), roster); roster = L.addPlayer(roster, { id: 'b' }); roster = L.addPlayer(roster, { id: 'c' }); assert.strictEqual(L.hasMinPlayers(roster), false); roster = L.addPlayer(roster, { id: 'd' }); assert.strictEqual(L.hasMinPlayers(roster), true); assert.strictEqual(L.removePlayer(roster, 'a').length, 3);
+console.log('All tests passed');
