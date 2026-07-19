@@ -88,6 +88,19 @@
     <section id="submit-phase" class="phase-panel hidden">
       <div id="guest-submit-box" class="hidden">
         <p class="phase-hint">この言葉の本物らしいニセの定義を考えて送信してください。</p>
+        <div class="template-hints">
+          <p class="template-hints-label">辞書っぽい言い回し(タップでカーソル位置に挿入)</p>
+          <div id="template-hint-list" class="template-hint-list">
+            <button type="button" class="template-btn" data-template="こと。">〜こと。</button>
+            <button type="button" class="template-btn" data-template="さま。">〜さま。</button>
+            <button type="button" class="template-btn" data-template="ようす。">〜ようす。</button>
+            <button type="button" class="template-btn" data-template="という意味の言葉。">〜という意味の言葉。</button>
+            <button type="button" class="template-btn" data-template="する人のこと。">〜する人のこと。</button>
+            <button type="button" class="template-btn" data-template="ときに使う言葉。">〜ときに使う言葉。</button>
+            <button type="button" class="template-btn" data-template="な様子を表す言葉。">〜な様子を表す言葉。</button>
+            <button type="button" class="template-btn" data-template="転じて、">転じて、〜</button>
+          </div>
+        </div>
         <textarea id="fake-definition-input" class="fake-textarea" maxlength="120" placeholder="ニセの定義を入力…"></textarea>
         <button id="submit-fake-btn" class="mode-btn" type="button">送信</button>
         <p id="fake-submitted-status" class="online-status hidden">送信しました。他の人の回答を待っています…</p>

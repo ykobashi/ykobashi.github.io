@@ -24,6 +24,7 @@
 :root[data-theme="dark"] .game-hint,
 :root[data-theme="dark"] .word-label,
 :root[data-theme="dark"] .phase-hint,
+:root[data-theme="dark"] .template-hints-label,
 :root[data-theme="dark"] .result-word-label,
 :root[data-theme="dark"] .result-order-label,
 :root[data-theme="dark"] .result-tally-meta {
@@ -332,6 +333,38 @@ main {
   color: #555;
   font-size: 0.85rem;
   margin: 0 0 0.8rem;
+}
+
+.template-hints {
+  margin-bottom: 0.8rem;
+}
+
+.template-hints-label {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  color: #777;
+}
+
+.template-hint-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.template-btn {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: none;
+  color: var(--accent);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.template-btn:hover {
+  background: var(--accent);
+  color: #fff;
 }
 
 .fake-textarea {
