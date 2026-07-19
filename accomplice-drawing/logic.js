@@ -66,11 +66,14 @@ function voteEntries(votes) {
   return Object.keys(votes).map((id) => [id, votes[id]]);
 }
 
-function tallyPairVotes(votes) {
-  const counts = Object.create(null);
+function tallyPairVotes(votes, excludedVoterIds = []) {
+  if (!Array.isArray(excludedVoterIds) || excludedVoterIds.some((id) => typeof id !== 'string' || !id)) throw new Error('invalid excluded voter ids');
+  const excluded = new Set(excludedVoterIds);
+  const counts = {};
   voteEntries(votes).forEach((entry) => {
     const voterId = entry[0]; const target = entry[1];
     if (typeof voterId !== 'string' || !voterId || !Array.isArray(target) || target.length !== 2) throw new Error('invalid vote');
+    if (excluded.has(voterId)) return;
     const key = pairKey(target[0], target[1]);
     counts[key] = (counts[key] || 0) + 1;
   });

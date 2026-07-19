@@ -14,7 +14,10 @@ const weird = ['a|雪', '"b,[]']; const key = L.pairKey(...weird); assert.strict
 const ab = L.pairKey('a', 'b'); const ac = L.pairKey('a', 'c');
 let tally = L.tallyPairVotes({ host: ['a', 'b'], a: ['b', 'a'], b: ['a', 'c'] }); assert.strictEqual(tally.counts[ab], 2); assert.deepStrictEqual(tally.selectedIds, [ab]); assert.strictEqual(tally.isTie, false);
 tally = L.tallyPairVotes({ host: ['a', 'b'], a: ['a', 'c'] }); assert.strictEqual(tally.isTie, true); assert.strictEqual(tally.selectedIds.length, 2); assert.deepStrictEqual(L.tallyPairVotes({}).selectedIds, []);
+const accomplicesFindEachOther = { a: ['a', 'b'], b: ['a', 'b'], host: ['a', 'c'], c: ['b', 'c'] };
+const citizenTally = L.tallyPairVotes(accomplicesFindEachOther, ['a', 'b']); assert.strictEqual(citizenTally.isTie, true); assert.strictEqual(L.checkCaught(citizenTally, ab), false);
 assert.throws(() => L.tallyPairVotes({ a: ['x'] })); assert.throws(() => L.tallyPairVotes({ a: ['x', 'x'] })); assert.throws(() => L.tallyPairVotes(null));
+assert.throws(() => L.tallyPairVotes({}, [null]));
 assert.strictEqual(L.checkAllyFound(['a', 'b'], { a: ['b', 'a'], b: ['a', 'b'] }), true); assert.strictEqual(L.checkAllyFound(['a', 'b'], { a: ['a', 'b'] }), false); assert.strictEqual(L.checkAllyFound(['a', 'b'], { a: ['a', 'c'], b: ['a', 'c'] }), false);
 assert.strictEqual(L.checkCaught(L.tallyPairVotes({ a: ['a', 'b'], b: ['a', 'b'], c: ['a', 'c'] }), ab), true); assert.strictEqual(L.checkCaught(L.tallyPairVotes({ a: ['a', 'b'], b: ['a', 'c'] }), ab), false); assert.strictEqual(L.checkCaught(L.tallyPairVotes({ a: ['a', 'c'] }), ab), false); assert.strictEqual(L.checkCaught(L.tallyPairVotes({}), ab), false);
 assert.strictEqual(L.determineWinner({ allyFound: true, caught: false }), 'accomplice'); [[false,false],[false,true],[true,true]].forEach(([allyFound,caught]) => assert.strictEqual(L.determineWinner({ allyFound, caught }), 'citizens'));
