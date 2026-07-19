@@ -14,4 +14,6 @@ assert.strictEqual(normalizeAnswer(' スシ '), 'すし');
 assert.strictEqual(isCorrectAnswer('すし', '寿司'), true);
 assert.strictEqual(isCorrectAnswer('スシ', '寿司'), true);
 assert.strictEqual(isCorrectAnswer('やきにく', '寿司'), false);
+assert.strictEqual(isCorrectAnswer('りょこう', '旅行'), true);
+assert.strictEqual(isCorrectAnswer('ゆうがた', '夕方'), true);
 console.log('All tests passed');
