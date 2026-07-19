@@ -76,7 +76,7 @@ node bmi-calculator/test.js
 | [taboo-word-game](taboo-word-game/) | NGワードゲーム（タブー形式）。禁止ワードを避けてお題を説明する10問タイムアタック（2人〜） |
 | [insider-game](insider-game/) | インサイダーゲーム。マスター・インサイダー・庶民に分かれるお題当てゲーム（3人〜） |
 | [one-night-werewolf](one-night-werewolf/) | ワンナイト人狼（簡易版）。人狼・占い師・村人に分かれる正体隠匿ゲーム（3〜8人） |
-| [tahoiya](tahoiya/) | たほいや。難読語のニセ定義をでっち上げて本物を当てる辞書ゲーム（3人〜、出題者はホスト固定） |
+| [tahoiya](tahoiya/) | たほいや。難読語のニセ定義をでっち上げて本物を当てる辞書ゲーム（3人〜、お題はアプリが自動選出するためホストも含め全員が毎回プレイヤーとして参加する） |
 
 ### オンライン対戦（gomoku / memory-match）
 
