@@ -78,6 +78,7 @@ node bmi-calculator/test.js
 | [one-night-werewolf](one-night-werewolf/) | ワンナイト人狼（簡易版）。人狼・占い師・村人に分かれる正体隠匿ゲーム（3〜8人） |
 | [tahoiya](tahoiya/) | たほいや。難読語のニセ定義をでっち上げて本物を当てる辞書ゲーム（2人〜、お題はアプリが自動選出するためホストも含め全員が毎回プレイヤーとして参加する） |
 | [word-wolf](word-wolf/) | ワードウルフ。少数派だけ違うお題を配られ、会話と投票で人狼を探すゲーム（3人〜） |
+| [word-detective](word-detective/) | ワード探偵。全員に別々の単語を配り、YES/NOの質問で相手の単語を当てる推理ゲーム（2人〜） |
 | [drawing-wolf](drawing-wolf/) | お絵描き人狼。お題を知らない人狼を絵と投票で見つけるゲーム（3人〜） |
 | [picture-telephone](picture-telephone/) | お絵描き伝言ゲーム。文章と絵を交互に伝えて変化を楽しむゲーム（2人〜） |
 

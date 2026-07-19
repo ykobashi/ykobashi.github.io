@@ -1,0 +1,10 @@
+const assert=require('assert'); const L=require('./logic');
+assert(L.WORD_BANK.length>=150); assert(L.WORD_BANK.every(word=>typeof word==='string'&&word.length>0)); assert.strictEqual(new Set(L.WORD_BANK).size,L.WORD_BANK.length); assert.strictEqual(new Set(L.WORD_BANK.map(L.normalizeAnswer)).size,L.WORD_BANK.length);
+const a=[1,2,3,4]; assert.deepStrictEqual(L.shuffle(a,()=>0),[2,3,4,1]); assert.deepStrictEqual(a,[1,2,3,4]);
+const words=L.assignWords(['a','b','c'],()=>0,['甲','乙','丙']); assert.strictEqual(new Set(Object.values(words)).size,3); assert.deepStrictEqual(Object.keys(words).sort(),['a','b','c']);
+const two=L.buildTargetChain(['a','b'],()=>0); assert.strictEqual(two.targetOf.a,'b'); assert.strictEqual(two.targetOf.b,'a');
+const chain=L.buildTargetChain(['a','b','c'],()=>0); chain.order.forEach(id=>assert.notStrictEqual(chain.targetOf[id],id)); assert.strictEqual(new Set(Object.values(chain.targetOf)).size,3);
+assert.throws(()=>L.assignWords(['a','a'])); assert.throws(()=>L.assignWords(['a','b'],Math.random,['甲'])); assert.throws(()=>L.assignWords(['a','b'],Math.random,['甲','甲'])); assert.throws(()=>L.buildTargetChain(['a'])); assert.throws(()=>L.buildTargetChain(['a','a']));
+assert(L.isCorrectGuess(' メ ガ ネ！','眼鏡')); assert(L.isCorrectGuess('ばんそうこう','絆創膏')); assert(!L.isCorrectGuess('めがねケース','眼鏡')); assert(!L.isCorrectGuess('', '眼鏡'));
+let r=[]; r=L.addPlayer(r,{id:'a',name:'A'}); assert.strictEqual(L.addPlayer(r,{id:'a',name:'X'}),r); assert(L.hasMinPlayers(L.addPlayer(r,{id:'b',name:'B'}))); assert.deepStrictEqual(L.removePlayer(r,'x'),r);
+console.log('All tests passed');
