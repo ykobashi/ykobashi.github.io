@@ -1,0 +1,534 @@
+:root {
+  --accent: #2f8f6e;
+  --accent2: #22c1c3;
+  --grad: linear-gradient(120deg, var(--accent), var(--accent2));
+  --btn-c1: var(--accent);
+  --btn-c2: var(--accent2);
+  --btn-grad: linear-gradient(120deg, var(--btn-c1), var(--btn-c2));
+  --bg: #f4f1ea;
+  --text: #2b2b2b;
+  --card-bg: #ffffff;
+  --card-border: #e6e2d8;
+  --muted: #6b6b66;
+  --danger: #c0392b;
+  --hero-grid: rgba(20, 20, 40, 0.05);
+}
+
+:root[data-theme="dark"] {
+  --accent: #4fd1a5;
+  --accent2: #5eead4;
+  /* ボタンの塗りは文字用のaccentよりトーンを落として、暗い背景で発光しすぎないようにする */
+  --btn-c1: #2f8f6e;
+  --btn-c2: #1c9a9c;
+  --bg: #121214;
+  --text: #ececee;
+  --card-bg: #1c1c20;
+  --card-border: #2c2c31;
+  --muted: #9a9aa2;
+  --danger: #ff7a70;
+  --hero-grid: rgba(255, 255, 255, 0.06);
+}
+:root[data-theme="dark"] .ad-slot {
+  background: repeating-linear-gradient(45deg, #1c1c20, #1c1c20 10px, #232328 10px, #232328 20px);
+  color: #9a9aa2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, var(--hero-grid) 1px, transparent 1px),
+    radial-gradient(900px circle at 15% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    radial-gradient(800px circle at 100% 10%, color-mix(in srgb, var(--accent2) 9%, transparent), transparent 55%);
+  background-size: 22px 22px, auto, auto;
+  background-attachment: fixed;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
+}
+
+.site-header {
+  text-align: center;
+  padding: 1.6rem 1rem 0.6rem;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.ad-slot {
+  width: 100%;
+  max-width: 640px;
+  min-height: 60px;
+  margin: 0.8rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(45deg, #eee, #eee 10px, #e2e2e2 10px, #e2e2e2 20px);
+  color: #999;
+  font-size: 0.8rem;
+  border-radius: 6px;
+}
+
+main {
+  width: 100%;
+  max-width: 520px;
+  padding: 0 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.site-nav {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.site-nav a:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.setup-screen,
+.lobby-panel,
+.howto {
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem 1.2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.setup-screen h2,
+.lobby-panel h3,
+.howto h2 {
+  margin-top: 0;
+  font-size: 1.15rem;
+  padding-left: 0.6rem;
+  border-left: 4px solid transparent;
+  border-image: var(--grad) 1;
+}
+
+.name-input {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  margin: 0.5rem auto 1.2rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.mode-btn {
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--btn-grad);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mode-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
+}
+
+.mode-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.reset-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--btn-grad);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reset-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
+}
+
+.secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.secondary-btn:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  transform: translateY(-1px);
+}
+
+.link-btn {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.3rem;
+}
+
+.online-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.join-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.join-row input {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 1rem;
+  width: 130px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.host-wait {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.room-code {
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin: 0.5rem 0;
+}
+
+.online-status {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0;
+}
+
+.online-error {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin-top: 0.8rem;
+}
+
+.roster {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.roster-item {
+  background: color-mix(in srgb, var(--accent) 8%, var(--card-bg));
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  font-weight: bold;
+}
+
+.game-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.theme-box,
+.my-number-box {
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  text-align: center;
+}
+
+.theme-label,
+.my-number-label {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.theme-title {
+  margin: 0.3rem 0 0.2rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.theme-scale {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+#reroll-theme-btn {
+  display: inline-block;
+  margin-top: 0.6rem;
+}
+
+.my-number {
+  margin: 0.3rem 0 0;
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.game-hint {
+  width: 100%;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+}
+
+.order-panel {
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.order-panel h3 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.order-candidates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.order-candidate-btn {
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+.order-built {
+  text-align: left;
+  max-width: 260px;
+  margin: 0 auto 1rem;
+  padding-left: 1.4rem;
+}
+
+.order-actions {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  max-width: 90%;
+  width: 360px;
+  position: relative;
+  z-index: 1001;
+}
+
+.result-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.4;
+  margin: 0 0 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.result-order-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.result-order {
+  text-align: left;
+  max-width: 260px;
+  margin: 0 auto 1rem;
+  padding-left: 1.4rem;
+}
+
+.result-order li {
+  padding: 0.35rem 0;
+  line-height: 1.5;
+}
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.other-games {
+  margin-top: 1.2rem;
+  border-top: 1px solid var(--card-border);
+  padding-top: 1rem;
+}
+
+.other-games p {
+  margin: 0 0 0.5rem;
+  font-weight: bold;
+  color: var(--muted);
+}
+
+.other-games ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.other-games a {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.other-games a:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.howto ul {
+  padding-left: 1.2rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.site-footer {
+  margin-top: auto;
+  padding: 1rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 480px) {
+  .site-header h1 {
+    font-size: 1.4rem;
+  }
+  .overlay-card {
+    padding: 1.2rem 1rem;
+  }
+  .my-number {
+    font-size: 2.4rem;
+  }
+}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../theme.js"></script>
+<link rel="stylesheet" href="../theme-toggle.css">
+<title>五目並べ | ブラウザで遊べる無料対戦ゲーム(2人・CPU・オンライン)</title>
+<meta name="description" content="無料で遊べるブラウザ五目並べ。13x13盤で友達と1台の端末で対戦、CPU(コンピューター)と対戦、または友達とオンラインで対戦できます。縦横斜めに5つ並べたら勝利。インストール不要ですぐ遊べます。">
+<meta property="og:title" content="五目並べ | ブラウザで遊べる無料対戦ゲーム(2人・CPU・オンライン)">
+<meta property="og:description" content="13x13盤で2人対戦・CPU対戦・オンライン対戦ができる無料の五目並べ。縦横斜めに5つ並べたら勝利です。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/gomoku/">
+<link rel="canonical" href="https://ykobashi.github.io/gomoku/">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Game",
+  "name": "五目並べ",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "description": "無料で遊べるブラウザ五目並べ。13x13盤で友達と1台の端末で対戦、CPU(コンピューター)と対戦、または友達とオンラインで対戦できます。縦横斜めに5つ並べたら勝利。インストール不要ですぐ遊べます。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EQ35W720X8');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>五目並べ</h1>
+  <p class="subtitle">2人でこの端末で対戦、CPUと対戦、または友達とオンライン対戦!縦・横・斜めに5つ先に並べたら勝ち</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section id="setup-screen" class="setup-screen">
+    <div id="mode-select" class="mode-select">
+      <h2>対戦相手を選んでください</h2>
+      <div class="mode-buttons">
+        <button id="mode-local-btn" class="mode-btn" type="button">2人で対戦(この端末で交互に)</button>
+        <button id="mode-cpu-btn" class="mode-btn" type="button">CPUと対戦</button>
+        <button id="mode-online-btn" class="mode-btn" type="button">オンライン対戦(友達と)</button>
+      </div>
+    </div>
+
+    <div id="online-panel" class="online-panel hidden">
+      <button id="online-back-btn" class="link-btn" type="button">&laquo; 戻る</button>
+      <h2>オンライン対戦</h2>
+
+      <div class="online-choice">
+        <button id="host-btn" class="mode-btn" type="button">部屋を作る(招待する)</button>
+        <div class="join-row">
+          <input id="join-code-input" type="text" inputmode="latin" maxlength="6" placeholder="6桁のコード">
+          <button id="join-btn" class="mode-btn" type="button">参加する</button>
+        </div>
+      </div>
+
+      <div id="host-wait" class="host-wait hidden">
+        <p>このコードを友達に伝えてください:</p>
+        <div class="room-code" id="room-code-text">------</div>
+        <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+        <p id="online-status" class="online-status">相手の参加を待っています…</p>
+      </div>
+
+      <p id="online-error" class="online-error hidden"></p>
+    </div>
+  </section>
+
+  <section id="game-area" class="game-area hidden">
+    <section class="status-bar">
+      <div id="turn-indicator" class="turn-indicator">
+        <span class="stone-preview black"></span>
+        <span id="turn-text">あなたの番です(黒)</span>
+      </div>
+      <button id="reset-btn" class="reset-btn" type="button">最初から</button>
+    </section>
+
+    <p id="online-connection-status" class="online-status hidden"></p>
+
+    <section class="board-wrapper">
+      <div id="board" class="board" role="grid" aria-label="五目並べ盤面"></div>
+    </section>
+
+    <button id="quit-online-btn" class="link-btn hidden" type="button">対戦をやめてモード選択に戻る</button>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-text" class="result-text">勝負あり!</p>
+      <button id="play-again-btn" class="reset-btn" type="button">もう一度遊ぶ</button>
+      <div class="other-games">
+        <p>他のゲームもどうぞ</p>
+        <ul>
+          <li><a href="../memory-match/index.html">神経衰弱</a></li>
+          <li><a href="../game-2048/index.html">2048</a></li>
+          <li><a href="../lights-out/index.html">ライツアウト</a></li>
+          <li><a href="../snake-game/index.html">スネークゲーム</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方</h2>
+    <ul>
+      <li>「2人で対戦」を選ぶと、同じ端末を2人で交互に操作して対戦します(黒が先手)。</li>
+      <li>「CPUと対戦」を選ぶと、あなた(黒・先手)とCPU(白)で対戦します。石を置くとCPUが少し考えてから自動的に打ち返します。</li>
+      <li>「オンライン対戦」を選ぶと、友達と2台の端末でリアルタイムに対戦できます。「部屋を作る」を押すと表示される6桁のコードを友達に伝え、友達は「参加する」からそのコードを入力すると接続されます。部屋を作った人が黒(先手)になります。</li>
+      <li>縦・横・斜め(どちらの方向も)のいずれかで自分の石が5つ連続で並んだら勝利です。</li>
+      <li>盤面が全て埋まって誰も5つ並べられなければ引き分けです。</li>
+      <li>オンライン対戦はネットワーク環境によっては接続できない場合があります。</li>
+      <li>「最初から」ボタンでいつでも新しい対局を始められます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 五目並べ</p>
+  <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="peerjs.min.js"></script>
+<script src="net.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

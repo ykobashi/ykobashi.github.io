@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="../theme.js"></script><link rel="stylesheet" href="../theme-toggle.css"><link rel="stylesheet" href="style.css"><title>ジャストワン | オンライン協力ゲーム</title><meta name="description" content="同じヒントの重複を避け、お題を当てる協力ゲーム。"><meta property="og:title" content="ジャストワン"><meta property="og:description" content="重複しない一言ヒントでお題を当てるオンライン協力ゲーム。"><meta property="og:type" content="website"><meta property="og:image" content="https://ykobashi.github.io/og-image.png"><meta property="og:url" content="https://ykobashi.github.io/just-one/"><link rel="canonical" href="https://ykobashi.github.io/just-one/"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Game","name":"ジャストワン","description":"重複しない一言ヒントでお題を当てるオンライン協力ゲーム。","url":"https://ykobashi.github.io/just-one/","applicationCategory":"GameApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script><link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg"><link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png"><script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-EQ35W720X8');</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script><meta name="google-adsense-account" content="ca-pub-2142740595477223"></head><body><button class="theme-toggle-btn" type="button" aria-label="テーマを切替">🌙</button><nav class="site-nav"><a href="https://ykobashi.github.io/">← トップページに戻る</a></nav>
+<header class="site-header"><h1>ジャストワン</h1><p class="subtitle">重複しない一言ヒントで、お題を当てよう。</p></header><div class="ad-slot" aria-label="広告"></div><main>
+
+<section id="setup" class="setup-screen">
+  <h2>参加準備</h2>
+  <input id="name" class="name-input" maxlength="10" placeholder="ニックネーム">
+  <div class="online-choice">
+    <button id="host" class="mode-btn">部屋を作る</button>
+    <div class="join-row">
+      <input id="join-code" maxlength="6" placeholder="6桁コード">
+      <button id="join" class="mode-btn">参加する</button>
+    </div>
+  </div>
+  <p id="error" class="online-error"></p>
+</section>
+
+<section id="lobby" class="lobby-panel hidden">
+  <div id="host-wait" class="host-wait hidden">
+    <p>このコードを友達に伝えてください</p>
+    <div id="code" class="room-code">------</div>
+    <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+  </div>
+  <h3>参加者</h3>
+  <ul id="roster" class="roster"></ul>
+  <button id="start" class="mode-btn" disabled>ゲーム開始（2人以上）</button>
+</section>
+
+<section id="game" class="game-area hidden">
+  <div class="word-box"><h2 id="answer"></h2></div>
+  <div class="phase-panel">
+    <p id="status" aria-live="polite" class="online-status"></p>
+    <div id="clue-box" class="hidden"><input id="clue" maxlength="10" placeholder="一言ヒント"><button id="send-clue" class="mode-btn">送信</button></div>
+    <div id="guess-box" class="hidden"><p id="hints"></p><input id="guess" maxlength="30" placeholder="答え"><button id="send-guess" class="mode-btn">回答する</button></div>
+  </div>
+</section>
+
+<section id="result-overlay" class="overlay hidden">
+  <div class="overlay-card">
+    <p id="result-label" class="result-word-label"></p>
+    <p id="result-headline" class="result-word"></p>
+    <p id="result-detail" class="result-detail"></p>
+    <p id="result-note" class="online-status hidden">ホストが次に進めるのを待っています…</p>
+    <div class="result-actions">
+      <button id="next" class="mode-btn hidden" type="button">次へ</button>
+      <button id="again" class="mode-btn hidden" type="button">もう一度あそぶ</button>
+      <a id="back-to-list" href="https://ykobashi.github.io/" class="secondary-btn">ゲーム一覧に戻る</a>
+    </div>
+  </div>
+</section>
+
+<section class="howto">
+  <h2>遊び方</h2>
+  <ul>
+    <li>1ラウンドにつき1人が「回答者」になります(全員が1回ずつ担当し、ラウンド数は参加人数と同じです)。</li>
+    <li>回答者以外の全員が、表示されたお題を連想させる一言ヒントを一つずつ入力します(回答者にはお題は見えません)。</li>
+    <li>全員が入力し終わると、同じ内容のヒントが2人以上いた場合はそのヒントは全部無効になります。生き残ったヒントだけが回答者に見せられます。</li>
+    <li>回答者は残ったヒントから元のお題を推理して回答します。正解すると1問正解として記録されます。</li>
+    <li>結果発表のあと、ホストが「次へ」を押すと次のラウンド(次の回答者)に進みます。全ラウンド終了後、正解数の合計が発表されます。</li>
+  </ul>
+</section>
+
+</main><footer class="site-footer">&copy; 2026 ジャストワン · <a href="../privacy.html">プライバシーポリシー</a></footer>
+<script src="peerjs.min.js"></script><script src="../common/net-core.js"></script><script src="../common/peer-errors.js"></script><script src="../common/wake-lock.js"></script><script src="../common/rejoin-storage.js"></script><script src="../common/ack-send.js"></script><script src="logic.js"></script><script src="net.js"></script><script src="script.js"></script></body></html>

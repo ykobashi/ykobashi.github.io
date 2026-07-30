@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="../theme.js"></script><link rel="stylesheet" href="../theme-toggle.css">
+<title>表情当てクイズ | AIイラストの裏の感情を当てるオンラインパーティーゲーム</title>
+<meta name="description" content="AIが生成した表情イラストの裏にある本当の感情シナリオを4択で当てる無料オンラインクイズゲーム。全3問の得点を友達と競います。2人から遊べます。">
+<meta property="og:title" content="表情当てクイズ"><meta property="og:description" content="表情イラストの裏にある感情シナリオを4択で当てる無料オンラインクイズ。全3問で得点を競います。"><meta property="og:type" content="website"><meta property="og:image" content="https://ykobashi.github.io/og-image.png"><meta property="og:url" content="https://ykobashi.github.io/expression-quiz/"><link rel="canonical" href="https://ykobashi.github.io/expression-quiz/"><link rel="stylesheet" href="style.css"><link rel="icon" href="../favicon.svg">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Game","name":"表情当てクイズ","applicationCategory":"GameApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-EQ35W720X8');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223"></head>
+<body><button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button><nav class="site-nav"><a href="../index.html">&larr; トップページに戻る</a></nav>
+<header class="site-header"><h1>表情当てクイズ</h1><p class="subtitle">表情イラストの裏にある本当の感情シナリオを当てよう。</p></header><div class="ad-slot" aria-label="広告"></div><main>
+
+<section id="setup-screen" class="setup-screen">
+  <h2>参加準備</h2>
+  <input id="name-input" class="name-input" maxlength="10" placeholder="ニックネーム" aria-label="ニックネーム">
+  <div class="online-choice">
+    <button id="host-btn" class="mode-btn" type="button">部屋を作る</button>
+    <div class="join-row">
+      <input id="join-code-input" maxlength="6" placeholder="6桁コード" aria-label="6桁の部屋コード">
+      <button id="join-btn" class="mode-btn" type="button">参加する</button>
+    </div>
+  </div>
+  <p id="online-error" class="online-error hidden" role="alert"></p>
+</section>
+
+<section id="lobby-panel" class="lobby-panel hidden">
+  <div id="host-wait" class="host-wait hidden">
+    <p>このコードを友達に伝えてください</p>
+    <div id="room-code-text" class="room-code">------</div>
+    <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+  </div>
+  <p id="online-status" class="online-status" role="status"></p>
+  <h3>参加者</h3>
+  <ul id="roster-list" class="roster"></ul>
+  <button id="start-btn" class="mode-btn hidden" type="button" disabled>ゲーム開始（2人以上）</button>
+</section>
+
+<section id="game-area" class="game-area hidden">
+  <div class="expression-box">
+    <p id="round-status" class="word-label"></p>
+    <img id="expression-image" class="expression-image" alt="表情イラスト">
+  </div>
+  <div id="choices-list" class="choices-list" role="group" aria-label="選択肢"></div>
+  <p id="answer-status" class="online-status hidden" role="status">回答しました</p>
+  <div id="host-progress-box" class="phase-panel hidden">
+    <h3>回答状況</h3>
+    <p id="progress-text" class="online-status" role="status"></p>
+    <ul id="progress-list" class="roster"></ul>
+  </div>
+  <p id="game-connection-status" class="online-error hidden" role="alert"></p>
+  <button id="quit-btn" class="link-btn" type="button">やめる</button>
+</section>
+
+<section id="round-result-overlay" class="overlay hidden">
+  <div class="overlay-card">
+    <p id="result-round-label" class="result-word-label"></p>
+    <p class="result-order-label">正解のシナリオ</p>
+    <p id="result-scenario" class="result-word result-scenario-text"></p>
+    <p id="result-correct-answerers" class="result-correct-voters"></p>
+    <p class="result-order-label">通算スコア</p>
+    <ol id="result-scoreboard-list" class="result-scoreboard-list"></ol>
+    <button id="result-next-btn" class="reset-btn hidden" type="button"></button>
+  </div>
+</section>
+
+<section id="final-result-screen" class="final-result-screen hidden">
+  <h2>最終結果</h2>
+  <p id="final-winner-text" class="final-winner-text"></p>
+  <p id="final-my-rank-text" class="final-my-rank-text"></p>
+  <ol id="final-scoreboard-list" class="result-scoreboard-list"></ol>
+  <div class="final-actions">
+    <button id="play-again-btn" class="mode-btn hidden" type="button">もう一度遊ぶ</button>
+    <a href="../index.html" class="reset-btn back-to-top-btn">ゲーム一覧に戻る</a>
+  </div>
+</section>
+
+<section class="howto">
+  <h2>遊び方</h2>
+  <ul>
+    <li>表示された表情イラストが「本当はどんな場面での表情か」を4択から選びます。表面の感情は共通ですが、裏にある感情の色が違います。</li>
+    <li>全員が回答すると、ホストの画面で自動的に正誤が集計されます。</li>
+    <li>正解すると1,000点。全3問の合計点で競います。同点の場合は同じ順位で表示されます。</li>
+  </ul>
+</section>
+
+</main><footer class="site-footer">&copy; 2026 表情当てクイズ</footer>
+<script src="peerjs.min.js"></script><script src="../common/net-core.js"></script><script src="../common/peer-errors.js"></script><script src="../common/wake-lock.js"></script><script src="../common/rejoin-storage.js"></script><script src="../common/ack-send.js"></script><script src="logic.js"></script><script src="net.js"></script><script src="script.js"></script></body></html>

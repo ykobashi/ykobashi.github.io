@@ -1,0 +1,297 @@
+:root {
+  --bg: #101828;
+  --board-bg: #1d2939;
+  --cell-off: #344054;
+  --cell-on: #fbbf24;
+  --text: #f2f4f7;
+  --accent: #6366f1;
+  --accent2: #fbbf24;
+  --grad: linear-gradient(120deg, var(--accent), var(--accent2));
+  --btn-c1: var(--accent);
+  --btn-c2: var(--accent2);
+  --btn-grad: linear-gradient(120deg, var(--btn-c1), var(--btn-c2));
+  --card-bg: #1d2939;
+  --card-border: #344054;
+  --muted: #98a2b3;
+  --hero-grid: rgba(255, 255, 255, 0.06);
+}
+
+/* This page already uses a dark palette by default (regardless of system
+   preference), so the dark-mode override below intentionally keeps the
+   same neutral colors rather than changing them. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101828;
+    --text: #f2f4f7;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, var(--hero-grid) 1px, transparent 1px),
+    radial-gradient(900px circle at 15% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    radial-gradient(800px circle at 100% 10%, color-mix(in srgb, var(--accent2) 9%, transparent), transparent 55%);
+  background-size: 22px 22px, auto, auto;
+  background-attachment: fixed;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
+}
+
+.site-header {
+  text-align: center;
+  padding: 1.2rem 1rem 0.4rem;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.ad-slot {
+  width: 100%;
+  max-width: 640px;
+  min-height: 60px;
+  margin: 0.8rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(45deg, #1d2939, #1d2939 10px, #22304a 10px, #22304a 20px);
+  color: var(--muted);
+  font-size: 0.8rem;
+  border-radius: 6px;
+}
+
+main {
+  width: 100%;
+  max-width: 480px;
+  padding: 0 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.status-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: normal;
+  color: var(--muted);
+}
+
+.reset-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--btn-grad);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reset-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--btn-c1) 35%, transparent);
+}
+
+.board-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 0.5rem;
+  background: var(--board-bg);
+  border-radius: 10px;
+  padding: 0.7rem;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1 / 1;
+}
+
+.cell {
+  border-radius: 6px;
+  background: var(--cell-off);
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s;
+}
+
+.cell.on {
+  background: var(--cell-on);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.7);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  max-width: 90%;
+  width: 360px;
+  position: relative;
+  z-index: 1001;
+  color: var(--text);
+}
+
+.result-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0 0 0.5rem;
+}
+
+.result-detail {
+  color: var(--muted);
+  margin: 0 0 1rem;
+}
+
+.other-games {
+  margin-top: 1.2rem;
+  border-top: 1px solid var(--card-border);
+  padding-top: 1rem;
+}
+
+.other-games p {
+  margin: 0 0 0.5rem;
+  font-weight: bold;
+  color: var(--muted);
+}
+
+.other-games ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.other-games a {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.other-games a:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.howto {
+  width: 100%;
+  margin-top: 2rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+}
+
+.howto h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.howto ul {
+  padding-left: 1.2rem;
+  line-height: 1.6;
+}
+
+.site-footer {
+  margin-top: auto;
+  padding: 1rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 480px) {
+  .site-header h1 {
+    font-size: 1.4rem;
+  }
+  .overlay-card {
+    padding: 1.2rem 1rem;
+  }
+}
+
+.site-nav {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.site-nav a:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}

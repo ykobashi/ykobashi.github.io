@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="../theme.js"></script><link rel="stylesheet" href="../theme-toggle.css">
+<title>辞書定義当てクイズ | 難読語・辞書の意味当てオンラインパーティーゲーム</title>
+<meta name="description" content="辞書のような一文の意味説明から、それが示す難読語・マイナー語を4択で当てる無料オンラインクイズゲーム。全8問の得点を友達と競います。2人から遊べます。">
+<meta property="og:title" content="辞書定義当てクイズ"><meta property="og:description" content="意味説明から難読語を4択で当てる無料オンラインクイズ。全8問で得点を競います。"><meta property="og:type" content="website"><meta property="og:image" content="https://ykobashi.github.io/og-image.png"><meta property="og:url" content="https://ykobashi.github.io/dictionary-quiz/"><link rel="canonical" href="https://ykobashi.github.io/dictionary-quiz/"><link rel="stylesheet" href="style.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Game","name":"辞書定義当てクイズ","applicationCategory":"GameApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+<link rel="icon" href="../favicon.svg">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-EQ35W720X8');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223"></head>
+<body><button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button><nav class="site-nav"><a href="../index.html">&larr; トップページに戻る</a></nav>
+<header class="site-header"><h1>辞書定義当てクイズ</h1><p class="subtitle">辞書っぽい一文の意味から、その難読語を4択で当てよう。</p></header><div class="ad-slot" aria-label="広告"></div><main>
+
+<section id="setup-screen" class="setup-screen">
+  <h2>参加準備</h2>
+  <input id="name-input" class="name-input" maxlength="10" placeholder="ニックネーム" aria-label="ニックネーム">
+  <div class="online-choice">
+    <button id="host-btn" class="mode-btn" type="button">部屋を作る</button>
+    <div class="join-row">
+      <input id="join-code-input" maxlength="6" placeholder="6桁コード" aria-label="6桁の部屋コード">
+      <button id="join-btn" class="mode-btn" type="button">参加する</button>
+    </div>
+  </div>
+  <p id="online-error" class="online-error hidden" role="alert"></p>
+</section>
+
+<section id="lobby-panel" class="lobby-panel hidden">
+  <div id="host-wait" class="host-wait hidden">
+    <p>このコードを友達に伝えてください</p>
+    <div id="room-code-text" class="room-code">------</div>
+    <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+  </div>
+  <p id="online-status" class="online-status" role="status"></p>
+  <h3>参加者</h3>
+  <ul id="roster-list" class="roster"></ul>
+  <button id="start-btn" class="mode-btn hidden" type="button" disabled>ゲーム開始（2人以上）</button>
+</section>
+
+<section id="game-area" class="game-area hidden">
+  <div class="word-box">
+    <p id="round-status" class="word-label"></p>
+    <p id="meaning-text" class="meaning-text">--</p>
+  </div>
+  <div id="choices-list" class="choices-list" role="group" aria-label="選択肢"></div>
+  <p id="answer-status" class="online-status hidden" role="status">回答しました</p>
+  <div id="host-progress-box" class="phase-panel hidden">
+    <h3>回答状況</h3>
+    <p id="progress-text" class="online-status" role="status"></p>
+    <ul id="progress-list" class="roster"></ul>
+    <button id="tally-btn" class="mode-btn" type="button" disabled>集計して結果発表</button>
+  </div>
+  <p id="game-connection-status" class="online-error hidden" role="alert"></p>
+  <button id="quit-btn" class="link-btn" type="button">やめる</button>
+</section>
+
+<section id="round-result-overlay" class="overlay hidden">
+  <div class="overlay-card">
+    <p id="result-round-label" class="result-word-label"></p>
+    <p class="result-order-label">正解</p>
+    <p id="result-word" class="result-word"></p>
+    <p id="result-reading" class="result-reading"></p>
+    <p id="result-meaning" class="result-real-definition"></p>
+    <p id="result-correct-answerers" class="result-correct-voters"></p>
+    <p class="result-order-label">通算スコア</p>
+    <ol id="result-scoreboard-list" class="result-scoreboard-list"></ol>
+    <button id="result-next-btn" class="reset-btn hidden" type="button"></button>
+  </div>
+</section>
+
+<section id="final-result-screen" class="final-result-screen hidden">
+  <h2>最終結果</h2>
+  <p id="final-winner-text" class="final-winner-text"></p>
+  <p id="final-my-rank-text" class="final-my-rank-text"></p>
+  <ol id="final-scoreboard-list" class="result-scoreboard-list"></ol>
+  <div class="final-actions">
+    <button id="play-again-btn" class="mode-btn hidden" type="button">もう一度遊ぶ</button>
+    <a href="../index.html" class="secondary-btn">ゲーム一覧に戻る</a>
+  </div>
+</section>
+
+<section class="howto">
+  <h2>遊び方</h2>
+  <ul>
+    <li>表示された一文の意味説明を読んで、それが示す言葉を4択から選びます。制限時間は20秒です。</li>
+    <li>全員が回答するか時間切れになったら、ホストが「集計して結果発表」を押すと正誤が集計されます。</li>
+    <li>正解すると1,000点。全8問の合計点で競います。同点の場合は同じ順位で表示されます。</li>
+  </ul>
+</section>
+
+</main><footer class="site-footer">&copy; 2026 辞書定義当てクイズ · <a href="../privacy.html">プライバシーポリシー</a></footer>
+<script src="peerjs.min.js"></script><script src="../common/net-core.js"></script><script src="../common/peer-errors.js"></script><script src="../common/wake-lock.js"></script><script src="../common/rejoin-storage.js"></script><script src="../common/ack-send.js"></script><script src="logic.js"></script><script src="net.js"></script><script src="script.js"></script></body></html>

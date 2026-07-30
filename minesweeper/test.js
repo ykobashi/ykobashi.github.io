@@ -1,0 +1,13 @@
+const assert = require('assert');
+const L = require('./logic.js');
+let board = L.createEmptyBoard(2, 3);
+assert.strictEqual(board.length, 2); assert.strictEqual(board[0].length, 3);
+assert.deepStrictEqual(L.getNeighbors(3, 3, 0, 0), [[0, 1], [1, 0], [1, 1]]);
+L.placeMines(board, 1, () => 0, [[0, 0]]); assert.strictEqual(board[0][0].mine, false); assert.strictEqual(board.flat().filter(c => c.mine).length, 1);
+assert.throws(() => L.placeMines(L.createEmptyBoard(1, 1), 1, Math.random, [[0, 0]]), RangeError);
+board = L.generateBoard(5, 5, 1, [2, 2], () => 0); assert.strictEqual(board[2][2].mine, false); assert.strictEqual(board[2][2].adjacent, 0);
+board = L.createEmptyBoard(3, 3); board[0][0].mine = true; L.computeAdjacentCounts(board); L.floodOpen(board, 2, 2); assert.strictEqual(board[2][2].opened, true); assert.strictEqual(board[1][1].opened, true); assert.strictEqual(board[0][1].opened, true); assert.strictEqual(board[0][0].opened, false);
+L.toggleFlag(board, 0, 0); assert.strictEqual(board[0][0].flagged, true); assert.strictEqual(L.countFlags(board), 1); assert.strictEqual(L.remainingMineCount(board, 10), 9);
+assert.strictEqual(L.isWin(board), true); L.revealAllMines(board); assert.strictEqual(board[0][0].opened, true);
+assert.strictEqual(L.formatTime(0), '00:00'); assert.strictEqual(L.formatTime(65), '01:05'); assert.strictEqual(L.formatTime(-2), '00:00');
+console.log('All tests passed');

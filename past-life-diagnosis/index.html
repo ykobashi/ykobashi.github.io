@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../theme.js"></script>
+<link rel="stylesheet" href="../theme-toggle.css">
+<title>前世診断 | 名前と生年月日からあなたの前世がわかる無料診断</title>
+<meta name="description" content="名前と生年月日を入力するだけで、あなたの前世の職業・時代・性格がわかる無料診断ツール。25種類以上の前世キャラからあなただけの結果を導き出します。">
+<meta property="og:title" content="前世診断 | あなたの前世がわかる無料診断">
+<meta property="og:description" content="名前と生年月日を入力するだけで、あなたの前世の職業・時代・性格がわかる無料診断ツールです。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/past-life-diagnosis/">
+<link rel="canonical" href="https://ykobashi.github.io/past-life-diagnosis/">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "前世診断",
+  "applicationCategory": "LifestyleApplication",
+  "operatingSystem": "Any",
+  "description": "名前と生年月日を入力するだけで、あなたの前世の職業・時代・性格がわかる無料診断ツール。25種類以上の前世キャラからあなただけの結果を導き出します。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EQ35W720X8');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>前世診断</h1>
+  <p class="subtitle">あなたの魂が歩んできた、もうひとつの人生</p>
+</header>
+
+<main>
+  <section class="card" id="form-section">
+    <form id="diagnosis-form" autocomplete="off">
+      <label for="name-input">お名前</label>
+      <input type="text" id="name-input" name="name" placeholder="例:山田太郎" required maxlength="30">
+
+      <label for="birthdate-input">生年月日</label>
+      <input type="date" id="birthdate-input" name="birthdate" required>
+
+      <button type="submit">前世を診断する</button>
+    </form>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="card result-card" id="result-section" hidden>
+    <h2>診断結果</h2>
+    <p class="result-headline" id="result-headline"></p>
+    <dl class="result-detail">
+      <dt>職業</dt>
+      <dd id="result-job"></dd>
+      <dt>時代</dt>
+      <dd id="result-era"></dd>
+      <dt>性格</dt>
+      <dd id="result-flavor"></dd>
+    </dl>
+
+    <div class="share-area">
+      <button type="button" id="share-button">結果をXでシェアする</button>
+    </div>
+
+    <button type="button" id="retry-button" class="secondary-button">もう一度診断する</button>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+  <section class="card about-section">
+    <h2>このツールについて</h2>
+    <p>
+      「前世診断」は、お名前と生年月日を組み合わせて作られる一意の値をもとに、25種類以上の前世キャラクターの中からあなたにぴったりの1つを導き出す無料の診断ツールです。
+      同じお名前・同じ生年月日を入力すると、何度診断しても同じ結果が表示されます。占いや心理学的な根拠に基づくものではなく、エンターテインメントとしてお楽しみください。
+    </p>
+    <p>
+      入力された情報はサーバーに送信されず、すべてお使いのブラウザ内で診断処理が完結します。安心してご利用ください。
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 前世診断</p>
+  <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><script src="../theme.js"></script><link rel="stylesheet" href="../theme-toggle.css"><title>コンセプト（簡易版） | オンライン連想ゲーム</title><meta name="description" content="絵文字のピン配置でお題を伝える、コンセプト風オンラインゲーム。"><meta property="og:title" content="コンセプト（簡易版）"><meta property="og:description" content="絵文字ボード上のピン配置でお題を伝えるオンライン連想ゲーム。"><meta property="og:type" content="website"><meta property="og:image" content="https://ykobashi.github.io/og-image.png"><meta property="og:url" content="https://ykobashi.github.io/concept/"><link rel="canonical" href="https://ykobashi.github.io/concept/"><link rel="stylesheet" href="style.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Game","name":"コンセプト（簡易版）","description":"絵文字ボード上のピン配置でお題を伝えるオンライン連想ゲーム。","url":"https://ykobashi.github.io/concept/","applicationCategory":"GameApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script><link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg"><link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png"><script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-EQ35W720X8');</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script><meta name="google-adsense-account" content="ca-pub-2142740595477223"></head><body><button class="theme-toggle-btn" type="button" aria-label="テーマを切替">🌙</button><nav class="site-nav"><a href="https://ykobashi.github.io/">← トップページに戻る</a></nav>
+<header class="site-header"><h1>コンセプト（簡易版）</h1><p class="subtitle">絵文字ボードにピンを置いて、お題を伝えよう。</p></header><div class="ad-slot" aria-label="広告"></div><main>
+<p id="connection-health" class="connection-health hidden" role="status" aria-live="polite">通信が不安定です。再接続を試みています…</p>
+
+<section id="setup" class="setup-screen">
+  <h2>参加準備</h2>
+  <input id="name" class="name-input" maxlength="10" placeholder="ニックネーム">
+  <div class="online-choice">
+    <button id="host" class="mode-btn">部屋を作る</button>
+    <div class="join-row">
+      <input id="join-code" maxlength="6" placeholder="6桁コード">
+      <button id="join" class="mode-btn">参加する</button>
+    </div>
+  </div>
+  <p id="error" class="online-error"></p>
+</section>
+
+<section id="lobby" class="lobby-panel hidden">
+  <div id="host-wait" class="host-wait hidden">
+    <p>このコードを友達に伝えてください</p>
+    <div id="code" class="room-code">------</div>
+    <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+  </div>
+  <h3>参加者</h3>
+  <ul id="roster" class="roster"></ul>
+  <button id="start" class="mode-btn" disabled>ゲーム開始（2人以上）</button>
+</section>
+
+<section id="game" class="game-area hidden">
+  <div class="word-box">
+    <h2 id="topic"></h2>
+    <p id="status" aria-live="polite" class="online-status"></p>
+    <button id="reveal" class="mode-btn hidden">正解が出ました</button>
+  </div>
+  <div id="board" class="board"></div>
+</section>
+
+<section id="result-overlay" class="overlay hidden">
+  <div class="overlay-card">
+    <p id="result-label" class="result-word-label"></p>
+    <p id="result-headline" class="result-word"></p>
+    <p id="result-detail" class="result-detail"></p>
+    <ol id="result-list" class="result-scoreboard-list hidden"></ol>
+    <p id="result-note" class="online-status hidden">ホストが次に進めるのを待っています…</p>
+    <div class="result-actions">
+      <button id="next" class="mode-btn hidden" type="button">次へ</button>
+      <button id="again" class="mode-btn hidden" type="button">もう一度あそぶ</button>
+      <a id="back-to-list" href="https://ykobashi.github.io/" class="secondary-btn">ゲーム一覧に戻る</a>
+    </div>
+  </div>
+</section>
+
+<section class="howto">
+  <h2>遊び方</h2>
+  <ul>
+    <li>出題者は毎ラウンド持ち回りで交代します(全員が1回ずつ担当します)。出題者だけに秘密のお題が見えています。</li>
+    <li>出題者は、言葉を使わずに絵文字ボードへ「📌ピン」を置いていくことで、お題を表現します。</li>
+    <li>他の全員はピンの配置から連想し、音声などで答えを話し合って当てます(アプリへの回答入力はありません)。</li>
+    <li>誰かが正解を言い当てたら、出題者が「正解が出ました」ボタンを押して確定します。出題が成立するたびに出題者に1点が入ります。</li>
+    <li>結果発表のあと、ホストが「次へ」を押すと次の出題者に進みます。全員が1回ずつ出題者を終えたら終了です。合計点を競います。</li>
+  </ul>
+</section>
+
+</main><footer class="site-footer">&copy; 2026 コンセプト · <a href="../privacy.html">プライバシーポリシー</a></footer>
+<script src="peerjs.min.js"></script><script src="../common/net-core.js"></script><script src="../common/peer-errors.js"></script><script src="../common/wake-lock.js"></script><script src="../common/rejoin-storage.js"></script><script src="logic.js"></script><script src="net.js"></script><script src="script.js"></script></body></html>
