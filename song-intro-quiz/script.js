@@ -47,7 +47,6 @@
   const gameArea = document.getElementById('game-area');
   const roundStatusEl = document.getElementById('round-status');
   const playClipBtn = document.getElementById('play-clip-btn');
-  const playHintEl = document.getElementById('play-hint');
   const clipFrameWrapEl = document.getElementById('clip-frame-wrap');
   const clipErrorEl = document.getElementById('clip-error');
   const choicesListEl = document.getElementById('choices-list');
@@ -62,6 +61,7 @@
   // --- DOM要素(ラウンド結果) ---
   const roundResultOverlay = document.getElementById('round-result-overlay');
   const resultRoundLabelEl = document.getElementById('result-round-label');
+  const resultClipFrameEl = document.getElementById('result-clip-frame');
   const resultWordEl = document.getElementById('result-word');
   const resultCorrectAnswerersEl = document.getElementById('result-correct-answerers');
   const resultRoundPointsListEl = document.getElementById('result-round-points-list');
@@ -152,6 +152,10 @@
       if (currentResultPayload.roundDeltas && Object.prototype.hasOwnProperty.call(currentResultPayload.roundDeltas, oldId)) {
         currentResultPayload.roundDeltas[newId] = currentResultPayload.roundDeltas[oldId];
         delete currentResultPayload.roundDeltas[oldId];
+      }
+      if (currentResultPayload.elapsedById && Object.prototype.hasOwnProperty.call(currentResultPayload.elapsedById, oldId)) {
+        currentResultPayload.elapsedById[newId] = currentResultPayload.elapsedById[oldId];
+        delete currentResultPayload.elapsedById[oldId];
       }
       currentResultPayload.roster = publicRoster();
       currentResultPayload.totalScores = publicScores();
@@ -565,6 +569,7 @@
     answered = false;
     playPressedAt = null;
     stopClip();
+    resultClipFrameEl.src = '';
     setupScreen.classList.add('hidden');
     lobbyPanel.classList.add('hidden');
     roundResultOverlay.classList.add('hidden');
@@ -574,8 +579,6 @@
 
     roundStatusEl.textContent = 'ラウンド ' + data.round + ' / ' + data.totalRounds;
     playClipBtn.disabled = false;
-    playHintEl.textContent = '再生ボタンを押すと曲が流れます（回答するまで流れ続けます）';
-    playHintEl.classList.remove('hidden');
     clipErrorEl.classList.add('hidden');
     clipFrameWrapEl.classList.add('hidden');
     choicesListEl.innerHTML = '';
@@ -737,6 +740,8 @@
     tallied = true;
     const tally = L.tallyRoundAnswers(answers, currentEntry.title);
     const idDeltas = L.computeRoundScoreDeltas(answers, currentEntry.title);
+    const elapsedById = {};
+    Object.keys(answers).forEach((id) => { elapsedById[id] = answers[id].elapsedMs; });
     const tokenDeltas = {};
     Object.keys(idDeltas).forEach((id) => {
       const token = tokenForId(id);
@@ -751,6 +756,7 @@
       videoId: currentEntry.videoId,
       correctIds: tally.correctIds,
       roundDeltas: idDeltas,
+      elapsedById,
       totalScores: publicScores(),
       isFinalRound: currentRound >= L.ROUND_TOTAL,
       roster: publicRoster(),
@@ -775,12 +781,23 @@
       : 'なし');
 
     resultRoundPointsListEl.innerHTML = '';
-    (data.roster || []).forEach((p) => {
-      const li = document.createElement('li');
-      const delta = (data.roundDeltas && data.roundDeltas[p.id]) || 0;
-      li.textContent = p.name + ': +' + delta + '点';
-      resultRoundPointsListEl.appendChild(li);
-    });
+    (data.roster || [])
+      .slice()
+      .sort((a, b) => {
+        const ea = (data.elapsedById && data.elapsedById[a.id]) ?? Infinity;
+        const eb = (data.elapsedById && data.elapsedById[b.id]) ?? Infinity;
+        return ea - eb;
+      })
+      .forEach((p) => {
+        const li = document.createElement('li');
+        const delta = (data.roundDeltas && data.roundDeltas[p.id]) || 0;
+        const elapsedMs = data.elapsedById && data.elapsedById[p.id];
+        const elapsedText = typeof elapsedMs === 'number' ? '（' + (elapsedMs / 1000).toFixed(1) + '秒）' : '';
+        li.textContent = p.name + ': +' + delta + '点' + elapsedText;
+        resultRoundPointsListEl.appendChild(li);
+      });
+
+    resultClipFrameEl.src = 'https://www.youtube.com/embed/' + data.videoId;
 
     resultScoreboardListEl.innerHTML = '';
     L.buildScoreboard(data.totalScores, data.roster).forEach((row) => {
@@ -809,6 +826,7 @@
   function showFinalResult(data) {
     phase = 'final';
     currentFinalPayload = data;
+    resultClipFrameEl.src = '';
     roundResultOverlay.classList.add('hidden');
     gameArea.classList.add('hidden');
     finalResultScreen.classList.remove('hidden');

@@ -50,7 +50,6 @@
   <div class="word-box">
     <p id="round-status" class="word-label"></p>
     <button id="play-clip-btn" class="mode-btn play-clip-btn" type="button">▶ 再生</button>
-    <p id="play-hint" class="online-status">再生ボタンを押すと曲が流れます（回答するまで流れ続けます）</p>
     <p id="clip-error" class="online-error hidden" role="alert"></p>
     <div id="clip-frame-wrap" class="clip-frame-wrap hidden" aria-hidden="true"><div id="clip-frame"></div></div>
   </div>
@@ -72,6 +71,7 @@
     <p id="result-round-label" class="result-word-label"></p>
     <p class="result-order-label">正解</p>
     <p id="result-word" class="result-word"></p>
+    <div class="result-clip-wrap"><iframe id="result-clip-frame" src="" allow="autoplay" title="正解の動画" loading="lazy"></iframe></div>
     <p id="result-correct-answerers" class="result-correct-voters"></p>
     <p class="result-order-label">今回の得点</p>
     <ul id="result-round-points-list" class="result-scoreboard-list"></ul>
