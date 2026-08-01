@@ -13,12 +13,17 @@ const DECAY_WINDOW_MS = 10000; // この経過時間でMIN_POINTSまで線形に
 
 const DEFAULT_BANK = (typeof window !== 'undefined' && window.SongIntroQuizData) || [];
 
-// 素のiframe埋め込みURLを組み立てる。IFrame Player APIは使わず、URLパラメータのみで
-// 0秒目からclipLengthSec秒までの自動再生クリップにする。
-function embedUrl(videoId, clipLengthSec = CLIP_LENGTH_SEC) {
-  return 'https://www.youtube.com/embed/' + videoId +
-    '?start=0&end=' + clipLengthSec +
-    '&autoplay=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3';
+// YouTube IFrame Player API の new YT.Player(el, config) にそのまま渡す設定を組み立てる。
+// 素のiframe(URLパラメータのみ)では自動再生がミュートにフォールバックした場合に
+// ユーザー側で解除する手段がなく(controls=0のため)、また埋め込み不可の動画を検知できない
+// ため、JS APIを使ってonReadyでの明示的unMute()とonErrorでのエラー検知を行う。
+function playerConfig(videoId, clipLengthSec = CLIP_LENGTH_SEC) {
+  return {
+    videoId,
+    width: 2,
+    height: 2,
+    playerVars: { start: 0, end: clipLengthSec, autoplay: 1, controls: 0, modestbranding: 1, rel: 0, iv_load_policy: 3 },
+  };
 }
 
 // genre='mix' または decade='all' の場合はその軸を絞らない
@@ -148,7 +153,7 @@ const SongIntroQuizLogicExports = {
   MIN_POINTS,
   DECAY_WINDOW_MS,
   DEFAULT_BANK,
-  embedUrl,
+  playerConfig,
   filterPool,
   shuffle,
   selectRoundVideo,

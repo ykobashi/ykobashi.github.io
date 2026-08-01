@@ -12,15 +12,14 @@ VIDEO_BANK.forEach((entry) => {
 });
 assert.strictEqual(new Set(VIDEO_BANK.map((e) => e.videoId)).size, VIDEO_BANK.length, 'videoIdが重複している');
 
-// ---- embedUrl ----
-assert.strictEqual(
-  L.embedUrl('abc123'),
-  'https://www.youtube.com/embed/abc123?start=0&end=7&autoplay=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3'
-);
-assert.strictEqual(
-  L.embedUrl('abc123', 10),
-  'https://www.youtube.com/embed/abc123?start=0&end=10&autoplay=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3'
-);
+// ---- playerConfig ----
+assert.deepStrictEqual(L.playerConfig('abc123'), {
+  videoId: 'abc123',
+  width: 2,
+  height: 2,
+  playerVars: { start: 0, end: 7, autoplay: 1, controls: 0, modestbranding: 1, rel: 0, iv_load_policy: 3 },
+});
+assert.deepStrictEqual(L.playerConfig('abc123', 10).playerVars.end, 10);
 
 // ---- filterPool ----
 {

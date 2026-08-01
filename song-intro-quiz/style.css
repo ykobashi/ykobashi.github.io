@@ -341,13 +341,13 @@ main {
   margin: 0.4rem 0;
 }
 
-.clip-frame {
+.clip-frame-wrap {
   position: fixed;
   bottom: 0;
   right: 0;
   width: 2px;
   height: 2px;
-  border: 0;
+  overflow: hidden;
   opacity: 0.01;
   pointer-events: none;
 }

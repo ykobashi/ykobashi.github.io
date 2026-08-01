@@ -48,7 +48,6 @@
   const roundStatusEl = document.getElementById('round-status');
   const playClipBtn = document.getElementById('play-clip-btn');
   const playHintEl = document.getElementById('play-hint');
-  const clipFrame = document.getElementById('clip-frame');
   const choicesListEl = document.getElementById('choices-list');
   const answerStatusEl = document.getElementById('answer-status');
   const hostProgressBox = document.getElementById('host-progress-box');
@@ -97,6 +96,37 @@
   let tallied = false;
   let answered = false; // 自分が回答済みかどうか
   let playPressedAt = null; // 自分が再生ボタンを押した時刻(Date.now())
+  let ytPlayer = null; // YT.Player インスタンス(初回再生時に生成し、以降のラウンドで使い回す)
+  let ytApiReady = false;
+  window.onYouTubeIframeAPIReady = function () { ytApiReady = true; };
+
+  function stopClip() {
+    if (ytPlayer && typeof ytPlayer.stopVideo === 'function') ytPlayer.stopVideo();
+  }
+
+  // 再生ボタン押下(ユーザー操作)から同期的に呼ぶ。ミュートでの自動再生にフォールバック
+  // した場合に解除できないと無音のまま進行してしまうため、onReadyで明示的にunMute()する。
+  // 埋め込み不可・削除済みなどで再生できない動画はonErrorで検知し、ホストが次に進める
+  // よう文言で案内する(素のiframeにはこの検知手段がない)。
+  function playClip(videoId) {
+    if (!ytApiReady || typeof YT === 'undefined' || !YT.Player) {
+      playHintEl.textContent = '動画プレイヤーの読み込みに失敗しました。ホストは次の問題に進めてください。';
+      return;
+    }
+    const config = L.playerConfig(videoId);
+    if (!ytPlayer) {
+      ytPlayer = new YT.Player('clip-frame', Object.assign({}, config, {
+        events: {
+          onReady(e) { e.target.unMute(); e.target.setVolume(100); e.target.playVideo(); },
+          onError() { playHintEl.textContent = 'この動画は再生できません。ホストは次の問題に進めてください。'; },
+        },
+      }));
+      return;
+    }
+    ytPlayer.loadVideoById({ videoId, startSeconds: 0, endSeconds: L.CLIP_LENGTH_SEC });
+    ytPlayer.unMute();
+    ytPlayer.setVolume(100);
+  }
   let roomCode = '';
   let playerToken = '';
   let joinRequestId = '';
@@ -377,7 +407,7 @@
   });
 
   quitBtn.addEventListener('click', () => {
-    clipFrame.src = '';
+    stopClip();
     WakeLockHelper.disable();
     RejoinStorage.clear(GAME_KEY);
     window.location.reload();
@@ -558,7 +588,7 @@
     currentQuestionPayload = data;
     answered = false;
     playPressedAt = null;
-    clipFrame.src = '';
+    stopClip();
     setupScreen.classList.add('hidden');
     lobbyPanel.classList.add('hidden');
     roundResultOverlay.classList.add('hidden');
@@ -568,6 +598,7 @@
 
     roundStatusEl.textContent = 'ラウンド ' + data.round + ' / ' + data.totalRounds;
     playClipBtn.disabled = false;
+    playHintEl.textContent = '再生ボタンを押すとイントロが流れます（1回だけ）';
     playHintEl.classList.remove('hidden');
     choicesListEl.innerHTML = '';
     choicesListEl.classList.add('hidden');
@@ -579,7 +610,7 @@
   playClipBtn.addEventListener('click', () => {
     if (phase !== 'question' || playPressedAt !== null || !currentQuestionPayload) return;
     playPressedAt = Date.now();
-    clipFrame.src = L.embedUrl(currentQuestionPayload.videoId);
+    playClip(currentQuestionPayload.videoId);
     playClipBtn.disabled = true;
     revealChoices(currentQuestionPayload.choices);
   });
@@ -695,7 +726,7 @@
   function showRoundResult(data) {
     phase = 'result';
     currentResultPayload = data;
-    clipFrame.src = '';
+    stopClip();
     gameArea.classList.add('hidden');
     finalResultScreen.classList.add('hidden');
     roundResultOverlay.classList.remove('hidden');
