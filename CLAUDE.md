@@ -10,14 +10,14 @@
 
 グローバルルールでは「worktreeは使わない」がデフォルトだが、このプロジェクトは静的サイトでnode_modules等のビルド成果物を持たず、作業ツリー全体が数MB程度と小さい（複製してもディスクコストがほぼ無視できる）ため、例外としてworktreeを使う。
 
-- 複数セッションを並行して進める場合、リポジトリ直下を使い回さず、セッションごとに専用のworktreeを作る
+- 複数セッションを並行して進める場合、リポジトリ直下を使い回さず、セッションごとに専用のworktreeを作る。Claude Codeアプリはリポジトリ内 `.claude/worktrees/<slug>` に自動でworktreeを作成する（`git worktree list` で実態を確認できる）ため、手動で作る場合もこのパスに揃える
   ```bash
-  git worktree add ../ykobashi.github.io-worktrees/<slug> -b feature/<内容> --no-track
+  git worktree add .claude/worktrees/<slug> -b feature/<内容> --no-track
   ```
 - 作業はそのworktreeディレクトリの中で行う。同じブランチを複数worktreeで同時にチェックアウトすることはGitの仕様上できないため、セッション同士が同じ作業ディレクトリを取り合うことはない
 - developへのマージ後、使い終わったworktreeは片付ける
   ```bash
-  git worktree remove ../ykobashi.github.io-worktrees/<slug>
+  git worktree remove .claude/worktrees/<slug>
   ```
 - worktreeはGitの機能でありエージェント側の設定ではないため、Claude Code以外のツール(Codex CLIなど)で並行作業する場合も同じ手順でよい。各ツールをそのworktreeディレクトリをカレントディレクトリにして起動するだけで、Git的には独立したブランチ・作業ディレクトリとして扱われる
 
