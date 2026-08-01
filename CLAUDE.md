@@ -117,6 +117,7 @@ node bmi-calculator/test.js
 | [just-one](just-one/) | ジャストワン。同じお題への重複しない一言ヒントで回答者を助ける協力ゲーム（2人〜） |
 | [concept](concept/) | コンセプト（簡易版）。絵文字ボード上のピン配置だけでお題を伝える連想ゲーム（2人〜） |
 | [youtube-thumbnail-quiz](youtube-thumbnail-quiz/) | YouTubeサムネ当てクイズ。ぼかしたYouTubeサムネイルからボカロ・アニソン・J-POPの曲名を4択で当てるゲーム（2人〜、ジャンル・年代を選んで8ラウンド制で得点を競う） |
+| [song-intro-quiz](song-intro-quiz/) | イントロ早押しクイズ。YouTube動画のイントロを再生し、ボカロ・アニソン・J-POPの曲名を4択で当てるゲーム。再生してから回答するまでの速さで得点が変わる早押し方式（2人〜、ジャンル・年代を選んで8ラウンド制で得点を競う） |
 | [real-or-fake-photo](real-or-fake-photo/) | 偽物鑑定ゲーム。実写とAI生成画像を見比べて本物を当てる5問の得点クイズ（2人〜） |
 | [expression-quiz](expression-quiz/) | 表情当てクイズ。表情イラストの裏にある感情シナリオを4択で当てる3問の得点クイズ（2人〜） |
 
