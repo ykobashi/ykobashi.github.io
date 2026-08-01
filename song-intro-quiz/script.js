@@ -48,6 +48,7 @@
   const roundStatusEl = document.getElementById('round-status');
   const playClipBtn = document.getElementById('play-clip-btn');
   const playHintEl = document.getElementById('play-hint');
+  const clipErrorEl = document.getElementById('clip-error');
   const choicesListEl = document.getElementById('choices-list');
   const answerStatusEl = document.getElementById('answer-status');
   const hostProgressBox = document.getElementById('host-progress-box');
@@ -98,27 +99,55 @@
   let playPressedAt = null; // 自分が再生ボタンを押した時刻(Date.now())
   let ytPlayer = null; // YT.Player インスタンス(初回再生時に生成し、以降のラウンドで使い回す)
   let ytApiReady = false;
+  let clipReadyTimer = null;
   window.onYouTubeIframeAPIReady = function () { ytApiReady = true; };
 
   function stopClip() {
+    if (clipReadyTimer) { clearTimeout(clipReadyTimer); clipReadyTimer = null; }
     if (ytPlayer && typeof ytPlayer.stopVideo === 'function') ytPlayer.stopVideo();
   }
 
+  function showClipError(message) {
+    if (clipReadyTimer) { clearTimeout(clipReadyTimer); clipReadyTimer = null; }
+    clipErrorEl.textContent = message;
+    clipErrorEl.classList.remove('hidden');
+  }
+
+  function armClipTimeout() {
+    if (clipReadyTimer) clearTimeout(clipReadyTimer);
+    clipReadyTimer = setTimeout(() => {
+      showClipError('動画の読み込みがタイムアウトしました。広告ブロッカーなどの拡張機能を無効にして再読み込みするか、ホストは次の問題に進めてください。');
+    }, 6000);
+  }
+
   // 再生ボタン押下(ユーザー操作)から同期的に呼ぶ。ミュートでの自動再生にフォールバック
-  // した場合に解除できないと無音のまま進行してしまうため、onReadyで明示的にunMute()する。
-  // 埋め込み不可・削除済みなどで再生できない動画はonErrorで検知し、ホストが次に進める
-  // よう文言で案内する(素のiframeにはこの検知手段がない)。
+  // した場合に解除できないと無音のまま進行してしまうため、onStateChangeでPLAYING状態に
+  // なった時点で明示的にunMute()する。埋め込み不可・削除済みなどで再生できない動画は
+  // onErrorで検知し、ホストが次に進めるよう文言で案内する(素のiframeにはこの検知手段が
+  // ない)。onReady/onStateChange/onErrorのいずれも発火しないまま固まるケース(広告
+  // ブロッカー等でYouTube側の追加リクエストが止まる)もあるため、一定時間で強制的に
+  // エラー表示するタイムアウトも併用する。2ラウンド目以降はプレイヤーを使い回す
+  // (loadVideoById)ため、onReadyは初回しか発火しない -> 再生確認はonStateChangeで
+  // 毎ラウンド行う。
   function playClip(videoId) {
+    clipErrorEl.classList.add('hidden');
     if (!ytApiReady || typeof YT === 'undefined' || !YT.Player) {
-      playHintEl.textContent = '動画プレイヤーの読み込みに失敗しました。ホストは次の問題に進めてください。';
+      showClipError('動画プレイヤーを読み込めませんでした。広告ブロッカーなどの拡張機能を無効にして再読み込みするか、ホストは次の問題に進めてください。');
       return;
     }
+    armClipTimeout();
     const config = L.playerConfig(videoId);
     if (!ytPlayer) {
       ytPlayer = new YT.Player('clip-frame', Object.assign({}, config, {
         events: {
-          onReady(e) { e.target.unMute(); e.target.setVolume(100); e.target.playVideo(); },
-          onError() { playHintEl.textContent = 'この動画は再生できません。ホストは次の問題に進めてください。'; },
+          onStateChange(e) {
+            if (e.data === YT.PlayerState.PLAYING) {
+              if (clipReadyTimer) { clearTimeout(clipReadyTimer); clipReadyTimer = null; }
+              e.target.unMute();
+              e.target.setVolume(100);
+            }
+          },
+          onError() { showClipError('この動画は再生できません。ホストは次の問題に進めてください。'); },
         },
       }));
       return;
@@ -600,6 +629,7 @@
     playClipBtn.disabled = false;
     playHintEl.textContent = '再生ボタンを押すとイントロが流れます（1回だけ）';
     playHintEl.classList.remove('hidden');
+    clipErrorEl.classList.add('hidden');
     choicesListEl.innerHTML = '';
     choicesListEl.classList.add('hidden');
     answerStatusEl.classList.add('hidden');
