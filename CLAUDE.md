@@ -10,14 +10,14 @@
 
 グローバルルールでは「worktreeは使わない」がデフォルトだが、このプロジェクトは静的サイトでnode_modules等のビルド成果物を持たず、作業ツリー全体が数MB程度と小さい（複製してもディスクコストがほぼ無視できる）ため、例外としてworktreeを使う。
 
-- 複数セッションを並行して進める場合、リポジトリ直下を使い回さず、セッションごとに専用のworktreeを作る
+- 複数セッションを並行して進める場合、リポジトリ直下を使い回さず、セッションごとに専用のworktreeを作る。Claude Codeアプリはリポジトリ内 `.claude/worktrees/<slug>` に自動でworktreeを作成する（`git worktree list` で実態を確認できる）ため、手動で作る場合もこのパスに揃える
   ```bash
-  git worktree add ../ykobashi.github.io-worktrees/<slug> -b feature/<内容> --no-track
+  git worktree add .claude/worktrees/<slug> -b feature/<内容> --no-track
   ```
 - 作業はそのworktreeディレクトリの中で行う。同じブランチを複数worktreeで同時にチェックアウトすることはGitの仕様上できないため、セッション同士が同じ作業ディレクトリを取り合うことはない
 - developへのマージ後、使い終わったworktreeは片付ける
   ```bash
-  git worktree remove ../ykobashi.github.io-worktrees/<slug>
+  git worktree remove .claude/worktrees/<slug>
   ```
 - worktreeはGitの機能でありエージェント側の設定ではないため、Claude Code以外のツール(Codex CLIなど)で並行作業する場合も同じ手順でよい。各ツールをそのworktreeディレクトリをカレントディレクトリにして起動するだけで、Git的には独立したブランチ・作業ディレクトリとして扱われる
 
@@ -117,6 +117,7 @@ node bmi-calculator/test.js
 | [just-one](just-one/) | ジャストワン。同じお題への重複しない一言ヒントで回答者を助ける協力ゲーム（2人〜） |
 | [concept](concept/) | コンセプト（簡易版）。絵文字ボード上のピン配置だけでお題を伝える連想ゲーム（2人〜） |
 | [youtube-thumbnail-quiz](youtube-thumbnail-quiz/) | YouTubeサムネ当てクイズ。ぼかしたYouTubeサムネイルからボカロ・アニソン・J-POPの曲名を4択で当てるゲーム（2人〜、ジャンル・年代を選んで8ラウンド制で得点を競う） |
+| [song-intro-quiz](song-intro-quiz/) | イントロ早押しクイズ。YouTube動画のイントロを再生し、ボカロ・アニソン・J-POPの曲名を4択で当てるゲーム。再生してから回答するまでの速さで得点が変わる早押し方式（2人〜、ジャンル・年代を選んで8ラウンド制で得点を競う） |
 | [real-or-fake-photo](real-or-fake-photo/) | 偽物鑑定ゲーム。実写とAI生成画像を見比べて本物を当てる5問の得点クイズ（2人〜） |
 | [expression-quiz](expression-quiz/) | 表情当てクイズ。表情イラストの裏にある感情シナリオを4択で当てる3問の得点クイズ（2人〜） |
 
