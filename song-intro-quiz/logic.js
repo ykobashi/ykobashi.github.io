@@ -17,11 +17,13 @@ const DEFAULT_BANK = (typeof window !== 'undefined' && window.SongIntroQuizData)
 // 素のiframe(URLパラメータのみ)では自動再生がミュートにフォールバックした場合に
 // ユーザー側で解除する手段がなく(controls=0のため)、また埋め込み不可の動画を検知できない
 // ため、JS APIを使ってonReadyでの明示的unMute()とonErrorでのエラー検知を行う。
+// width/heightは極端に小さくしない(ブラウザによっては面積がほぼ0の要素の動画再生を
+// 間引く場合があるため)。代わりにCSS側で画面外に配置して視覚的に隠す。
 function playerConfig(videoId, clipLengthSec = CLIP_LENGTH_SEC) {
   return {
     videoId,
-    width: 2,
-    height: 2,
+    width: 200,
+    height: 113,
     playerVars: { start: 0, end: clipLengthSec, autoplay: 1, controls: 0, modestbranding: 1, rel: 0, iv_load_policy: 3 },
   };
 }

@@ -343,12 +343,10 @@ main {
 
 .clip-frame-wrap {
   position: fixed;
-  bottom: 0;
-  right: 0;
-  width: 2px;
-  height: 2px;
-  overflow: hidden;
-  opacity: 0.01;
+  top: -9999px;
+  left: -9999px;
+  width: 200px;
+  height: 113px;
   pointer-events: none;
 }
 

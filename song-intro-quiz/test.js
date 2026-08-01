@@ -15,8 +15,8 @@ assert.strictEqual(new Set(VIDEO_BANK.map((e) => e.videoId)).size, VIDEO_BANK.le
 // ---- playerConfig ----
 assert.deepStrictEqual(L.playerConfig('abc123'), {
   videoId: 'abc123',
-  width: 2,
-  height: 2,
+  width: 200,
+  height: 113,
   playerVars: { start: 0, end: 7, autoplay: 1, controls: 0, modestbranding: 1, rel: 0, iv_load_policy: 3 },
 });
 assert.deepStrictEqual(L.playerConfig('abc123', 10).playerVars.end, 10);
