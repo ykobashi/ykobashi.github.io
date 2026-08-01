@@ -1,0 +1,273 @@
+:root {
+  --accent: #b73524;
+  --accent2: #c89426;
+  --grad: linear-gradient(120deg, var(--accent), var(--accent2));
+  --btn-c1: #b73524;
+  --btn-c2: #d39d32;
+  --btn-grad: linear-gradient(120deg, var(--btn-c1), var(--btn-c2));
+  --bg: #fffaf1;
+  --card-bg: #fffefd;
+  --text: #392b25;
+  --muted: #74635b;
+  --card-border: #eadbc8;
+  --danger: #a92424;
+  --hero-grid: rgba(118, 66, 40, 0.06);
+  --soft-gold: #fff2c7;
+  --soft-red: #fff0ea;
+}
+
+:root[data-theme="dark"] {
+  --accent: #ef8a70;
+  --accent2: #edc56a;
+  /* 暗い背景でボタンが発光しすぎないよう、文字用アクセントより塗りを落ち着かせる */
+  --btn-c1: #9e3529;
+  --btn-c2: #9d7225;
+  --bg: #15110f;
+  --card-bg: #211b18;
+  --text: #f4ece7;
+  --muted: #b7a69d;
+  --card-border: #43342e;
+  --danger: #ff8b82;
+  --hero-grid: rgba(255, 255, 255, 0.055);
+  --soft-gold: #382e1b;
+  --soft-red: #3a211d;
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, var(--hero-grid) 1px, transparent 1px),
+    radial-gradient(900px circle at 10% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    radial-gradient(800px circle at 100% 8%, color-mix(in srgb, var(--accent2) 11%, transparent), transparent 55%);
+  background-size: 22px 22px, auto, auto;
+  background-attachment: fixed;
+  font-family: "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+}
+
+button { font: inherit; }
+
+.site-nav {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+}
+
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.9rem;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.site-nav a:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+.site-header { padding: 1rem 1rem 0.4rem; text-align: center; }
+
+.site-header h1 {
+  margin: 0;
+  color: transparent;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.subtitle { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.95rem; }
+
+.ad-slot {
+  width: calc(100% - 2rem);
+  max-width: 640px;
+  min-height: 60px;
+  margin: 0.8rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  background: repeating-linear-gradient(45deg, #f1ece4, #f1ece4 10px, #e8e0d6 10px, #e8e0d6 20px);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+:root[data-theme="dark"] .ad-slot {
+  background: repeating-linear-gradient(45deg, #211b18, #211b18 10px, #29211e 10px, #29211e 20px);
+}
+
+main { width: 100%; max-width: 960px; padding: 0 1rem 2rem; }
+
+.game-status,
+.click-panel,
+.buildings-panel,
+.howto {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.game-status { margin-bottom: 1rem; padding: 0.8rem; }
+
+.game-status dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.game-status dl > div { min-width: 0; padding: 0.35rem; text-align: center; }
+.game-status dt { margin-bottom: 0.2rem; color: var(--muted); font-size: 0.75rem; }
+.game-status dd { margin: 0; color: var(--accent); font-size: 1.15rem; font-weight: 800; overflow-wrap: anywhere; }
+
+.game-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  align-items: start;
+  gap: 1rem;
+}
+
+.click-panel,
+.buildings-panel { padding: 1rem; text-align: center; }
+
+.click-panel { position: relative; overflow: hidden; }
+.click-panel h2,
+.buildings-panel h2,
+.howto h2 { margin: 0 0 0.35rem; color: var(--accent); font-size: 1.2rem; }
+.click-panel > p,
+.buildings-panel > p { margin: 0 0 0.8rem; color: var(--muted); font-size: 0.88rem; }
+
+.offering-box {
+  position: relative;
+  width: min(100%, 300px);
+  min-height: 280px;
+  padding: 0.8rem;
+  border: 0;
+  border-radius: 20px;
+  color: #fff;
+  background: var(--btn-grad);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--btn-c1) 30%, transparent);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.offering-box:hover { transform: translateY(-1px); box-shadow: 0 11px 26px color-mix(in srgb, var(--btn-c1) 38%, transparent); }
+.offering-box:active { transform: translateY(1px) scale(0.99); }
+.offering-box:focus-visible,
+.building-card:focus-visible,
+.site-nav a:focus-visible { outline: 3px solid var(--accent2); outline-offset: 3px; }
+
+.image-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: color-mix(in srgb, #fff 78%, var(--soft-gold));
+  border-radius: 15px;
+}
+
+.image-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+}
+
+.image-frame img.is-loaded { opacity: 1; }
+.image-frame img.is-broken { display: none; }
+
+.image-fallback {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  background: linear-gradient(145deg, var(--soft-red), var(--soft-gold));
+  font-size: clamp(3rem, 13vw, 6rem);
+}
+
+.image-frame.has-image .image-fallback { visibility: hidden; }
+
+.offering-label { display: block; padding: 0.75rem 0.25rem 0.15rem; font-size: 1.05rem; font-weight: 800; letter-spacing: 0.04em; }
+.offering-box.is-bouncing { animation: offering-bounce 0.3s ease-out; }
+
+.effect-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; overflow: hidden; }
+.floating-gain { position: absolute; left: 50%; top: 51%; color: var(--accent2); font-size: 1.25rem; font-weight: 900; text-shadow: 0 1px 3px var(--card-bg); animation: float-gain 0.75s ease-out forwards; }
+.sparkle { position: absolute; left: 50%; top: 51%; width: 7px; height: 7px; border-radius: 50%; background: #ffd76a; box-shadow: 0 0 8px #ffd76a; animation: sparkle-pop 0.65s ease-out forwards; }
+.blessing-ring { position: fixed; left: 50%; top: 50%; z-index: 20; width: 80px; height: 80px; border: 5px solid color-mix(in srgb, var(--accent2) 85%, white); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: blessing-ring 0.9s ease-out forwards; }
+
+.building-list { display: grid; gap: 0.65rem; margin: 0; padding: 0; list-style: none; text-align: left; }
+.building-card {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  align-items: center;
+  width: 100%;
+  min-height: 82px;
+  padding: 0.45rem;
+  gap: 0.7rem;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.building-card:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 6px 16px color-mix(in srgb, var(--btn-c1) 18%, transparent); }
+.building-card:disabled { opacity: 0.5; cursor: not-allowed; }
+.building-card.is-purchased { animation: purchase-pop 0.42s ease-out; }
+.building-image { width: 72px; border-radius: 8px; }
+.building-image .image-fallback { font-size: 2rem; }
+.building-copy { min-width: 0; }
+.building-name { display: block; font-size: 0.95rem; font-weight: 800; }
+.building-production { display: block; margin-top: 0.15rem; color: var(--muted); font-size: 0.76rem; }
+.building-price { display: block; margin-top: 0.25rem; color: var(--accent); font-size: 0.83rem; font-weight: 700; }
+.building-owned { min-width: 2.6rem; padding: 0.35rem 0.45rem; color: #fff; background: var(--btn-grad); border-radius: 999px; font-size: 0.82rem; font-weight: 800; text-align: center; }
+
+.howto { margin-top: 1rem; padding: 1rem 1.2rem; }
+.howto ul { margin: 0.5rem 0 0; padding-left: 1.2rem; line-height: 1.7; }
+
+.site-footer { margin-top: auto; padding: 1rem; color: var(--muted); font-size: 0.8rem; text-align: center; }
+.site-footer a { color: var(--accent); }
+
+.visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
+
+/* このゲームは依頼仕様により、共通の控えめな演出ルールの例外としてCSSアニメーションを積極的に使用する。 */
+@keyframes offering-bounce { 0% { transform: scale(1); } 45% { transform: scale(0.96); } 72% { transform: scale(1.035); } 100% { transform: scale(1); } }
+@keyframes float-gain { from { opacity: 1; transform: translate(-50%, 0) scale(0.9); } to { opacity: 0; transform: translate(-50%, -85px) scale(1.15); } }
+@keyframes sparkle-pop { from { opacity: 1; transform: translate(-50%, -50%) rotate(var(--angle)) translateX(8px) scale(1); } to { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--distance)) scale(0); } }
+@keyframes purchase-pop { 0% { transform: scale(1); } 45% { transform: scale(1.025); border-color: var(--accent2); } 100% { transform: scale(1); } }
+@keyframes blessing-ring { from { opacity: 0.9; transform: translate(-50%, -50%) scale(0.4); } to { opacity: 0; transform: translate(-50%, -50%) scale(9); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+@media (max-width: 480px) {
+  .site-header h1 { font-size: 1.55rem; }
+  .game-status dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .game-status dl > div:nth-child(n + 3) { border-top: 1px solid var(--card-border); padding-top: 0.65rem; }
+  .click-panel, .buildings-panel { padding: 0.8rem; }
+  .offering-box { min-height: 240px; }
+  .building-card { grid-template-columns: 64px minmax(0, 1fr) auto; gap: 0.55rem; }
+  .building-image { width: 64px; }
+  .building-owned { min-width: 2.25rem; padding-inline: 0.35rem; }
+}

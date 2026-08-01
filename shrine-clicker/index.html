@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../theme.js"></script>
+<link rel="stylesheet" href="../theme-toggle.css">
+<title>賽銭箱クリッカー | ご利益を貯める無料ゲーム</title>
+<meta name="description" content="賽銭箱をクリックしてご利益を貯め、神社の施設を増やす無料ゲーム。ページを開いている間、施設が自動でご利益を生み出します。">
+<meta property="og:title" content="賽銭箱クリッカー | ご利益を貯める無料ゲーム">
+<meta property="og:description" content="クリックで運気を貯めて、施設を増やしてご利益ざくざく。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/shrine-clicker/">
+<link rel="canonical" href="https://ykobashi.github.io/shrine-clicker/">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Game",
+  "name": "賽銭箱クリッカー",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "description": "賽銭箱をクリックしてご利益を貯め、神社の施設を増やす無料の放置ゲーム。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EQ35W720X8');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>賽銭箱クリッカー</h1>
+  <p class="subtitle">クリックで運気を貯めて、施設を増やしてご利益ざくざく</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <section class="game-status" aria-label="ゲームの状況">
+    <dl>
+      <div><dt>所持ご利益</dt><dd id="goriyaku-count">0</dd></div>
+      <div><dt>毎秒</dt><dd><span id="rate-count">0</span> /秒</dd></div>
+      <div><dt>累計ご利益</dt><dd id="total-count">0</dd></div>
+      <div><dt>クリック</dt><dd id="click-count">0</dd></div>
+    </dl>
+  </section>
+
+  <div class="game-layout">
+    <section class="click-panel">
+      <h2>お参りする</h2>
+      <p>賽銭箱を押すたびに、ご利益が1増えます。</p>
+      <button id="offering-box" class="offering-box" type="button" tabindex="-1" aria-label="賽銭箱をクリックしてご利益を得る">
+        <span class="offering-image image-frame">
+          <span class="image-fallback" aria-hidden="true">⛩️</span>
+          <img id="offering-image" src="images/saisenbako.png" alt="" width="512" height="512" decoding="async">
+        </span>
+        <span class="offering-label">お賽銭を入れる</span>
+      </button>
+      <div id="effect-layer" class="effect-layer" aria-hidden="true"></div>
+    </section>
+
+    <section class="buildings-panel">
+      <h2>神社をにぎやかに</h2>
+      <p>施設を増やすと、毎秒ご利益が貯まります。</p>
+      <ul id="building-list" class="building-list"></ul>
+    </section>
+  </div>
+
+  <div id="game-announcer" class="visually-hidden" role="status" aria-live="polite"></div>
+
+  <section class="howto">
+    <h2>遊び方</h2>
+    <ul>
+      <li>賽銭箱をクリックまたはタップすると、ご利益が1増えます。</li>
+      <li>貯めたご利益で施設を購入すると、自動でご利益を生み出します。</li>
+      <li>施設は購入するたびに価格が上がります。</li>
+      <li>ゲームは自動保存されますが、ご利益が増えるのはページを開いている間だけです。</li>
+    </ul>
+  </section>
+</main>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<footer class="site-footer">
+  <p>&copy; 2026 賽銭箱クリッカー</p>
+  <p><a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="logic.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
