@@ -102,60 +102,6 @@
   let clipReadyTimer = null;
   window.onYouTubeIframeAPIReady = function () { ytApiReady = true; };
 
-  function stopClip() {
-    if (clipReadyTimer) { clearTimeout(clipReadyTimer); clipReadyTimer = null; }
-    if (ytPlayer && typeof ytPlayer.stopVideo === 'function') ytPlayer.stopVideo();
-  }
-
-  function showClipError(message) {
-    if (clipReadyTimer) { clearTimeout(clipReadyTimer); clipReadyTimer = null; }
-    clipErrorEl.textContent = message;
-    clipErrorEl.classList.remove('hidden');
-  }
-
-  function armClipTimeout() {
-    if (clipReadyTimer) clearTimeout(clipReadyTimer);
-    clipReadyTimer = setTimeout(() => {
-      showClipError('動画の読み込みがタイムアウトしました。広告ブロッカーなどの拡張機能を無効にして再読み込みするか、ホストは次の問題に進めてください。');
-    }, 6000);
-  }
-
-  // 再生ボタン押下(ユーザー操作)から同期的に呼ぶ。ミュートでの自動再生にフォールバック
-  // した場合に解除できないと無音のまま進行してしまうため、onStateChangeでPLAYING状態に
-  // なった時点で明示的にunMute()する。埋め込み不可・削除済みなどで再生できない動画は
-  // onErrorで検知し、ホストが次に進めるよう文言で案内する(素のiframeにはこの検知手段が
-  // ない)。onReady/onStateChange/onErrorのいずれも発火しないまま固まるケース(広告
-  // ブロッカー等でYouTube側の追加リクエストが止まる)もあるため、一定時間で強制的に
-  // エラー表示するタイムアウトも併用する。2ラウンド目以降はプレイヤーを使い回す
-  // (loadVideoById)ため、onReadyは初回しか発火しない -> 再生確認はonStateChangeで
-  // 毎ラウンド行う。
-  function playClip(videoId) {
-    clipErrorEl.classList.add('hidden');
-    if (!ytApiReady || typeof YT === 'undefined' || !YT.Player) {
-      showClipError('動画プレイヤーを読み込めませんでした。広告ブロッカーなどの拡張機能を無効にして再読み込みするか、ホストは次の問題に進めてください。');
-      return;
-    }
-    armClipTimeout();
-    const config = L.playerConfig(videoId);
-    if (!ytPlayer) {
-      ytPlayer = new YT.Player('clip-frame', Object.assign({}, config, {
-        events: {
-          onStateChange(e) {
-            if (e.data === YT.PlayerState.PLAYING) {
-              if (clipReadyTimer) { clearTimeout(clipReadyTimer); clipReadyTimer = null; }
-              e.target.unMute();
-              e.target.setVolume(100);
-            }
-          },
-          onError() { showClipError('この動画は再生できません。ホストは次の問題に進めてください。'); },
-        },
-      }));
-      return;
-    }
-    ytPlayer.loadVideoById({ videoId, startSeconds: 0, endSeconds: L.CLIP_LENGTH_SEC });
-    ytPlayer.unMute();
-    ytPlayer.setVolume(100);
-  }
   let roomCode = '';
   let playerToken = '';
   let joinRequestId = '';
@@ -635,6 +581,63 @@
     answerStatusEl.classList.add('hidden');
     hostProgressBox.classList.toggle('hidden', !isHost);
     renderProgress([]);
+  }
+
+  // ================= イントロ再生(YouTube IFrame Player API) =================
+
+  function stopClip() {
+    if (clipReadyTimer) { clearTimeout(clipReadyTimer); clipReadyTimer = null; }
+    if (ytPlayer && typeof ytPlayer.stopVideo === 'function') ytPlayer.stopVideo();
+  }
+
+  function showClipError(message) {
+    if (clipReadyTimer) { clearTimeout(clipReadyTimer); clipReadyTimer = null; }
+    clipErrorEl.textContent = message;
+    clipErrorEl.classList.remove('hidden');
+  }
+
+  function armClipTimeout() {
+    if (clipReadyTimer) clearTimeout(clipReadyTimer);
+    clipReadyTimer = setTimeout(() => {
+      showClipError('動画の読み込みに時間がかかっています。ホストは次の問題に進めても構いません。');
+    }, 8000);
+  }
+
+  // 再生ボタン押下(ユーザー操作)から同期的に呼ぶ。ミュートでの自動再生にフォールバック
+  // した場合に解除できないと無音のまま進行してしまうため、onStateChangeでPLAYING状態に
+  // なった時点で明示的にunMute()する。埋め込み不可・削除済みなどで再生できない動画は
+  // onErrorで検知し、ホストが次に進めるよう文言で案内する(素のiframeにはこの検知手段が
+  // ない)。onReady/onStateChange/onErrorのいずれも発火しないまま固まるケース(広告
+  // ブロッカー等でYouTube側の追加リクエストが止まる)もあるため、一定時間で強制的に
+  // エラー表示するタイムアウトも併用する。2ラウンド目以降はプレイヤーを使い回す
+  // (loadVideoById)ため、onReadyは初回しか発火しない -> 再生確認はonStateChangeで
+  // 毎ラウンド行う。
+  function playClip(videoId) {
+    clipErrorEl.classList.add('hidden');
+    if (!ytApiReady || typeof YT === 'undefined' || !YT.Player) {
+      showClipError('動画プレイヤーを読み込めませんでした。ページを再読み込みするか、ホストは次の問題に進めてください。');
+      return;
+    }
+    armClipTimeout();
+    const config = L.playerConfig(videoId);
+    if (!ytPlayer) {
+      ytPlayer = new YT.Player('clip-frame', Object.assign({}, config, {
+        events: {
+          onStateChange(e) {
+            if (e.data === YT.PlayerState.PLAYING) {
+              if (clipReadyTimer) { clearTimeout(clipReadyTimer); clipReadyTimer = null; }
+              e.target.unMute();
+              e.target.setVolume(100);
+            }
+          },
+          onError() { showClipError('この動画は再生できません。ホストは次の問題に進めてください。'); },
+        },
+      }));
+      return;
+    }
+    ytPlayer.loadVideoById({ videoId, startSeconds: 0, endSeconds: L.CLIP_LENGTH_SEC });
+    ytPlayer.unMute();
+    ytPlayer.setVolume(100);
   }
 
   playClipBtn.addEventListener('click', () => {
