@@ -6,7 +6,6 @@ const CHOICE_COUNT = 4;
 const GENRES = ['vocaloid', 'anime', 'jpop']; // UI上は 'mix' も選べるが、これは「絞らない」を表す特別値
 const DECADES = ['1990s', '2000s', '2010s', '2020s']; // UI上は 'all' も選べるが、これは「絞らない」を表す特別値
 
-const CLIP_LENGTH_SEC = 7; // 全曲共通のクリップ長(秒)。0秒目から再生する
 const MAX_POINTS = 1000; // 最速(elapsedMs=0)で正解した場合の得点
 const MIN_POINTS = 300; // 正解であれば、どれだけ遅くても保証される最低得点(床)
 const DECAY_WINDOW_MS = 10000; // この経過時間でMIN_POINTSまで線形に減衰しきる
@@ -16,15 +15,15 @@ const DEFAULT_BANK = (typeof window !== 'undefined' && window.SongIntroQuizData)
 // YouTube IFrame Player API の new YT.Player(el, config) にそのまま渡す設定を組み立てる。
 // 素のiframe(URLパラメータのみ)では自動再生がミュートにフォールバックした場合に
 // ユーザー側で解除する手段がなく(controls=0のため)、また埋め込み不可の動画を検知できない
-// ため、JS APIを使ってonReadyでの明示的unMute()とonErrorでのエラー検知を行う。
-// width/heightは極端に小さくしない(ブラウザによっては面積がほぼ0の要素の動画再生を
-// 間引く場合があるため)。代わりにCSS側で画面外に配置して視覚的に隠す。
-function playerConfig(videoId, clipLengthSec = CLIP_LENGTH_SEC) {
+// ため、JS APIを使ってonStateChangeでの明示的unMute()とonErrorでのエラー検知を行う。
+// end(再生終了秒)はあえて指定しない: 回答するまで曲が流れ続ける仕様のため、クリップ長を
+// 区切らず0秒目から再生させ、停止は回答時にscript.js側でstopVideo()を呼んで行う。
+function playerConfig(videoId) {
   return {
     videoId,
     width: 200,
     height: 113,
-    playerVars: { start: 0, end: clipLengthSec, autoplay: 1, controls: 0, modestbranding: 1, rel: 0, iv_load_policy: 3 },
+    playerVars: { start: 0, autoplay: 1, controls: 0, modestbranding: 1, rel: 0, iv_load_policy: 3 },
   };
 }
 
@@ -150,7 +149,6 @@ const SongIntroQuizLogicExports = {
   CHOICE_COUNT,
   GENRES,
   DECADES,
-  CLIP_LENGTH_SEC,
   MAX_POINTS,
   MIN_POINTS,
   DECAY_WINDOW_MS,

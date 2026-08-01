@@ -17,9 +17,8 @@ assert.deepStrictEqual(L.playerConfig('abc123'), {
   videoId: 'abc123',
   width: 200,
   height: 113,
-  playerVars: { start: 0, end: 7, autoplay: 1, controls: 0, modestbranding: 1, rel: 0, iv_load_policy: 3 },
+  playerVars: { start: 0, autoplay: 1, controls: 0, modestbranding: 1, rel: 0, iv_load_policy: 3 },
 });
-assert.deepStrictEqual(L.playerConfig('abc123', 10).playerVars.end, 10);
 
 // ---- filterPool ----
 {
@@ -152,7 +151,6 @@ assert.strictEqual(L.computeSpeedPoints(5000, false), 0, '不正解は速さに�
 assert.strictEqual(L.MIN_PLAYERS, 2);
 assert.strictEqual(L.ROUND_TOTAL, 8);
 assert.strictEqual(L.CHOICE_COUNT, 4);
-assert.strictEqual(L.CLIP_LENGTH_SEC, 7);
 assert.strictEqual(L.MAX_POINTS, 1000);
 assert.strictEqual(L.MIN_POINTS, 300);
 assert.strictEqual(L.DECAY_WINDOW_MS, 10000);

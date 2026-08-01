@@ -50,9 +50,9 @@
   <div class="word-box">
     <p id="round-status" class="word-label"></p>
     <button id="play-clip-btn" class="mode-btn play-clip-btn" type="button">▶ 再生</button>
-    <p id="play-hint" class="online-status">再生ボタンを押すとイントロが流れます（1回だけ）</p>
+    <p id="play-hint" class="online-status">再生ボタンを押すと曲が流れます（回答するまで流れ続けます）</p>
     <p id="clip-error" class="online-error hidden" role="alert"></p>
-    <div class="clip-frame-wrap" aria-hidden="true"><div id="clip-frame"></div></div>
+    <div id="clip-frame-wrap" class="clip-frame-wrap hidden" aria-hidden="true"><div id="clip-frame"></div></div>
   </div>
   <div id="choices-list" class="choices-list hidden" role="group" aria-label="選択肢"></div>
   <p id="answer-status" class="online-status hidden" role="status">回答しました</p>
@@ -96,7 +96,7 @@
   <h2>遊び方</h2>
   <ul>
     <li>ホストがジャンル（ボカロ・アニソン・J-POP・ミックス）と年代（90年代〜2020年代・全部）を選んでからゲームを開始します。</li>
-    <li>「再生」ボタンを押すとイントロが流れます（1人1回だけ）。再生してから回答するまでの速さで得点が変わります。</li>
+    <li>「再生」ボタンを押すと曲が流れ始めます（1人1回だけ）。回答するまで流れ続けるので、わかったら早めに回答しましょう。再生してから回答するまでの速さで得点が変わります。</li>
     <li>4択から曲名を選びます。全員が回答したら、ホストが「集計して結果発表」を押すと正誤と得点が発表されます。</li>
     <li>正解が速いほど高得点（最大1,000点）、遅くても正解なら最低300点は入ります。不正解は0点。全8問の合計点で競います。同点の場合は同じ順位で表示されます。</li>
     <li>動画が再生されない場合は、ホストの判断で「集計して結果発表」に進んでください。</li>

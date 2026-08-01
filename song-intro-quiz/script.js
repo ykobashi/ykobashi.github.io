@@ -48,6 +48,7 @@
   const roundStatusEl = document.getElementById('round-status');
   const playClipBtn = document.getElementById('play-clip-btn');
   const playHintEl = document.getElementById('play-hint');
+  const clipFrameWrapEl = document.getElementById('clip-frame-wrap');
   const clipErrorEl = document.getElementById('clip-error');
   const choicesListEl = document.getElementById('choices-list');
   const answerStatusEl = document.getElementById('answer-status');
@@ -573,9 +574,10 @@
 
     roundStatusEl.textContent = 'ラウンド ' + data.round + ' / ' + data.totalRounds;
     playClipBtn.disabled = false;
-    playHintEl.textContent = '再生ボタンを押すとイントロが流れます（1回だけ）';
+    playHintEl.textContent = '再生ボタンを押すと曲が流れます（回答するまで流れ続けます）';
     playHintEl.classList.remove('hidden');
     clipErrorEl.classList.add('hidden');
+    clipFrameWrapEl.classList.add('hidden');
     choicesListEl.innerHTML = '';
     choicesListEl.classList.add('hidden');
     answerStatusEl.classList.add('hidden');
@@ -635,7 +637,7 @@
       }));
       return;
     }
-    ytPlayer.loadVideoById({ videoId, startSeconds: 0, endSeconds: L.CLIP_LENGTH_SEC });
+    ytPlayer.loadVideoById({ videoId, startSeconds: 0 });
     ytPlayer.unMute();
     ytPlayer.setVolume(100);
   }
@@ -645,6 +647,7 @@
     playPressedAt = Date.now();
     playClip(currentQuestionPayload.videoId);
     playClipBtn.disabled = true;
+    clipFrameWrapEl.classList.remove('hidden');
     revealChoices(currentQuestionPayload.choices);
   });
 
@@ -669,6 +672,7 @@
     if (answered || phase !== 'question') return;
     answered = true;
     const elapsedMs = playPressedAt !== null ? Date.now() - playPressedAt : 0;
+    stopClip();
     Array.prototype.forEach.call(choicesListEl.children, (b) => { b.disabled = true; });
     btnEl.classList.add('selected');
     answerStatusEl.classList.remove('hidden');
