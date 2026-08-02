@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="../theme.js"></script>
+  <link rel="stylesheet" href="../theme-toggle.css">
+  <title>ビリヤード（8ボール）| 1〜4人・CPU・オンライン対戦</title>
+  <meta name="description" content="本格8ボールルールで遊べる無料ビリヤードゲーム。1〜4人のローカル対戦、2vs2、CPU対戦、PeerJSオンライン対戦に対応。">
+  <meta property="og:title" content="ビリヤード（8ボール）">
+  <meta property="og:description" content="1〜4人・チーム戦・CPU・オンラインに対応した本格8ボールゲーム。">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+  <meta property="og:url" content="https://ykobashi.github.io/billiards/">
+  <link rel="canonical" href="https://ykobashi.github.io/billiards/">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Game","name":"ビリヤード（8ボール）","applicationCategory":"GameApplication","operatingSystem":"Any","description":"1〜4人、CPU、オンライン対戦に対応した8ボールビリヤードゲーム。","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+  <link rel="icon" href="../favicon.svg">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-EQ35W720X8');</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+  <meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+  <button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
+  <nav class="site-nav"><a href="../index.html">&larr; トップページに戻る</a></nav>
+  <header class="site-header"><h1>🎱 ビリヤード</h1><p class="subtitle">狙いを定めて、本格8ボールを楽しもう。</p></header>
+  <div class="ad-slot" aria-label="広告"></div>
+  <main>
+    <p id="connection-health" class="connection-health hidden" role="status" aria-live="polite">通信が不安定です。再接続を待っています…</p>
+
+    <section id="setup-screen" class="panel">
+      <h2>プレイモード</h2>
+      <div class="mode-grid" id="mode-select">
+        <button id="mode-free-btn" class="mode-card" type="button"><strong>練習する</strong><span>1人で自由にショット</span></button>
+        <button id="mode-cpu-btn" class="mode-card" type="button"><strong>CPUと対戦</strong><span>1人 vs CPU</span></button>
+        <button id="mode-local-btn" class="mode-card" type="button"><strong>ローカル対戦</strong><span>2〜4人・同じ端末</span></button>
+        <button id="mode-online-btn" class="mode-card" type="button"><strong>オンライン対戦</strong><span>ルームコードで集合</span></button>
+      </div>
+      <div id="online-setup" class="online-setup hidden">
+        <button id="online-back-btn" class="link-button" type="button">← モード選択へ</button>
+        <label for="name-input">ニックネーム</label>
+        <input id="name-input" class="text-input" maxlength="10" autocomplete="nickname" placeholder="ニックネーム">
+        <div class="online-choice">
+          <button id="host-btn" class="primary" type="button">部屋を作る</button>
+          <div class="join-row"><input id="join-code-input" class="text-input room-input" maxlength="6" inputmode="latin" placeholder="6桁コード" aria-label="6桁のルームコード"><button id="join-btn" class="primary" type="button">参加する</button></div>
+        </div>
+        <p id="online-error" class="error" role="alert"></p>
+      </div>
+    </section>
+
+    <section id="seat-config-screen" class="panel hidden">
+      <h2>ローカル対戦の設定</h2>
+      <label for="seat-count">座席数</label>
+      <select id="seat-count" class="select-input"><option value="2">2人</option><option value="3">3人</option><option value="4">4人</option></select>
+      <div class="config-actions"><button id="auto-teams-btn" class="secondary" type="button">チームを自動振り分け</button></div>
+      <div id="local-seat-list" class="seat-editor"></div>
+      <p id="local-config-error" class="error" role="alert"></p>
+      <div class="actions"><button id="local-back-btn" class="secondary" type="button">戻る</button><button id="local-start-btn" class="primary" type="button">対戦開始</button></div>
+    </section>
+
+    <section id="lobby-panel" class="panel hidden">
+      <div id="host-wait" class="host-code hidden"><p>このコードを友達に伝えてください</p><div id="room-code-text" class="room-code">------</div><button id="copy-code-btn" class="link-button" type="button">コードをコピー</button></div>
+      <p id="online-status" class="status" role="status"></p>
+      <h2>オンラインロビー</h2>
+      <ul id="roster-list" class="roster"></ul>
+      <div id="online-seat-controls" class="hidden"><h3>座席・陣営（ホストが設定）</h3><div id="online-seat-list" class="seat-editor"></div><button id="online-auto-teams-btn" class="secondary" type="button">チームを自動振り分け</button></div>
+      <p id="lobby-error" class="error" role="alert"></p>
+      <button id="start-online-btn" class="primary hidden" type="button" disabled>対戦開始</button>
+      <button id="leave-lobby-btn" class="link-button" type="button">退出する</button>
+    </section>
+
+    <section id="table-screen" class="table-screen hidden">
+      <div id="turn-banner" class="turn-banner"><strong id="turn-text">ゲームを開始します</strong><span id="group-text"></span></div>
+      <p id="foul-status" class="foul-status hidden" role="status"></p>
+      <div class="table-frame"><canvas id="table-canvas" width="1000" height="500" tabindex="0" aria-label="ビリヤード台。ポインターまたは矢印キーで狙いとパワーを調整します"></canvas></div>
+      <div class="shot-controls">
+        <label for="power-slider">パワー <output id="power-value">55%</output></label>
+        <input id="power-slider" type="range" min="5" max="100" value="55">
+        <div class="angle-row"><button id="angle-left-btn" class="secondary compact" type="button" aria-label="左に狙う">↶ 左</button><button id="shoot-btn" class="primary" type="button">ショット</button><button id="angle-right-btn" class="secondary compact" type="button" aria-label="右に狙う">右 ↷</button></div>
+        <p id="control-hint" class="status">台を押した位置で角度が固定され、手球との距離でパワーが変わります。押したまま距離を調整し、離すとショット。</p>
+      </div>
+      <div class="game-actions"><button id="rerack-btn" class="secondary hidden" type="button">再配置</button><button id="quit-game-btn" class="link-button" type="button">ゲームをやめる</button></div>
+      <p id="game-status" class="error" role="alert"></p>
+    </section>
+
+    <section id="final-result-screen" class="panel final-result hidden">
+      <h2>ラック終了</h2>
+      <p id="final-winner-text" class="winner-text"></p>
+      <div id="scoreboard" class="scoreboard"></div>
+      <div class="actions"><button id="play-again-btn" class="primary" type="button">もう一度遊ぶ</button><a href="../index.html" class="secondary-btn">ゲーム一覧に戻る</a></div>
+    </section>
+
+    <section class="panel howto">
+      <h2>遊び方・ルール</h2>
+      <ul>
+        <li>台を押した位置で狙いを固定し、手球との距離でパワーを決めます。押したまま距離を調整し、指を離すとショットします。キーボードでは左右で角度、上下でパワー、スペースでショットできます。</li>
+        <li>最初に合法的に入れたグループ（1〜7番のソリッド／9〜15番のストライプ）が自分の陣営になります。自分の球をすべて入れてから8番を入れると勝利です。</li>
+        <li>無接触、違うグループへの先当て、スクラッチ、接触後に球がポケットにもクッションにも届かない場合はファウル。相手は台上の任意の合法位置に手球を置けます。</li>
+        <li>簡略ルールとしてコールショットはありません。ブレイク時の8番ポットは再ラック、ボールインハンドのヘッドストリング制限もありません。</li>
+      </ul>
+    </section>
+  </main>
+  <footer class="site-footer">&copy; 2026 ビリヤード · <a href="../privacy.html">プライバシーポリシー</a></footer>
+  <script src="../common/net-core.js"></script><script src="../common/peer-errors.js"></script><script src="../common/wake-lock.js"></script><script src="../common/rejoin-storage.js"></script><script src="peerjs.min.js"></script><script src="logic.js"></script><script src="net.js"></script><script src="script.js"></script>
+</body>
+</html>
