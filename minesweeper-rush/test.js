@@ -1,0 +1,18 @@
+const assert = require('assert');
+const L = require('./logic.js');
+let board = L.createEmptyBoard(2, 3);
+assert.deepStrictEqual(board[0][0], { mine: false, adjacent: 0, opened: false, owner: null });
+board = L.generateBoard(5, 5, 3, [2, 2], () => 0.4);
+assert.strictEqual(board.flat().filter((c) => c.mine).length, 3);
+L.getNeighbors(5, 5, 2, 2).concat([[2, 2]]).forEach(([r, c]) => assert.strictEqual(board[r][c].mine, false));
+board = L.createEmptyBoard(3, 3); board[0][0].mine = true; L.computeAdjacentCounts(board);
+let result = L.claimCell(board, 2, 2, 'a');
+assert.strictEqual(result.hitMine, false); assert.strictEqual(result.newlyOwned.length, 8); assert(board.flat().filter((c) => !c.mine).every((c) => c.owner === 'a'));
+const before = JSON.stringify(board); result = L.claimCell(board, 2, 2, 'b'); assert.strictEqual(result.alreadyResolved, true); assert.strictEqual(JSON.stringify(board), before);
+board = L.createEmptyBoard(2, 2); board[0][0].mine = true; result = L.claimCell(board, 0, 0, 'a'); assert(result.hitMine); assert.strictEqual(board[0][0].owner, 'mine');
+board = L.createEmptyBoard(2, 2); L.computeAdjacentCounts(board); assert(!L.claimCell(board, 0, 0, 'a').alreadyResolved); assert(L.claimCell(board, 0, 0, 'b').alreadyResolved);
+board = L.createEmptyBoard(2, 2); board[0][0].mine = true; assert(!L.isBoardCleared(board)); [[0, 1], [1, 0], [1, 1]].forEach(([r, c]) => L.claimCell(board, r, c, 'a')); assert(L.isBoardCleared(board));
+const roster = [{ id: 'a', name: 'A', joinOrder: 1 }, { id: 'b', name: 'B', joinOrder: 2 }, { id: 'c', name: 'C', joinOrder: 3 }, { id: 'd', name: 'D', joinOrder: 4 }];
+const score = L.buildScoreboard({ a: 4, b: 4, c: 2, d: 1 }, roster); assert.deepStrictEqual(score.map((x) => x.rank), [1, 1, 3, 4]); assert.deepStrictEqual(L.getWinners(score).map((x) => x.id), ['a', 'b']);
+assert.strictEqual(L.addPlayer(roster.slice(0, 1), roster[0]).length, 1); assert.strictEqual(L.removePlayer(roster, 'd').length, 3); assert(L.hasMinPlayers(roster.slice(0, 2))); assert(!L.hasMaxPlayers(roster.slice(0, 3))); assert(L.hasMaxPlayers(roster));
+console.log('All tests passed');

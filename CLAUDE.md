@@ -37,6 +37,12 @@
 
 各ディレクトリのstyle.cssは独立ファイルだが、色相以外は同じCSS変数設計をコピーして使う。
 
+- **新しいゲームのCSS/HTMLは「デザインシステムを理解して似せて書く」のではなく、既存ゲームのファイルをコピーしてから差分だけ変える、という手順を必ず踏む。** これは実装エージェント（Claude Code・Codex CLIなど）を問わない絶対のルール。ゼロから似た見た目を書き直すと、クラス名や`flex-direction`・余白・フォントの太さが微妙にズレて「他のゲームと印象が違う」状態になる（[minesweeper-rush](minesweeper-rush/)の初期実装で実際に発生した不具合。ロビーの「部屋を作る/参加する」を独自クラスの横並びflexで実装してしまい、正しくは`.online-choice`（縦積み）+`.join-row`（コード入力とボタンの横並び）だった）。手順:
+  1. ジャンルが近い既存ゲームを1つ選ぶ。**background（body背景）も結果画面もこのルールの対象であり例外はない**。結果画面には2パターンある: (A) 1セッション中に結果発表が1回だけのゲーム（脱落・正体当て・今回のような早押し陣取りなど、スコア表示の有無を問わない）は`.overlay`（`position:fixed;inset:0`の暗い背景）+`.overlay-card`（中央の白いカード）＝**フルスクリーンモーダル**で結果を出す。これが大多数のゲームで採用されている既定パターンで、参照先は[drawing-wolf](drawing-wolf/)か[word-wolf](word-wolf/)（`.overlay`/`.overlay-card`/`.result-title`/`.result-actions`/`.secondary-btn`）。(B) 8問クイズのように**複数ラウンドをスコア加算しながら周回する**ゲームだけ、ラウンドごとの結果は`.overlay`、全ラウンド終了後の最終結果だけ別セクション`.final-result-screen`（`.final-winner-text`/`.final-my-rank-text`/`.result-scoreboard-list`）にする。参照先は[dictionary-quiz](dictionary-quiz/)か[drawing-quiz](drawing-quiz/)。**迷ったら(A)の[drawing-wolf](drawing-wolf/)**（ロビーの`.online-choice`/`.join-row`も同ファイルに含む）。盤面2人対戦なら[gomoku-othello](gomoku-othello/)
+  2. その`style.css`をまるごと新ディレクトリにコピーする（`cp drawing-wolf/style.css <new>/style.css`）。手で似たルールを書き起こさない
+  3. コピーしたファイルの中で編集してよいのは(a)`:root`と`:root[data-theme="dark"]`内の色の値（`--accent`/`--accent2`/`--btn-c1`/`--btn-c2`/`--bg`/`--card-bg`/`--text`/`--muted`/`--card-border`/`--danger`/`--hero-grid`）、(b)そのゲーム固有の要素（盤面・カード・タイマーなど、コピー元に存在しないコンポーネント）の追加分だけ。それ以外のセレクタ（`body`／`.site-nav`／`.site-header`／`.ad-slot`／`main`／`.panel`(または`.setup-screen`/`.lobby-panel`)／`.text-input`(または`.name-input`)／`.online-choice`／`.join-row`／ボタン類（`.primary`/`.mode-btn`等コピー元の名前のまま）／`.secondary-btn`／`.link-button`(または`.link-btn`)／`.error`／`.host-code`(または`.host-wait`)／`.room-code`／`.roster`／`.overlay`／`.overlay-card`／`.result-title`／`.result-actions`／`.connection-health`／`footer`）はクラス名・プロパティ値とも変更しない
+  4. `index.html`も同様にコピー元の該当セクションの構造（タグの入れ子・class名・要素の順番）をそのまま流用し、テキストとidだけ差し替える。結果画面は「勝者発表→（必要なら）自分の順位・詳細→もう一度遊ぶ（ホスト限定）→ゲーム一覧に戻る」の順番も含めて丸ごと踏襲する
+  5. 実装が終わったら、コピー元と新ゲームを画面ごと（セットアップ・ロビー・ゲーム中・結果画面）に並べて見比べ、盤面幅など本当にゲーム固有の事情がある差分以外が残っていないか確認する。テキストだけの比較で済ませず、可能ならブラウザで実際にレンダリングして見比べる
 - `:root`にアクセントカラー`--accent`/`--accent2`とその合成`--grad`（`linear-gradient(120deg, var(--accent), var(--accent2))`）、ボタン用に`--btn-c1`/`--btn-c2`/`--btn-grad`、背景・カード・文字色に`--bg`/`--card-bg`/`--text`/`--muted`/`--card-border`、エラー色に`--danger`、背景の粒状テクスチャに`--hero-grid`を定義し、ゲームごとに色の値だけ変える
 - `:root[data-theme="dark"]`で同じ変数をダーク値に再定義する。ボタンの塗り(`--btn-c1`/`--btn-c2`)は文字色用の`--accent`よりトーンを落とし、暗い背景で発光しすぎないようにする
 - ダークモード切り替え自体はルート直下の[theme.js](theme.js)・[theme-toggle.css](theme-toggle.css)が担当する（localStorage保存・OS設定への追従・他タブ同期込み）。各ゲームは`<script src="../theme.js"></script>`と`<link rel="stylesheet" href="../theme-toggle.css">`をheadで読み込み、bodyの先頭に`<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>`を置くだけでよく、ゲーム側で再実装しない
@@ -92,6 +98,7 @@ node bmi-calculator/test.js
 | [gomoku-othello](gomoku-othello/) | 五目並べ×オセロのオリジナル対戦ゲーム。石を置くとオセロのように挟んだ相手の石を反転させつつ、五目並べのように5連で勝利を狙う |
 | [gravity-othello](gravity-othello/) | コネクト4×オセロのオリジナル対戦ゲーム。列に石を落として重力で積み上げつつ、挟んだ相手の石を反転させて4連を狙う |
 | [nested-tic-tac-toe](nested-tic-tac-toe/) | 3×3の小盤が入れ子になった○×ゲーム(Ultimate Tic-Tac-Toe)。置いた位置が相手の打つべき小盤を強制し、小盤を3つ獲得して大盤の3並びを狙う |
+| [minesweeper-rush](minesweeper-rush/) | 陣取り早押しマインスイーパー。安全マスを早押しで獲得し、地雷で5秒凍結する2〜4人オンライン対戦ゲーム |
 
 ## みんなで遊ぶ（オンライン会話・party game）
 
