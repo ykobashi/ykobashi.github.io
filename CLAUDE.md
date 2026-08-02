@@ -87,6 +87,7 @@ node bmi-calculator/test.js
 |---|---|
 | [gomoku](gomoku/) | 五目並べ。2人対戦・CPU対戦・オンライン対戦（PeerJS/WebRTC）に対応 |
 | [memory-match](memory-match/) | 神経衰弱。2人オフライン・CPU対戦・オンライン対戦（PeerJS/WebRTC）に対応 |
+| [billiards](billiards/) | ビリヤード。本格8ボールルールで1〜4人・2vs2チーム戦・CPU対戦・オンライン対戦（PeerJS/WebRTC）に対応 |
 | [game-2048](game-2048/) | 2048 |
 | [lights-out](lights-out/) | ライツアウトパズル |
 | [snake-game](snake-game/) | 矢印キー操作のスネークゲーム |
