@@ -202,8 +202,15 @@ function selectRoundWord(rng = Math.random, bank = WORD_BANK, used = []) {
 - **「もう一度遊ぶ」で出題履歴をリセットしてはいけない**。同じ部屋にいる間はページをリロードするまで履歴を保持し続け、バンクを使い切った時だけ関数内部で自動的に履歴をリセットして最初から選び直す（上記コード例の`pool.length > 0`分岐がそれに当たる）
 - 1ラウンドで複数語をまとめて選ぶゲームは、残プールが必要数に満たない時点でリセットする（[taboo-word-game](taboo-word-game/)の`selectRoundWords`が実例）。外部APIから候補を取るゲームは「除外済みタイトルを引いた候補配列を複数返し、script.js側で先頭から順にfetchを試す」形にする（[wikipedia-quiz](wikipedia-quiz/)の`pickArticleCandidates`が実例）
 
+### 更新履歴の運用
+
+ユーザー向けの変更（新しいツール/ゲームの追加、既存機能の目に見える修正など）をpushする際は、[changelog-data.js](changelog-data.js)の配列先頭に新しい日付のエントリを追記する。`CLAUDE.md`の文言調整やマージコミットなど、ユーザーから見えない内部限定の変更は対象外とする。
+
+エントリの文言は「「〇〇」を追加」「〇〇を修正」のように、何をしたかだけを一文で簡潔に書く。ゲームのルールや遊び方の説明はここでは書かない（説明は各ツール/ゲームのカード側の役割）。
+
 ## その他のルート直下ファイル
 
 - [privacy.html](privacy.html) — プライバシーポリシー
+- [changelog-data.js](changelog-data.js) — トップページに表示する更新履歴データ
 - `ads.txt` / `sitemap.xml` / `robots.txt` / `favicon.*` / `og-image.png` — SEO・広告関連
 - `google*.html` — Google Search Console のサイト確認用ファイル

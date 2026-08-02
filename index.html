@@ -12,6 +12,7 @@
 <meta property="og:url" content="https://ykobashi.github.io/">
 <link rel="canonical" href="https://ykobashi.github.io/">
 <script src="theme.js"></script>
+<script src="changelog-data.js"></script>
 <link rel="stylesheet" href="theme-toggle.css">
 <style>
   :root {
@@ -296,6 +297,112 @@
     color: var(--muted);
     font-size: 0.75rem;
   }
+  .changelog-toggle-btn {
+    position: fixed;
+    top: 0.6rem;
+    left: 0.6rem;
+    z-index: 100;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--fg);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    transition: background 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
+    padding: 0;
+  }
+  .changelog-toggle-btn:hover {
+    opacity: 0.85;
+  }
+  #changelog-modal {
+    width: min(32rem, calc(100% - 2rem));
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    background: var(--card-bg);
+    color: var(--fg);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  }
+  #changelog-modal::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+  .changelog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.4rem;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .changelog-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .changelog-close {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--card-border);
+    border-radius: 50%;
+    background: var(--card-bg);
+    color: var(--fg);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .changelog-close:hover {
+    border-color: var(--accent);
+  }
+  #changelog-list {
+    padding: 0.3rem 1.4rem 1.4rem;
+  }
+  .changelog-entry {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .changelog-entry:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  .changelog-entry h3 {
+    margin: 0 0 0.45rem;
+    color: var(--muted);
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+  .changelog-entry ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+  .changelog-entry li {
+    font-size: 0.92rem;
+  }
+  @media(max-width:480px) {
+    #changelog-modal {
+      width: calc(100% - 1rem);
+      max-height: calc(100vh - 1rem);
+    }
+    .changelog-header,
+    #changelog-list {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
 </style>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" href="favicon-192.png">
@@ -311,6 +418,14 @@
 </head>
 <body>
 <button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
+<button class="changelog-toggle-btn" type="button" aria-label="更新履歴を表示">📋</button>
+<dialog id="changelog-modal" aria-labelledby="changelog-title">
+  <div class="changelog-header">
+    <h2 id="changelog-title">更新履歴</h2>
+    <button type="button" class="changelog-close" aria-label="閉じる">×</button>
+  </div>
+  <div id="changelog-list"></div>
+</dialog>
 <div class="hero">
   <header>
     <span class="eyebrow">✨ 登録不要・完全無料</span>
@@ -550,6 +665,39 @@
   var searchInput = document.getElementById('site-search');
   var noResultsEl = document.getElementById('no-results');
   var noResultsQueryEl = document.getElementById('no-results-query');
+  var changelogButton = document.querySelector('.changelog-toggle-btn');
+  var changelogModal = document.getElementById('changelog-modal');
+  var changelogCloseButton = document.querySelector('.changelog-close');
+  var changelogList = document.getElementById('changelog-list');
+
+  (window.SITE_CHANGELOG || []).forEach(function (entry) {
+    var entryEl = document.createElement('div');
+    var dateEl = document.createElement('h3');
+    var itemsEl = document.createElement('ul');
+
+    entryEl.className = 'changelog-entry';
+    dateEl.textContent = entry.date;
+    entryEl.appendChild(dateEl);
+
+    entry.items.forEach(function (item) {
+      var itemEl = document.createElement('li');
+      itemEl.textContent = item;
+      itemsEl.appendChild(itemEl);
+    });
+
+    entryEl.appendChild(itemsEl);
+    changelogList.appendChild(entryEl);
+  });
+
+  changelogButton.addEventListener('click', function () {
+    changelogModal.showModal();
+  });
+  changelogCloseButton.addEventListener('click', function () {
+    changelogModal.close();
+  });
+  changelogModal.addEventListener('click', function (event) {
+    if (event.target === changelogModal) changelogModal.close();
+  });
 
   // カテゴリごとの件数バッジを表示
   sections.forEach(function (section) {
