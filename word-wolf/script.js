@@ -10,6 +10,7 @@
   const HOST_ID = 'host';
   const REJOIN_GRACE_MS = 30000;
   let usedPairs = [];
+  let amWolfGuesser = false;
 
   function showError(message) { error.textContent = message || ''; }
   function publicRoster() { return roster.map((p) => ({ id: p.id, name: p.name })); }
@@ -91,10 +92,11 @@ function peerError(err) { showError(PeerErrors.describe(err)); $('host').disable
   function enterGuess(data) {
     game.classList.add('hidden'); guess.classList.remove('hidden');
     const amWolf = myId === data.wolfId;
+    amWolfGuesser = amWolf;
     $('guess-message').textContent = amWolf ? 'ワードウルフだと見破られました。市民側のお題を当てれば、逆転勝ちです。' : data.wolfName + ' をワードウルフとして見破りました。市民側のお題を予想中です。';
     $('guess-input').classList.toggle('hidden', !amWolf); $('guess-btn').classList.toggle('hidden', !amWolf);
   }
-  $('guess-btn').addEventListener('click', () => { const answer = $('guess-input').value.trim(); if (!answer || currentPhase() !== 'guess' || myId !== round.wolfId) return; if (isHost) finishGuess(answer); else conn.send({ type: 'guess', answer, scopeId, actionId: RejoinStorage.newToken() }); });
+  $('guess-btn').addEventListener('click', () => { const answer = $('guess-input').value.trim(); if (!answer || currentPhase() !== 'guess' || !amWolfGuesser) return; if (isHost) finishGuess(answer); else conn.send({ type: 'guess', answer, scopeId, actionId: RejoinStorage.newToken() }); });
   function finishGuess(answer) {
     const correct = WordWolfLogic.isCorrectAnswer(answer, round.citizenWord);
     finish({ winner: correct ? 'wolf' : 'citizen', reason: correct ? 'ワードウルフが市民側のお題を当てました！' : 'ワードウルフは市民側のお題を当てられませんでした。', tally: WordWolfLogic.tallyVotes(votes), answer });

@@ -47,6 +47,7 @@
   const gameArea = document.getElementById('game-area');
   const roundStatusEl = document.getElementById('round-status');
   const playClipBtn = document.getElementById('play-clip-btn');
+  const volumeSliderEl = document.getElementById('volume-slider');
   const clipFrameWrapEl = document.getElementById('clip-frame-wrap');
   const clipErrorEl = document.getElementById('clip-error');
   const choicesListEl = document.getElementById('choices-list');
@@ -100,6 +101,7 @@
   let playPressedAt = null; // 自分が再生ボタンを押した時刻(Date.now())
   let ytPlayer = null; // YT.Player インスタンス(初回再生時に生成し、以降のラウンドで使い回す)
   let ytApiReady = false;
+  let currentVolume = 100; // 音量スライダーの現在値(0-100)
   let clipReadyTimer = null;
   window.onYouTubeIframeAPIReady = function () { ytApiReady = true; };
 
@@ -549,7 +551,10 @@
     usedIds = selection.usedIds;
     answers = {};
     tallied = false;
-    const choices = L.buildChoices(currentEntry, activePool, Math.random);
+    const usedTitles = usedIds
+      .map((id) => (activePool.find((entry) => entry.videoId === id) || {}).title)
+      .filter(Boolean);
+    const choices = L.buildChoices(currentEntry, activePool, Math.random, L.CHOICE_COUNT, usedTitles);
     const data = {
       type: 'question',
       round: currentRound,
@@ -632,7 +637,7 @@
             if (e.data === YT.PlayerState.PLAYING) {
               if (clipReadyTimer) { clearTimeout(clipReadyTimer); clipReadyTimer = null; }
               e.target.unMute();
-              e.target.setVolume(100);
+              e.target.setVolume(currentVolume);
             }
           },
           onError() { showClipError('この動画は再生できません。ホストは次の問題に進めてください。'); },
@@ -642,8 +647,13 @@
     }
     ytPlayer.loadVideoById({ videoId, startSeconds: 0 });
     ytPlayer.unMute();
-    ytPlayer.setVolume(100);
+    ytPlayer.setVolume(currentVolume);
   }
+
+  volumeSliderEl.addEventListener('input', () => {
+    currentVolume = Number(volumeSliderEl.value);
+    if (ytPlayer && typeof ytPlayer.setVolume === 'function') ytPlayer.setVolume(currentVolume);
+  });
 
   playClipBtn.addEventListener('click', () => {
     if (phase !== 'question' || playPressedAt !== null || !currentQuestionPayload) return;
