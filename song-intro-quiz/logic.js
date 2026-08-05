@@ -7,8 +7,10 @@ const GENRES = ['vocaloid', 'anime', 'jpop']; // UI上は 'mix' も選べるが�
 const DECADES = ['1990s', '2000s', '2010s', '2020s']; // UI上は 'all' も選べるが、これは「絞らない」を表す特別値
 
 const MAX_POINTS = 1000; // 最速(elapsedMs=0)で正解した場合の得点
-const MIN_POINTS = 300; // 正解であれば、どれだけ遅くても保証される最低得点(床)
-const DECAY_WINDOW_MS = 10000; // この経過時間でMIN_POINTSまで線形に減衰しきる
+const MIN_POINTS = 50; // 正解であれば、どれだけ遅くても保証される最低得点(床)
+const DECAY_WINDOW_MS = 20000; // この経過時間でMIN_POINTSまで線形に減衰しきる。
+// 旧仕様(10秒でMIN_POINTS=300に床打ち)だと10秒経過後は待つデメリットがほぼ無かったため、
+// 減衰ウィンドウを延ばし床も下げて、長く待つほど300点を下回るようにしている。
 
 const DEFAULT_BANK = (typeof window !== 'undefined' && window.SongIntroQuizData) || [];
 
@@ -63,9 +65,16 @@ function selectRoundVideo(rng = Math.random, pool, usedIds = []) {
   return { entry, usedIds: [entry.videoId] };
 }
 
-// 正解の曲名 + プールから無作為に選んだ他の曲名(count-1個)をシャッフルして返す
-function buildChoices(correctEntry, pool, rng = Math.random, count = CHOICE_COUNT) {
-  const others = shuffle(pool.filter((entry) => entry.videoId !== correctEntry.videoId), rng).slice(0, count - 1);
+// 正解の曲名 + プールから無作為に選んだ他の曲名(count-1個)をシャッフルして返す。
+// excludeTitles(この部屋で過去ラウンドの正解として既に出た曲名)は誤答の選択肢から除外する。
+// これを行わないと、以前の正解曲が別ラウンドの選択肢として再登場してしまう。
+// 除外した結果、必要数を満たせない場合は除外なしのプールにフォールバックする。
+function buildChoices(correctEntry, pool, rng = Math.random, count = CHOICE_COUNT, excludeTitles = []) {
+  const withoutCorrect = pool.filter((entry) => entry.videoId !== correctEntry.videoId);
+  const excludeSet = new Set(excludeTitles.filter((t) => t !== correctEntry.title));
+  const filtered = withoutCorrect.filter((entry) => !excludeSet.has(entry.title));
+  const candidatePool = filtered.length >= count - 1 ? filtered : withoutCorrect;
+  const others = shuffle(candidatePool, rng).slice(0, count - 1);
   return shuffle([correctEntry.title].concat(others.map((entry) => entry.title)), rng);
 }
 

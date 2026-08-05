@@ -1,7 +1,7 @@
 // logic.js - はぁっていうゲーム風・表情当てクイズ 純粋関数ロジック(DOM操作なし)
 
 const MIN_PLAYERS = 2;
-const ROUND_TOTAL = 3;
+const ROUND_TOTAL = 8;
 const CORRECT_POINTS = 1000;
 
 // 表面の感情は共通、裏にある感情の色が異なる4択(正解1件+誤答3件)。
