@@ -234,6 +234,21 @@
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1rem;
   }
+  .subgroup + .subgroup {
+    margin-top: 1.8rem;
+  }
+  .subgroup-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin: 0 0 0.8rem;
+  }
+  .subgroup.subgroup-hidden {
+    display: none;
+  }
   .card {
     position: relative;
     display: block;
@@ -454,91 +469,113 @@
 <main>
   <section id="party-games">
     <h2>🎉 みんなで遊ぶ <span class="count-badge"></span></h2>
-    <div class="grid">
-      <a class="card" href="ito-game/index.html">
-        <h3>ito(イト)</h3>
-        <p>数字を言わずに1〜100の順番を当てる協力ゲーム(2人〜)</p>
-      </a>
-      <a class="card" href="ng-word-battle/index.html">
-        <h3>NGワード対戦</h3>
-        <p>自分だけ知らない単語を相手に言わせたら勝ち(2人〜)</p>
-      </a>
-      <a class="card" href="taboo-word-game/index.html">
-        <h3>NGワード禁止クイズ</h3>
-        <p>NGワードを避けてお題を説明するタイムアタック(2人〜)</p>
-      </a>
-      <a class="card" href="insider-game/index.html">
-        <h3>インサイダーゲーム</h3>
-        <p>庶民・インサイダー・マスターに分かれるお題当てゲーム(3人〜)</p>
-      </a>
-      <a class="card" href="word-wolf/index.html">
-        <h3>ワードウルフ</h3>
-        <p>少し違うお題を持つ少数派を見つける会話ゲーム(3人〜)</p>
-      </a>
-      <a class="card" href="word-detective/index.html">
-        <h3>ワード探偵</h3>
-        <p>自分だけの単語が配られ、次の人の単語をYES/NOで当てる推理ゲーム（2人〜）</p>
-      </a>
-      <a class="card" href="drawing-wolf/index.html">
-        <h3>お絵描きウルフ</h3>
-        <p>お題を知らない人狼を、共同お絵描きで見つけるゲーム(3人〜)</p>
-      </a>
-      <a class="card" href="drawing-quiz/index.html">
-        <h3>お絵描きクイズ</h3>
-        <p>描かれていく絵からお題を早当てするオンラインお絵描きクイズ(2人〜)</p>
-      </a>
-      <a class="card" href="accomplice-drawing/index.html">
-        <h3>共犯ドローイング</h3>
-        <p>誰が共犯かは自分にも分からない。3ターンで少しずつ絵を完成させ、相方を見つけつつ正体を隠しきれ(4人〜)</p>
-      </a>
-      <a class="card" href="one-night-werewolf/index.html">
-        <h3>ワンナイト人狼</h3>
-        <p>友達とオンラインで遊べる正体隠匿ゲーム(3〜8人)</p>
-      </a>
-      <a class="card" href="tahoiya/index.html">
-        <h3>たほいや</h3>
-        <p>本当の意味を辞書からあてる言葉当てゲーム(2人〜)</p>
-      </a>
-      <a class="card" href="picture-telephone/index.html">
-        <h3>お絵描き伝言ゲーム</h3>
-        <p>お題から絵、絵から文章へ…どんどんズレていくパーティーゲーム(2人〜)</p>
-      </a>
-      <a class="card" href="ai-nickname-game/index.html">
-        <h3>AIあだ名当てゲーム</h3>
-        <p>AIが名付けたキャラの本当のあだ名を当てるウソ当てパーティーゲーム(2人〜)</p>
-      </a>
-      <a class="card" href="dictionary-quiz/index.html">
-        <h3>辞書定義当てクイズ</h3>
-        <p>辞書っぽい一文の意味説明から難読語を4択で当てる全8問クイズ(2人〜)</p>
-      </a>
-      <a class="card" href="wikipedia-quiz/index.html">
-        <h3>Wikipedia冒頭当てクイズ</h3>
-        <p>記事冒頭の抜粋文から何のページかを4択で当てる全8問の得点クイズ(2人〜)</p>
-      </a>
-      <a class="card" href="just-one/index.html">
-        <h3>ジャストワン</h3>
-        <p>重複しない一言ヒントでお題を当てる協力ゲーム(2人〜)</p>
-      </a>
-      <a class="card" href="concept/index.html">
-        <h3>コンセプト（簡易版）</h3>
-        <p>絵文字ボードのピンでお題を伝える連想ゲーム(2人〜)</p>
-      </a>
-      <a class="card" href="youtube-thumbnail-quiz/index.html">
-        <h3>YouTubeサムネ当てクイズ</h3>
-        <p>ぼかしたサムネイルからボカロ・アニソン・J-POPの曲名を4択で当てる全8問クイズ(2人〜)</p>
-      </a>
-      <a class="card" href="song-intro-quiz/index.html">
-        <h3>イントロ早押しクイズ</h3>
-        <p>YouTube動画のイントロを再生してボカロ・アニソン・J-POPの曲名を早押しで当てる全8問クイズ(2人〜)</p>
-      </a>
-      <a class="card" href="real-or-fake-photo/index.html">
-        <h3>偽物鑑定ゲーム</h3>
-        <p>本物の写真とAI生成の偽物、どちらが本物かを当てる全5問の得点クイズ(2人〜)</p>
-      </a>
-      <a class="card" href="expression-quiz/index.html">
-        <h3>表情当てクイズ</h3>
-        <p>AI生成の表情イラストの裏にある本当の感情シナリオを4択で当てる全3問の得点クイズ(2人〜)</p>
-      </a>
+
+    <div class="subgroup">
+      <h3 class="subgroup-title">🐺 正体隠匿ゲーム</h3>
+      <div class="grid">
+        <a class="card" href="one-night-werewolf/index.html">
+          <h3>🐺 ワンナイト人狼</h3>
+          <p>友達とオンラインで遊べる正体隠匿ゲーム(3〜8人)</p>
+        </a>
+        <a class="card" href="insider-game/index.html">
+          <h3>🐺 インサイダーゲーム</h3>
+          <p>庶民・インサイダー・マスターに分かれるお題当てゲーム(3人〜)</p>
+        </a>
+        <a class="card" href="word-wolf/index.html">
+          <h3>🐺 ワードウルフ</h3>
+          <p>少し違うお題を持つ少数派を見つける会話ゲーム(3人〜)</p>
+        </a>
+      </div>
+    </div>
+
+    <div class="subgroup">
+      <h3 class="subgroup-title">🎨 お絵描き系</h3>
+      <div class="grid">
+        <a class="card" href="drawing-wolf/index.html">
+          <h3>🎨 お絵描きウルフ</h3>
+          <p>お題を知らない人狼を、共同お絵描きで見つけるゲーム(3人〜)</p>
+        </a>
+        <a class="card" href="accomplice-drawing/index.html">
+          <h3>🎨 共犯ドローイング</h3>
+          <p>誰が共犯かは自分にも分からない。3ターンで少しずつ絵を完成させ、相方を見つけつつ正体を隠しきれ(4人〜)</p>
+        </a>
+        <a class="card" href="drawing-quiz/index.html">
+          <h3>🎨 お絵描きクイズ</h3>
+          <p>描かれていく絵からお題を早当てするオンラインお絵描きクイズ(2人〜)</p>
+        </a>
+        <a class="card" href="picture-telephone/index.html">
+          <h3>🎨 お絵描き伝言ゲーム</h3>
+          <p>お題から絵、絵から文章へ…どんどんズレていくパーティーゲーム(2人〜)</p>
+        </a>
+      </div>
+    </div>
+
+    <div class="subgroup">
+      <h3 class="subgroup-title">❓ 得点クイズ</h3>
+      <div class="grid">
+        <a class="card" href="dictionary-quiz/index.html">
+          <h3>❓ 辞書定義当てクイズ</h3>
+          <p>辞書っぽい一文の意味説明から難読語を4択で当てる全8問クイズ(2人〜)</p>
+        </a>
+        <a class="card" href="wikipedia-quiz/index.html">
+          <h3>❓ Wikipedia冒頭当てクイズ</h3>
+          <p>記事冒頭の抜粋文から何のページかを4択で当てる全8問の得点クイズ(2人〜)</p>
+        </a>
+        <a class="card" href="youtube-thumbnail-quiz/index.html">
+          <h3>❓ YouTubeサムネ当てクイズ</h3>
+          <p>ぼかしたサムネイルからボカロ・アニソン・J-POPの曲名を4択で当てる全8問クイズ(2人〜)</p>
+        </a>
+        <a class="card" href="song-intro-quiz/index.html">
+          <h3>❓ イントロ早押しクイズ</h3>
+          <p>YouTube動画のイントロを再生してボカロ・アニソン・J-POPの曲名を早押しで当てる全8問クイズ(2人〜)</p>
+        </a>
+        <a class="card" href="real-or-fake-photo/index.html">
+          <h3>❓ 偽物鑑定ゲーム</h3>
+          <p>本物の写真とAI生成の偽物、どちらが本物かを当てる全5問の得点クイズ(2人〜)</p>
+        </a>
+        <a class="card" href="expression-quiz/index.html">
+          <h3>❓ 表情当てクイズ</h3>
+          <p>AI生成の表情イラストの裏にある本当の感情シナリオを4択で当てる全3問の得点クイズ(2人〜)</p>
+        </a>
+      </div>
+    </div>
+
+    <div class="subgroup">
+      <h3 class="subgroup-title">💬 言葉遊び・ウソ当て</h3>
+      <div class="grid">
+        <a class="card" href="ito-game/index.html">
+          <h3>💬 ito(イト)</h3>
+          <p>数字を言わずに1〜100の順番を当てる協力ゲーム(2人〜)</p>
+        </a>
+        <a class="card" href="ng-word-battle/index.html">
+          <h3>💬 NGワード対戦</h3>
+          <p>自分だけ知らない単語を相手に言わせたら勝ち(2人〜)</p>
+        </a>
+        <a class="card" href="taboo-word-game/index.html">
+          <h3>💬 NGワード禁止クイズ</h3>
+          <p>NGワードを避けてお題を説明するタイムアタック(2人〜)</p>
+        </a>
+        <a class="card" href="word-detective/index.html">
+          <h3>💬 ワード探偵</h3>
+          <p>自分だけの単語が配られ、次の人の単語をYES/NOで当てる推理ゲーム（2人〜）</p>
+        </a>
+        <a class="card" href="tahoiya/index.html">
+          <h3>💬 たほいや</h3>
+          <p>本当の意味を辞書からあてる言葉当てゲーム(2人〜)</p>
+        </a>
+        <a class="card" href="ai-nickname-game/index.html">
+          <h3>💬 AIあだ名当てゲーム</h3>
+          <p>AIが名付けたキャラの本当のあだ名を当てるウソ当てパーティーゲーム(2人〜)</p>
+        </a>
+        <a class="card" href="just-one/index.html">
+          <h3>💬 ジャストワン</h3>
+          <p>重複しない一言ヒントでお題を当てる協力ゲーム(2人〜)</p>
+        </a>
+        <a class="card" href="concept/index.html">
+          <h3>💬 コンセプト（簡易版）</h3>
+          <p>絵文字ボードのピンでお題を伝える連想ゲーム(2人〜)</p>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -720,14 +757,26 @@
     var visibleTotal = 0;
 
     sections.forEach(function (section) {
-      var cards = Array.prototype.slice.call(section.querySelectorAll('.card'));
       var visibleInSection = 0;
+      var subgroups = Array.prototype.slice.call(section.querySelectorAll('.subgroup'));
+      // サブグループがないセクションは、セクション自体を1つのグループとして扱う
+      var groups = subgroups.length > 0 ? subgroups : [section];
 
-      cards.forEach(function (card) {
-        var text = card.textContent.toLowerCase();
-        var match = query === '' || text.indexOf(query) !== -1;
-        card.classList.toggle('card-hidden', !match);
-        if (match) visibleInSection++;
+      groups.forEach(function (group) {
+        var cards = Array.prototype.slice.call(group.querySelectorAll('.card'));
+        var visibleInGroup = 0;
+
+        cards.forEach(function (card) {
+          var text = card.textContent.toLowerCase();
+          var match = query === '' || text.indexOf(query) !== -1;
+          card.classList.toggle('card-hidden', !match);
+          if (match) visibleInGroup++;
+        });
+
+        if (group !== section) {
+          group.classList.toggle('subgroup-hidden', query !== '' && visibleInGroup === 0);
+        }
+        visibleInSection += visibleInGroup;
       });
 
       section.classList.toggle('category-hidden', query !== '' && visibleInSection === 0);
