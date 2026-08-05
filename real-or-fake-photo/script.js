@@ -30,6 +30,7 @@
   const roundStatusEl = document.getElementById('round-status');
   const photoBtns = [document.getElementById('photo-choice-0'), document.getElementById('photo-choice-1')];
   const photoImgs = [document.getElementById('photo-img-0'), document.getElementById('photo-img-1')];
+  const rerollQuestionBtn = document.getElementById('reroll-question-btn');
   const answerStatusEl = document.getElementById('answer-status');
   const hostProgressBox = document.getElementById('host-progress-box');
   const progressTextEl = document.getElementById('progress-text');
@@ -456,8 +457,31 @@
     answerStatusEl.classList.add('hidden');
     renderPhotoChoices(data.images);
     hostProgressBox.classList.toggle('hidden', !isHost);
+    rerollQuestionBtn.classList.toggle('hidden', !isHost);
+    rerollQuestionBtn.disabled = false;
     renderProgress([]);
   }
+
+  function hostRerollQuestion() {
+    if (!isHost || phase !== 'question' || Object.keys(answers).length > 0) return;
+    const selection = L.selectRoundPair(Math.random, L.PAIR_BANK, usedPairIds);
+    usedPairIds = selection.usedIds;
+    const round = L.buildRoundPayload(selection.entry, Math.random);
+    currentPair = { id: selection.entry.id, images: round.images, correctIndex: round.correctIndex, credit: selection.entry.credit };
+    answers = {};
+    tallied = false;
+    const data = {
+      type: 'question',
+      round: currentRound,
+      totalRounds: L.ROUND_TOTAL,
+      images: currentPair.images,
+    };
+    currentQuestionPayload = data;
+    net.broadcast(data);
+    enterQuestion(data);
+  }
+
+  rerollQuestionBtn.addEventListener('click', hostRerollQuestion);
 
   function renderPhotoChoices(images) {
     images.forEach((path, i) => {
@@ -511,6 +535,7 @@
     if (selectedIndex !== 0 && selectedIndex !== 1) return;
     answers[playerId] = selectedIndex;
     const ids = Object.keys(answers);
+    rerollQuestionBtn.disabled = true;
     net.broadcast({ type: 'progress', answeredIds: ids });
     renderProgress(ids);
     maybeAutoTally();

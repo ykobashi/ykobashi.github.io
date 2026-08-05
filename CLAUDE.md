@@ -178,6 +178,16 @@ node bmi-calculator/test.js
 - 複数ラウンドで得点を貯めるゲームは、`logic.js`に`buildScoreboard(scores, roster)`という同名の純粋関数を持たせ、スコア降順・同点同順位（1位が2人なら次は3位、のような標準競技順位方式）でソートする（[dictionary-quiz](dictionary-quiz/)・[drawing-quiz](drawing-quiz/)が模範）。1位（同率含む）を取り出す`getWinners(scoreboard)`も同居させる
 - ホスト/ゲストの出し分けは、UI表示は`要素.classList.toggle('hidden', !isHost)`、ボタン活性は`要素.disabled = !isHost || <ゲーム固有の条件>`、ホスト専用処理は関数冒頭で`if (!isHost) return;`とガードする、という書き方に揃える
 
+### ランダム出題のreroll（「別のお題にする」ボタン）
+
+固定バンクやAPIからランダムにお題/単語/問題を出題するゲームは、微妙な出題や直近との重複を出し直せるよう、ホスト限定の「別の◯◯にする」rerollボタンを実装する（[word-wolf](word-wolf/)・[insider-game](insider-game/)・[tahoiya](tahoiya/)・[taboo-word-game](taboo-word-game/)・[ito-game](ito-game/)・[drawing-wolf](drawing-wolf/)・[accomplice-drawing](accomplice-drawing/)・[just-one](just-one/)・[concept](concept/)・[word-detective](word-detective/)・[ng-word-battle](ng-word-battle/)・[dictionary-quiz](dictionary-quiz/)ほか4択クイズ系で採用）。
+
+- ボタンは`<button id="reroll-<名詞>-btn" class="link-btn hidden" type="button">別の◯◯にする</button>`をお題/単語/問題の表示要素のすぐ近くに置く。名詞は秘密のお題/単語を配るゲームなら`word`/`topic`、4択クイズなら`question`に揃える
+- 出題を表示する画面に入るタイミングで`classList.toggle('hidden', !isHost)`、まだ誰も回答/行動していないことを示す条件（クイズ系は`answers`が空、秘密お題配布系はクルー提出・ピン配置・推測などが0件）が崩れたら非表示または`disabled=true`にする
+- クリックハンドラは`if (!isHost) return;`に加えて上記の「まだ誰も回答/行動していない」条件でもガードする（防御的に、handler内で二重チェックする）
+- 選出は既存の`logic.js`の`select*(rng, bank, used)`系関数（重複出題防止の`used*`履歴配列ごと）をそのまま呼び直す。新規にlogic.js関数を追加する必要はない
+- 配布は「そのお題を知る権利がある人にだけ」送る（word-wolf/tahoiya/itoのように全員が知るゲームは全員へ、insider/tabooのように一部のロールだけが知るゲームはそのロールにだけ）
+
 ### 自由記述の正誤判定（表記ゆれ許容）
 
 お題やあだ名などを自由記述で入力させて正解と照合するゲーム（[drawing-wolf](drawing-wolf/)の人狼逆転回答、[word-wolf](word-wolf/)・[word-detective](word-detective/)の回答当て、[drawing-quiz](drawing-quiz/)のお題当てで確認）は、`logic.js`に以下とほぼ同じ`normalizeAnswer`を持ち、全角半角・大文字小文字・カタカナ/ひらがな・記号や長音符の表記ゆれを吸収してから比較する。新しく自由記述の正誤判定を作る場合はこの実装をそのままコピーする。

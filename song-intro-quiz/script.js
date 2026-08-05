@@ -49,6 +49,7 @@
   const playClipBtn = document.getElementById('play-clip-btn');
   const clipFrameWrapEl = document.getElementById('clip-frame-wrap');
   const clipErrorEl = document.getElementById('clip-error');
+  const rerollQuestionBtn = document.getElementById('reroll-question-btn');
   const choicesListEl = document.getElementById('choices-list');
   const answerStatusEl = document.getElementById('answer-status');
   const hostProgressBox = document.getElementById('host-progress-box');
@@ -585,8 +586,17 @@
     choicesListEl.classList.add('hidden');
     answerStatusEl.classList.add('hidden');
     hostProgressBox.classList.toggle('hidden', !isHost);
+    rerollQuestionBtn.classList.toggle('hidden', !isHost);
+    rerollQuestionBtn.disabled = false;
     renderProgress([]);
   }
+
+  function hostRerollQuestion() {
+    if (!isHost || phase !== 'question' || Object.keys(answers).length > 0) return;
+    pickAndBroadcastRound();
+  }
+
+  rerollQuestionBtn.addEventListener('click', hostRerollQuestion);
 
   // ================= イントロ再生(YouTube IFrame Player API) =================
 
@@ -704,6 +714,7 @@
     if (Object.prototype.hasOwnProperty.call(answers, playerId)) return;
     answers[playerId] = { title, elapsedMs };
     const ids = Object.keys(answers);
+    rerollQuestionBtn.disabled = true;
     net.broadcast({ type: 'progress', answeredIds: ids });
     renderProgress(ids);
   }

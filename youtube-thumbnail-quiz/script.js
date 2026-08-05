@@ -48,6 +48,7 @@
   const gameArea = document.getElementById('game-area');
   const roundStatusEl = document.getElementById('round-status');
   const thumbImg = document.getElementById('thumb-img');
+  const rerollQuestionBtn = document.getElementById('reroll-question-btn');
   const choicesListEl = document.getElementById('choices-list');
   const answerStatusEl = document.getElementById('answer-status');
   const hostProgressBox = document.getElementById('host-progress-box');
@@ -587,8 +588,17 @@
     answerStatusEl.classList.add('hidden');
     renderChoices(data.choices);
     hostProgressBox.classList.toggle('hidden', !isHost);
+    rerollQuestionBtn.classList.toggle('hidden', !isHost);
+    rerollQuestionBtn.disabled = false;
     renderProgress([]);
   }
+
+  function hostRerollQuestion() {
+    if (!isHost || phase !== 'question' || Object.keys(answers).length > 0) return;
+    pickAndBroadcastRound(0);
+  }
+
+  rerollQuestionBtn.addEventListener('click', hostRerollQuestion);
 
   function renderChoices(choices) {
     choicesListEl.innerHTML = '';
@@ -633,6 +643,7 @@
     if (Object.prototype.hasOwnProperty.call(answers, playerId)) return;
     answers[playerId] = title;
     const ids = Object.keys(answers);
+    rerollQuestionBtn.disabled = true;
     net.broadcast({ type: 'progress', answeredIds: ids });
     renderProgress(ids);
   }
