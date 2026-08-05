@@ -78,6 +78,28 @@ assert.deepStrictEqual(L.shuffle([1, 2, 3], () => 0), [2, 3, 1]);
   assert.ok(choices.includes(correct.title), '正解の曲名が選択肢に含まれていない');
 }
 
+// ---- buildChoices: excludeTitlesで過去ラウンドの正解曲を誤答の選択肢から除外 ----
+{
+  const pool = [
+    { videoId: '1', title: '曲1' },
+    { videoId: '2', title: '曲2' },
+    { videoId: '3', title: '曲3' },
+    { videoId: '4', title: '曲4' },
+    { videoId: '5', title: '曲5' },
+    { videoId: '6', title: '曲6' },
+    { videoId: '7', title: '曲7' },
+  ];
+  const correct = pool[0];
+  const choices = L.buildChoices(correct, pool, () => 0.99, L.CHOICE_COUNT, ['曲2', '曲3']);
+  assert.ok(!choices.includes('曲2'), '過去に正解として出た曲が誤答の選択肢に出てはいけない');
+  assert.ok(!choices.includes('曲3'), '過去に正解として出た曲が誤答の選択肢に出てはいけない');
+  assert.ok(choices.includes(correct.title));
+
+  // 除外すると必要数を満たせない場合は除外なしにフォールバックする
+  const fallback = L.buildChoices(correct, pool, () => 0.99, L.CHOICE_COUNT, ['曲2', '曲3', '曲4', '曲5', '曲6', '曲7']);
+  assert.strictEqual(fallback.length, L.CHOICE_COUNT);
+}
+
 // ---- judgeAnswer ----
 assert.strictEqual(L.judgeAnswer('千本桜', '千本桜'), true);
 assert.strictEqual(L.judgeAnswer('Lemon', '千本桜'), false);
@@ -86,10 +108,11 @@ assert.strictEqual(L.judgeAnswer(undefined, '千本桜'), false);
 
 // ---- computeSpeedPoints(速さ→得点の新規メカニクス) ----
 assert.strictEqual(L.computeSpeedPoints(0, true), 1000, '最速なら満点');
-assert.strictEqual(L.computeSpeedPoints(10000, true), 300, '減衰ウィンドウちょうどで床');
-assert.strictEqual(L.computeSpeedPoints(999999, true), 300, '床を下回らない');
+assert.strictEqual(L.computeSpeedPoints(20000, true), 50, '減衰ウィンドウちょうどで床');
+assert.strictEqual(L.computeSpeedPoints(999999, true), 50, '床を下回らない');
 assert.strictEqual(L.computeSpeedPoints(-500, true), 1000, '負値は0にクランプされ満点を超えない');
-assert.strictEqual(L.computeSpeedPoints(5000, true), 650, '中間値の線形減衰');
+assert.strictEqual(L.computeSpeedPoints(10000, true), 525, '中間値の線形減衰');
+assert.strictEqual(L.computeSpeedPoints(15000, true), 288, '長く待つと300点を下回ることもある');
 assert.strictEqual(L.computeSpeedPoints(0, false), 0, '不正解は速さに関係なく0点');
 assert.strictEqual(L.computeSpeedPoints(5000, false), 0, '不正解は速さに関係なく0点');
 
@@ -104,10 +127,10 @@ assert.strictEqual(L.computeSpeedPoints(5000, false), 0, '不正解は速さに�
   assert.deepStrictEqual(tally.correctIds.sort(), ['a', 'c']);
 
   const deltas = L.computeRoundScoreDeltas(answers, '千本桜');
-  assert.deepStrictEqual(deltas, { a: 1000, b: 0, c: 300 });
+  assert.deepStrictEqual(deltas, { a: 1000, b: 0, c: 525 });
 
   const scores = L.applyScoreDeltas({ a: 1000, b: 500 }, deltas);
-  assert.deepStrictEqual(scores, { a: 2000, b: 500, c: 300 });
+  assert.deepStrictEqual(scores, { a: 2000, b: 500, c: 525 });
 }
 
 // ---- buildScoreboard(同点は同順位) ----
@@ -152,8 +175,8 @@ assert.strictEqual(L.MIN_PLAYERS, 2);
 assert.strictEqual(L.ROUND_TOTAL, 8);
 assert.strictEqual(L.CHOICE_COUNT, 4);
 assert.strictEqual(L.MAX_POINTS, 1000);
-assert.strictEqual(L.MIN_POINTS, 300);
-assert.strictEqual(L.DECAY_WINDOW_MS, 10000);
+assert.strictEqual(L.MIN_POINTS, 50);
+assert.strictEqual(L.DECAY_WINDOW_MS, 20000);
 assert.deepStrictEqual(L.GENRES, ['vocaloid', 'anime', 'jpop']);
 assert.deepStrictEqual(L.DECADES, ['1990s', '2000s', '2010s', '2020s']);
 
