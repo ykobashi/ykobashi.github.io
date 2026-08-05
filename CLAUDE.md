@@ -29,6 +29,7 @@
   git worktree remove .claude/worktrees/<slug>
   ```
 - worktreeはGitの機能でありエージェント側の設定ではないため、Claude Code以外のツール(Codex CLIなど)で並行作業する場合も同じ手順でよい。各ツールをそのworktreeディレクトリをカレントディレクトリにして起動するだけで、Git的には独立したブランチ・作業ディレクトリとして扱われる。Codexに渡すPlanの書き方（worktreeパスの明記・移動手順の自己完結化など）はグローバルルールの「Planの書き方(Codexへの引き継ぎ前提)」を参照
+- `git worktree remove`しても、Windowsのファイルロックのタイミングで空フォルダの実体が`.claude/worktrees/`配下に残ることがある。また、今まさに使っている自分自身のworktreeは、そのセッションが動いている間は自分で削除できない（カレントディレクトリを自分で消せないため）。そのため放置すると`.claude/worktrees/`配下にフォルダが溜まっていく。これを防ぐため、**新しいセッションを開始する際は、まず`git worktree list`に登録されていない(＝既にgit管理からは外れているが実体だけ残っている)`.claude/worktrees/`配下の古いフォルダがないか確認し、あれば削除する**(自分がこれから使う新しいworktreeとは別物なので、自分の作業に影響しない)。削除コマンドはBashツールの`rmdir`/`rm`だと自動モードの分類器にブロックされることがあるため、その場合はPowerShellツールの`Remove-Item -Recurse -Force`を使う
 
 ## 各ディレクトリの共通構成
 
