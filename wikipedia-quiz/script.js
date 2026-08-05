@@ -37,6 +37,7 @@
   const gameArea = document.getElementById('game-area');
   const roundStatusEl = document.getElementById('round-status');
   const excerptTextEl = document.getElementById('excerpt-text');
+  const rerollQuestionBtn = document.getElementById('reroll-question-btn');
   const choicesListEl = document.getElementById('choices-list');
   const answerStatusEl = document.getElementById('answer-status');
   const hostProgressBox = document.getElementById('host-progress-box');
@@ -90,6 +91,7 @@
   let currentRoundPayload = null;
   let currentResultPayload = null;
   let currentFinalPayload = null;
+  let loadingRetryFn = null; // 取得失敗時に「再試行する」ボタンが呼ぶ関数(startRound or hostRerollQuestion)
 
   function publicRoster() {
     return roster.map((p) => ({ id: p.id, name: p.name }));
@@ -446,8 +448,10 @@
 
   retryFetchBtn.addEventListener('click', () => {
     if (!isHost) return;
-    startRound();
+    (loadingRetryFn || startRound)();
   });
+
+  rerollQuestionBtn.addEventListener('click', hostRerollQuestion);
 
   function startGame() {
     scores = {};
@@ -471,6 +475,7 @@
   async function startRound() {
     if (!isHost) return;
     currentRound += 1;
+    loadingRetryFn = startRound;
     showLoading();
     const result = await fetchRoundContent();
     if (!result) {
@@ -519,7 +524,40 @@
     answerStatusEl.classList.add('hidden');
     renderChoices(data.choices);
     hostProgressBox.classList.toggle('hidden', !isHost);
+    rerollQuestionBtn.classList.toggle('hidden', !isHost);
+    rerollQuestionBtn.disabled = false;
     renderProgress([]);
+  }
+
+  async function hostRerollQuestion() {
+    if (!isHost || phase !== 'question' || Object.keys(answers).length > 0) return;
+    loadingRetryFn = hostRerollQuestion;
+    showLoading();
+    const result = await fetchRoundContent();
+    if (!result) {
+      loadingTextEl.textContent = '問題の取得に失敗しました。';
+      hostFetchError.classList.remove('hidden');
+      return;
+    }
+    usedTitles.push(result.title);
+    currentCorrectTitle = result.title;
+    const excerpt = L.prepareExcerpt(result.extract, result.title);
+    const choices = L.buildChoices(result.title, Math.random);
+    currentRoundId = 'r' + Date.now() + '-' + currentRound;
+    answers = {};
+    processedActions.clear();
+    tallied = false;
+    const data = {
+      type: 'round',
+      round: currentRound,
+      totalRounds: L.ROUND_TOTAL,
+      roundId: currentRoundId,
+      excerpt,
+      choices,
+    };
+    currentRoundPayload = data;
+    net.broadcast(data);
+    enterQuestion(data);
   }
 
   function renderChoices(choices) {
@@ -571,6 +609,7 @@
     if (!Object.prototype.hasOwnProperty.call(answers, playerId)) answers[playerId] = choice;
     processedActions.add(key);
     const ids = Object.keys(answers);
+    rerollQuestionBtn.disabled = true;
     net.broadcast({ type: 'progress', roundId: currentRoundId, answeredIds: ids });
     renderProgress(ids);
     if (playerId !== HOST_ID) net.sendTo(playerId, { type: 'answer-ack', actionId, scopeId: roundId });

@@ -26,6 +26,7 @@
   const gameArea = document.getElementById('game-area');
   const wordListEl = document.getElementById('word-list');
   const gameConnectionStatus = document.getElementById('game-connection-status');
+  const rerollWordBtn = document.getElementById('reroll-word-btn');
   const quitBtn = document.getElementById('quit-btn');
 
   // --- DOM要素(結果画面) ---
@@ -324,12 +325,18 @@
     hostStartRound();
   });
 
+  rerollWordBtn.addEventListener('click', () => {
+    if (!isHost || currentClaim !== null) return;
+    hostStartRound();
+  });
+
   function enterGameScreen() {
     resultOverlay.classList.add('hidden');
     lobbyPanel.classList.add('hidden');
     setupScreen.classList.add('hidden');
     gameArea.classList.remove('hidden');
     gameConnectionStatus.classList.add('hidden');
+    rerollWordBtn.classList.toggle('hidden', !isHost);
     renderWordList();
   }
 

@@ -28,6 +28,7 @@
   const gameArea = document.getElementById('game-area');
   const roundStatusEl = document.getElementById('round-status');
   const meaningTextEl = document.getElementById('meaning-text');
+  const rerollQuestionBtn = document.getElementById('reroll-question-btn');
   const choicesListEl = document.getElementById('choices-list');
   const answerStatusEl = document.getElementById('answer-status');
   const hostProgressBox = document.getElementById('host-progress-box');
@@ -450,8 +451,32 @@
     answerStatusEl.classList.add('hidden');
     renderChoices(data.choices);
     hostProgressBox.classList.toggle('hidden', !isHost);
+    rerollQuestionBtn.classList.toggle('hidden', !isHost);
+    rerollQuestionBtn.disabled = false;
     renderProgress([]);
   }
+
+  function hostRerollQuestion() {
+    if (!isHost || phase !== 'question' || Object.keys(answers).length > 0) return;
+    const selection = L.selectRoundWord(Math.random, L.WORD_BANK, usedWords);
+    usedWords = selection.usedWords;
+    currentEntry = selection.entry;
+    answers = {};
+    tallied = false;
+    const choices = L.buildChoices(currentEntry, L.WORD_BANK, Math.random);
+    const data = {
+      type: 'question',
+      round: currentRound,
+      totalRounds: L.ROUND_TOTAL,
+      meaning: currentEntry.meaning,
+      choices,
+    };
+    currentQuestionPayload = data;
+    net.broadcast(data);
+    enterQuestion(data);
+  }
+
+  rerollQuestionBtn.addEventListener('click', hostRerollQuestion);
 
   function renderChoices(choices) {
     choicesListEl.innerHTML = '';
@@ -496,6 +521,7 @@
     if (Object.prototype.hasOwnProperty.call(answers, playerId)) return;
     answers[playerId] = word;
     const ids = Object.keys(answers);
+    rerollQuestionBtn.disabled = true;
     net.broadcast({ type: 'progress', answeredIds: ids });
     renderProgress(ids);
   }
