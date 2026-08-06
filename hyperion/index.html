@@ -6,9 +6,9 @@
 <script src="../theme.js"></script>
 <link rel="stylesheet" href="../theme-toggle.css">
 <title>ヒュペリオン | SKET DANCEの幻の頭脳ゲームを非公式に再現(無料・1〜4人・CPU・オンライン)</title>
-<meta name="description" content="漫画『SKET DANCE』に登場する謎の頭脳ゲーム「ヒュペリオン」を、作中で判明している断片的な設定をもとにAsobiLaboが独自に再現した非公式の8x8盤ゲーム。2vs2チーム制で、駒「アブラシモビッチ」を先に取られたチームの負け。1〜4人でのローカル対戦、CPU対戦、友達とのオンライン対戦に対応した無料ブラウザゲームです。">
+<meta name="description" content="漫画『SKET DANCE』に登場する謎の頭脳ゲーム「ヒュペリオン」を、ニコニコ大百科に記載の設定(盤面グランドクロス・駒9種)をもとにAsobiLaboが再現した非公式ゲーム。2vs2チーム制で、駒「アブラシモビッチ」を先に取られたチームの負け。1〜4人でのローカル対戦、CPU対戦、友達とのオンライン対戦に対応した無料ブラウザゲームです。">
 <meta property="og:title" content="ヒュペリオン | SKET DANCEの幻の頭脳ゲームを非公式に再現">
-<meta property="og:description" content="2vs2チームで駒を取り合う非公式の再現ボードゲーム。1〜4人・CPU対戦・オンライン対戦に対応。">
+<meta property="og:description" content="十字形の盤「グランドクロス」で9種類の駒を動かす、2vs2チームの非公式再現ボードゲーム。1〜4人・CPU対戦・オンライン対戦に対応。">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://ykobashi.github.io/og-image.png">
 <meta property="og:url" content="https://ykobashi.github.io/hyperion/">
@@ -21,7 +21,7 @@
   "name": "ヒュペリオン",
   "applicationCategory": "GameApplication",
   "operatingSystem": "Any",
-  "description": "漫画『SKET DANCE』に登場する謎の頭脳ゲーム「ヒュペリオン」を、判明している断片的な設定をもとに独自に再現した非公式の8x8盤ゲーム。2vs2チーム制、1〜4人・CPU対戦・オンライン対戦に対応。",
+  "description": "漫画『SKET DANCE』に登場する謎の頭脳ゲーム「ヒュペリオン」を、ニコニコ大百科に記載の設定(盤面グランドクロス・駒9種・1人14駒)をもとに再現した非公式ゲーム。2vs2チーム制、1〜4人・CPU対戦・オンライン対戦に対応。",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -86,8 +86,30 @@
     <div id="local-seat-list" class="seat-editor"></div>
     <p id="local-config-error" class="error"></p>
     <div class="mode-buttons">
-      <button id="local-start-btn" class="mode-btn" type="button">対戦開始</button>
+      <button id="local-start-btn" class="mode-btn" type="button">次へ(配置フェーズ)</button>
       <button id="local-back-btn" class="link-btn" type="button">&laquo; 戻る</button>
+    </div>
+  </section>
+
+  <section id="placement-screen" class="setup-screen hidden">
+    <h2 id="placement-seat-label">配置</h2>
+    <p id="placement-status" class="online-status"></p>
+    <div class="placement-layout">
+      <div id="arm-grid" class="arm-grid" aria-label="自陣(5×7マス)への配置"></div>
+      <div class="placement-controls">
+        <p class="subtitle">駒を選んで、空いているマスをクリックすると配置されます。配置済みの駒をクリックすると取り消せます。</p>
+        <div id="piece-palette" class="piece-palette"></div>
+        <div class="mode-buttons formation-buttons">
+          <button id="formation-0-btn" class="link-btn" type="button">エクスカリバーの陣を使う</button>
+          <button id="formation-1-btn" class="link-btn" type="button">千手孔雀陣を使う</button>
+          <button id="formation-2-btn" class="link-btn" type="button">例の陣を使う</button>
+        </div>
+      </div>
+    </div>
+    <div class="mode-buttons">
+      <button id="placement-ready-btn" class="mode-btn" type="button" disabled>準備完了</button>
+      <button id="placement-reset-btn" class="link-btn" type="button">配置をリセット</button>
+      <button id="placement-leave-btn" class="link-btn" type="button">やめる</button>
     </div>
   </section>
 
@@ -141,14 +163,15 @@
 
   <section class="howto">
     <h2>遊び方(ルール)</h2>
-    <p class="disclaimer">「ヒュペリオン」は漫画『SKET DANCE』の作中で実際のルールが明かされない架空のゲームです。判明しているのは「4人零和有限確定完全情報ゲーム」「2vs2チーム戦」「座布(ザフ)という駒」「アブラシモビッチという駒を失うと脱落する」という断片的な設定のみで、以下はそれをもとにAsobiLaboが独自に組み立てた非公式の再現ルールです。</p>
+    <p class="disclaimer">「ヒュペリオン」は漫画『SKET DANCE』の作中で実際のルールが明かされない架空のゲームです。このページはニコニコ大百科に記載されている設定(盤面「グランドクロス」・駒9種の動き・駒数・成駒なし、など)をできる限りそのまま再現し、原作に記述がない部分(チームの組み方・決着時の引き分け処理・CPU思考・OTLとデッドエクストリームアタックの具体的な効果など)だけをAsobiLaboが補った非公式の二次創作です。</p>
     <ul>
-      <li><strong>盤面と駒:</strong> 8×8マスの盤に、4つの席がそれぞれ隅に6つの駒(アブラシモビッチ×1・座布(ザフ)×2・兵×3)を持って向かい合います。席0・2がチームA、席1・3がチームBで、対角の相方がチームメイトです。</li>
-      <li><strong>手番:</strong> 席0→1→2→3→0…の順に手番が回ります(脱落した席は自動でスキップ)。</li>
-      <li><strong>駒の動き:</strong> アブラシモビッチは1マス8方向。座布(ザフ)は8方向に最大3マスまでスライド(味方・敵問わず駒に進路を塞がれ、敵の駒は着地マスでのみ捕獲できます)。兵は1マス、上下左右のみ。</li>
-      <li><strong>捕獲と脱落:</strong> 敵の駒がいるマスに移動すると捕獲できます。相手のアブラシモビッチを捕獲すると、その席が持つ残りの駒は盤上から全て取り除かれ、その席は脱落します。</li>
-      <li><strong>勝敗:</strong> 相手チームの2人ともアブラシモビッチを失った時点でチームの勝利です。決着が長引いた場合は、残っている駒の点数(アブラシモビッチ3点・ザフ2点・兵1点)が多いチームの勝ちとなり、同点なら引き分けです。</li>
-      <li>「ローカル対戦」では1台の端末で4席のうち好きな席を人間・CPUに割り当てて遊べます(1人でCPU3体を相手にすることも可能)。「オンライン対戦」では友達とルームコードで集まり、ホストが各席にゲスト・CPUを割り当てて対戦できます。</li>
+      <li><strong>盤面:</strong> 「グランドクロス」と呼ばれる十字形の盤。7×7マスの中央に、東西南北それぞれへ5×7マスの陣地が付属します(合計189マス)。4人が東西南北に着席し、席0(北)・2(南)がチームA、席1(東)・3(西)がチームBです(※チームの組み方は原作に明記がなく、このサイトでの仮設定です)。</li>
+      <li><strong>配置フェーズ:</strong> 対局開始前に、各自が自分の陣地(5×7マス)へ14個の持ち駒を自由に並べます。「エクスカリバーの陣」「千手孔雀陣」「例の陣」という原作に登場する3つの陣形をワンクリックで使うこともできます。</li>
+      <li><strong>持ち駒(1人14個):</strong> 覇王アブラシモビッチ(王将と同じ動き)×1、量産型ザフ(角と同じ)×2、重戦士ドドンドンドドン(香車と同じ)×1、スチーム(金将と同じ)×1、シューズ(銀将と同じ)×1、抹茶あずきーな(前後左右1マス)×1、OL(斜め1マス)×1、コダクサン(前方2マス先へジャンプ)×1、テキーラ(前方1マスのみ)×5。成駒(プロモーション)はありません。</li>
+      <li><strong>捕獲と脱落:</strong> 敵の駒がいるマスに移動すると捕獲できます。相手のアブラシモビッチを捕獲すると、その席の残りの駒は盤上から全て取り除かれ、その席は脱落します。</li>
+      <li><strong>特殊な合体・イベント:</strong> 自分のOLとテキーラが同じマスに重なると「OTL」という駒に合体します。自分のコダクサンが敵に捕獲されると「デッドエクストリームアタック」が発動し、盤上に残る自分のザフのうち最も近い1体が強化されます(どちらも原作では効果が明言されていない小ネタで、このサイトでは独自の効果を設定しています)。</li>
+      <li><strong>勝敗:</strong> 相手チームの2人ともアブラシモビッチを失った時点でチームの勝利です。決着が長引いた場合は、残っている駒の点数が多いチームの勝ちとなり、同点なら引き分けです。</li>
+      <li>「ローカル対戦」では1台の端末で4席のうち好きな席を人間・CPUに割り当てて遊べます(1人でCPU3体を相手にすることも可能)。「オンライン対戦」では友達とルームコードで集まり、ホストが各席にゲスト・CPUを割り当てて対戦できます。CPU席の配置は3つの陣形からランダムに選ばれます。</li>
     </ul>
   </section>
 

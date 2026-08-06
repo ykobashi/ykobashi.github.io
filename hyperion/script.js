@@ -8,9 +8,12 @@
   const GAME_KEY = 'hyperion';
   const REJOIN_GRACE_MS = 30000;
   const CPU_THINK_MS = 650;
-  const PIECE_GLYPH = { abrashimovich: '王', zafu: '座', hei: '兵' };
 
-  const screens = ['setup-screen', 'seat-config-screen', 'lobby-panel', 'game-area'];
+  const PIECE_GLYPH = { king: 'ア', zafu: 'ザ', lance: 'ド', gold: 'ス', silver: 'シ', matcha: 'あ', ol: 'O', kodakusan: 'コ', tequila: 'テ', otl: 'OTL', 'zafu-boosted': '強ザ' };
+  const PIECE_LABEL = { king: 'アブラシモビッチ', zafu: '量産型ザフ', lance: 'ドドンドンドドン', gold: 'スチーム', silver: 'シューズ', matcha: '抹茶あずきーな', ol: 'OL', kodakusan: 'コダクサン', tequila: 'テキーラ', otl: 'OTL', 'zafu-boosted': '強化ザフ' };
+  const PIECE_ORDER = ['king', 'zafu', 'lance', 'gold', 'silver', 'matcha', 'ol', 'kodakusan', 'tequila'];
+
+  const screens = ['setup-screen', 'seat-config-screen', 'lobby-panel', 'placement-screen', 'game-area'];
   function showOnly(id) { screens.forEach((s) => $(s).classList.toggle('hidden', s !== id)); }
   function showError(id, text) { $(id).textContent = text || ''; }
   function setGameStatus(text) { $('online-connection-status').textContent = text || ''; $('online-connection-status').classList.toggle('hidden', !text); }
@@ -26,6 +29,12 @@
   let roster = []; // ホスト専用: [{id, name, token}]
   let onlineSeats = L.createEmptySeats();
   let localSeats = L.createDefaultSeats();
+  let finalSeats = null; // 配置フェーズ開始時に確定する4席
+  let placementsBySeat = [[], [], [], []]; // ホスト/ローカルが集約する各席の配置(各14駒)
+  let readySeats = new Set();
+  let editingSeatIndex = null; // 現在配置画面を操作している席
+  let localPlacementQueue = []; // ローカル対戦: まだ配置していない人間席の残りキュー
+  let armedType = null; // パレットで選択中の駒種
   let matchState = null;
   let matchesWon = { A: 0, B: 0 };
   let gameId = 0;
@@ -38,6 +47,7 @@
   let legalTargets = [];
   const pendingRejoins = new Map();
   const boardCells = [];
+  const armCells = [];
   const savedSession = RejoinStorage.load(GAME_KEY);
 
   function peerError(err) {
@@ -74,13 +84,13 @@
       root.appendChild(row);
     });
   }
-  function startLocalMatch() {
+  function startLocalSetup() {
     localSeats.forEach((s, i) => { if (!s.name.trim()) s.name = s.kind === 'cpu' ? 'CPU' + (i + 1) : 'プレイヤー' + (i + 1); });
     if (!L.canStartMatch(localSeats)) { showError('local-config-error', '設定を確認してください。'); return; }
     showError('local-config-error', '');
     mode = 'local';
     matchesWon = { A: 0, B: 0 };
-    beginMatch(L.createMatchState(localSeats));
+    startPlacementPhase(localSeats);
   }
 
   // ---------- オンライン: ロビー・座席割り当て ----------
@@ -140,17 +150,146 @@
     $('start-online-btn').disabled = !isHost || !everyoneSeated || !L.canStartMatch(L.fillEmptySeatsWithCpu(onlineSeats));
   }
 
-  // ---------- 盤面表示 ----------
+  // ---------- 配置フェーズ ----------
+  function buildArmGrid() {
+    const root = $('arm-grid');
+    root.innerHTML = '';
+    armCells.length = 0;
+    for (let depth = 6; depth >= 0; depth -= 1) {
+      const rowEls = [];
+      for (let lateral = 0; lateral < 5; lateral += 1) {
+        const cell = document.createElement('button');
+        cell.type = 'button'; cell.className = 'arm-cell';
+        cell.addEventListener('click', () => onArmCellClick(depth, lateral));
+        root.appendChild(cell);
+        rowEls.push(cell);
+      }
+      armCells.push(rowEls);
+    }
+  }
+  function armCellAt(depth, lateral) { const row = armCells[6 - depth]; return row ? row[lateral] : null; }
+  function onArmCellClick(depth, lateral) {
+    if (editingSeatIndex == null || readySeats.has(editingSeatIndex)) return;
+    const abs = L.localToAbsolute(editingSeatIndex, depth, lateral);
+    const placements = placementsBySeat[editingSeatIndex];
+    const existing = placements.find((p) => p.r === abs.r && p.c === abs.c);
+    if (existing) placementsBySeat[editingSeatIndex] = L.removePlacement(placements, abs.r, abs.c);
+    else if (armedType) {
+      const next = L.addPlacement(placements, editingSeatIndex, abs.r, abs.c, armedType);
+      placementsBySeat[editingSeatIndex] = next;
+    }
+    renderPlacementScreen();
+  }
+  function renderPalette(placements) {
+    const root = $('piece-palette'); root.innerHTML = '';
+    const remaining = L.remainingPieceCounts(placements);
+    PIECE_ORDER.forEach((type) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'palette-btn' + (armedType === type ? ' armed' : '');
+      btn.textContent = PIECE_GLYPH[type] + ' ' + PIECE_LABEL[type] + ' ×' + remaining[type];
+      btn.disabled = remaining[type] <= 0;
+      btn.addEventListener('click', () => { armedType = armedType === type ? null : type; renderPlacementScreen(); });
+      root.appendChild(btn);
+    });
+  }
+  function renderPlacementScreen() {
+    if (editingSeatIndex == null || !finalSeats) return;
+    const seat = finalSeats[editingSeatIndex];
+    $('placement-seat-label').textContent = seat.name + 'さんの配置(' + teamLabel(seat.team) + ')';
+    const placements = placementsBySeat[editingSeatIndex];
+    armCells.forEach((row) => row.forEach((cell) => { cell.textContent = ''; cell.className = 'arm-cell'; cell.disabled = readySeats.has(editingSeatIndex); }));
+    placements.forEach((p) => {
+      const local = L.absoluteToLocal(editingSeatIndex, p.r, p.c);
+      const cell = armCellAt(local.depth, local.lateral);
+      if (cell) { cell.textContent = PIECE_GLYPH[p.type]; cell.classList.add('filled'); cell.classList.toggle('wide', PIECE_GLYPH[p.type].length > 1); }
+    });
+    renderPalette(placements);
+    const complete = L.isSetupComplete(placements);
+    $('placement-ready-btn').disabled = !complete || readySeats.has(editingSeatIndex);
+    $('placement-ready-btn').classList.toggle('hidden', readySeats.has(editingSeatIndex));
+    if (mode === 'local') $('placement-status').textContent = 'あと' + localPlacementQueue.length + '人が配置します(合計4席のうち人間の分)';
+    else $('placement-status').textContent = readySeats.has(editingSeatIndex) ? '配置を送信しました。他の参加者を待っています(' + readySeats.size + '/4)' : '準備完了: ' + readySeats.size + '/4人';
+  }
+  function startPlacementPhase(seats) {
+    finalSeats = seats;
+    placementsBySeat = [[], [], [], []];
+    readySeats = new Set();
+    matchesWon = matchesWon || { A: 0, B: 0 };
+    finalSeats.forEach((seat, seatIndex) => {
+      if (seat.kind === 'cpu') { placementsBySeat[seatIndex] = L.formationPlacements(seatIndex, L.cpuFormationChoice(Math.random)); readySeats.add(seatIndex); }
+    });
+    buildArmGrid();
+    if (mode === 'local') {
+      localPlacementQueue = finalSeats.filter((s) => s.kind === 'human').map((s) => s.seatIndex);
+      advanceLocalPlacementQueue();
+    } else {
+      const mySeat = finalSeats.find((s) => s.playerId === myId);
+      editingSeatIndex = mySeat ? mySeat.seatIndex : null;
+      armedType = null;
+      renderPlacementScreen();
+      showOnly('placement-screen');
+      if (isHost) { net.broadcast({ type: 'setup-status', gameId, readySeats: Array.from(readySeats) }); checkAllReadyAndStart(); }
+    }
+  }
+  function advanceLocalPlacementQueue() {
+    if (!localPlacementQueue.length) { finalizeLocalMatchStart(); return; }
+    editingSeatIndex = localPlacementQueue[0];
+    armedType = null;
+    renderPlacementScreen();
+    showOnly('placement-screen');
+  }
+  function finalizeLocalMatchStart() {
+    const state = L.createMatchState(finalSeats, placementsBySeat);
+    beginMatch(state);
+  }
+  function checkAllReadyAndStart() {
+    if (!isHost || readySeats.size < 4) return;
+    gameId += 1; lastRevision = 0;
+    const state = L.createMatchState(finalSeats, placementsBySeat);
+    net.broadcast({ type: 'match-start', gameId, revision: 0, matchesWon: clone(matchesWon), matchState: clone(state) });
+    beginMatch(state);
+  }
+  function confirmMyPlacementReady() {
+    if (editingSeatIndex == null || readySeats.has(editingSeatIndex)) return;
+    if (!L.isSetupComplete(placementsBySeat[editingSeatIndex])) return;
+    if (mode === 'local') {
+      readySeats.add(editingSeatIndex);
+      localPlacementQueue.shift();
+      advanceLocalPlacementQueue();
+      return;
+    }
+    if (isHost) { readySeats.add(editingSeatIndex); net.broadcast({ type: 'setup-status', gameId, readySeats: Array.from(readySeats) }); renderPlacementScreen(); checkAllReadyAndStart(); }
+    else if (conn && conn.open) conn.send({ type: 'placement-ready', gameId, seatIndex: editingSeatIndex, placements: placementsBySeat[editingSeatIndex] });
+  }
+  function hostHandlePlacementReady(peerId, data) {
+    if (!finalSeats || data.gameId !== gameId) return;
+    const seat = finalSeats[data.seatIndex];
+    if (!seat || seat.playerId !== peerId || readySeats.has(data.seatIndex)) return;
+    if (!Array.isArray(data.placements)) return;
+    const validSquares = data.placements.every((p) => L.isValidSquare(p.r, p.c) && L.isInOwnArm(data.seatIndex, p.r, p.c) && L.PIECE_COUNTS[p.type]);
+    const cellSet = new Set(data.placements.map((p) => p.r + ':' + p.c));
+    const counts = {}; data.placements.forEach((p) => { counts[p.type] = (counts[p.type] || 0) + 1; });
+    const countsMatch = Object.keys(L.PIECE_COUNTS).every((t) => (counts[t] || 0) === L.PIECE_COUNTS[t]);
+    if (!validSquares || cellSet.size !== data.placements.length || !countsMatch) return;
+    placementsBySeat[data.seatIndex] = data.placements;
+    readySeats.add(data.seatIndex);
+    net.broadcast({ type: 'setup-status', gameId, readySeats: Array.from(readySeats) });
+    checkAllReadyAndStart();
+  }
+
+  // ---------- 盤面表示(グランドクロス、21x21のうち有効マスのみ操作可能) ----------
   function buildBoardCells() {
     const boardEl = $('board');
     boardEl.innerHTML = '';
+    boardEl.style.gridTemplateColumns = 'repeat(' + L.BOARD_DIM + ', 1fr)';
     boardCells.length = 0;
-    for (let r = 0; r < L.BOARD_SIZE; r += 1) {
+    for (let r = 0; r < L.BOARD_DIM; r += 1) {
       const rowEls = [];
-      for (let c = 0; c < L.BOARD_SIZE; c += 1) {
+      for (let c = 0; c < L.BOARD_DIM; c += 1) {
+        if (!L.isValidSquare(r, c)) { const filler = document.createElement('div'); filler.className = 'cell invalid'; boardEl.appendChild(filler); rowEls.push(null); continue; }
         const cell = document.createElement('button');
-        cell.type = 'button';
-        cell.className = 'cell ' + ((r + c) % 2 === 0 ? 'light' : 'dark');
+        cell.type = 'button'; cell.className = 'cell ' + ((r + c) % 2 === 0 ? 'light' : 'dark');
         cell.dataset.row = r; cell.dataset.col = c;
         cell.addEventListener('click', () => onCellClick(r, c));
         boardEl.appendChild(cell);
@@ -171,9 +310,10 @@
     const board = matchState.board;
     const interactive = isMySeatTurn();
     const legalSet = new Set(legalTargets.map((m) => m.to.r + ':' + m.to.c));
-    for (let r = 0; r < L.BOARD_SIZE; r += 1) {
-      for (let c = 0; c < L.BOARD_SIZE; c += 1) {
+    for (let r = 0; r < L.BOARD_DIM; r += 1) {
+      for (let c = 0; c < L.BOARD_DIM; c += 1) {
         const cell = boardCells[r][c];
+        if (!cell) continue;
         const piece = board[r][c];
         const isLegal = legalSet.has(r + ':' + c);
         cell.classList.toggle('selected', !!selectedFrom && selectedFrom.r === r && selectedFrom.c === c);
@@ -182,21 +322,16 @@
         cell.classList.remove('p1', 'p2', 'p3', 'p4');
         if (piece) {
           cell.classList.add(seatColorClass(piece.seat));
-          cell.textContent = PIECE_GLYPH[piece.type] || '';
-          cell.setAttribute('aria-label', (r + 1) + '行' + (c + 1) + '列: ' + seatName(piece.seat) + 'の駒');
-        } else {
-          cell.textContent = '';
-          cell.setAttribute('aria-label', (r + 1) + '行' + (c + 1) + '列: 空きマス');
-        }
+          const glyph = PIECE_GLYPH[piece.type] || '';
+          cell.textContent = glyph;
+          cell.classList.toggle('wide', glyph.length > 1);
+          cell.setAttribute('aria-label', seatName(piece.seat) + 'の' + (PIECE_LABEL[piece.type] || piece.type));
+        } else { cell.textContent = ''; cell.classList.remove('wide'); cell.removeAttribute('aria-label'); }
         cell.disabled = !interactive;
       }
     }
   }
-  function selectPiece(r, c) {
-    selectedFrom = { r, c };
-    legalTargets = L.generateMovesForPiece(matchState.board, r, c);
-    renderBoard();
-  }
+  function selectPiece(r, c) { selectedFrom = { r, c }; legalTargets = L.generateMovesForPiece(matchState.board, r, c); renderBoard(); }
   function onCellClick(r, c) {
     if (!isMySeatTurn()) return;
     const seatIndex = matchState.activeSeatIndex;
@@ -269,13 +404,12 @@
   function rematch() {
     if (!matchState) return;
     const seats = matchState.seats;
-    const nextState = L.createMatchState(seats);
     if (mode === 'online') {
       if (!isHost) return;
-      gameId += 1; lastRevision = 0;
-      net.broadcast({ type: 'match-start', gameId, revision: 0, matchesWon: clone(matchesWon), matchState: clone(nextState) });
+      gameId += 1; lastRevision = -1;
+      net.broadcast({ type: 'setup-start', gameId, seats });
     }
-    beginMatch(nextState);
+    startPlacementPhase(seats);
   }
   function beginMatch(state) {
     matchState = clone(state);
@@ -324,7 +458,7 @@
   function hostMessage(peerId, data) {
     if (!data || typeof data !== 'object') return;
     if (data.type === 'join') {
-      if (matchState) { net.sendTo(peerId, { type: 'game-in-progress' }); return; }
+      if (finalSeats) { net.sendTo(peerId, { type: 'game-in-progress' }); return; }
       if (roster.length >= 4 || roster.some((p) => p.token === data.token)) { net.sendTo(peerId, { type: 'room-full' }); return; }
       if (typeof data.token !== 'string' || !data.token || typeof data.joinRequestId !== 'string') return;
       const name = String(data.name || 'ゲスト').trim().slice(0, 10) || 'ゲスト';
@@ -336,6 +470,7 @@
       return;
     }
     if (data.type === 'rejoin') { handleRejoin(peerId, data); return; }
+    if (data.type === 'placement-ready') { hostHandlePlacementReady(peerId, data); return; }
     if (data.type === 'move-request') { hostHandleMove(data.seatIndex, peerId, data.version, data.from, data.to); return; }
   }
 
@@ -343,12 +478,14 @@
   function replacePeerId(oldId, newId) {
     roster.forEach((p) => { if (p.id === oldId) p.id = newId; });
     onlineSeats.forEach((s) => { if (s.playerId === oldId) s.playerId = newId; });
+    if (finalSeats) finalSeats.forEach((s) => { if (s.playerId === oldId) s.playerId = newId; });
     if (matchState) matchState.seats.forEach((s) => { if (s.playerId === oldId) s.playerId = newId; });
   }
   function snapshotFor(peerId) {
+    const phase = matchState ? matchState.phase : (finalSeats ? 'setup' : 'lobby');
     return {
-      type: 'state-snapshot', snapshotVersion: 1, gameId, revision: matchState ? matchState.version : 0,
-      phase: matchState ? matchState.phase : 'lobby', roster: publicRoster(), seats: onlineSeats,
+      type: 'state-snapshot', snapshotVersion: 1, gameId, revision: matchState ? matchState.version : 0, phase,
+      roster: publicRoster(), seats: onlineSeats, finalSeats, readySeats: Array.from(readySeats),
       matchState: matchState ? clone(matchState) : null, matchesWon: clone(matchesWon), peerId,
     };
   }
@@ -373,8 +510,18 @@
     setGameStatus(player.name + 'さんの再接続を30秒待っています。手番はCPUが代打します。');
     const timer = setTimeout(() => {
       pendingRejoins.delete(player.token);
-      const convert = (seats) => seats.map((s) => (s.playerId === peerId ? { ...s, kind: 'cpu', playerId: null, name: player.name + '(CPU)' } : s));
+      const cpuName = player.name + '(CPU)';
+      const convert = (seats) => seats.map((s) => (s.playerId === peerId ? { ...s, kind: 'cpu', playerId: null, name: cpuName } : s));
       onlineSeats = convert(onlineSeats);
+      if (finalSeats) {
+        finalSeats = convert(finalSeats);
+        const idx = finalSeats.findIndex((s) => s.name === cpuName);
+        if (idx >= 0 && !readySeats.has(idx)) {
+          placementsBySeat[idx] = L.formationPlacements(idx, L.cpuFormationChoice(Math.random));
+          readySeats.add(idx);
+          if (isHost) { net.broadcast({ type: 'setup-status', gameId, readySeats: Array.from(readySeats) }); checkAllReadyAndStart(); }
+        }
+      }
       if (matchState) matchState.seats = convert(matchState.seats);
       setGameStatus(player.name + 'さんが切断しました。CPUが代打します。');
       broadcastRoster();
@@ -384,20 +531,28 @@
   }
   function applySnapshot(data) {
     if (data.snapshotVersion !== 1) return;
-    if (data.gameId < gameId || (data.gameId === gameId && data.revision < lastRevision)) return;
-    gameId = data.gameId; lastRevision = data.revision;
+    if (data.gameId < gameId || (data.gameId === gameId && (data.revision || 0) < lastRevision)) return;
+    gameId = data.gameId; lastRevision = data.revision || 0;
     roster = data.roster || roster; onlineSeats = data.seats || onlineSeats; matchesWon = data.matchesWon || matchesWon;
     if (data.peerId) myId = data.peerId;
     setGameStatus('');
-    if (data.matchState && (data.phase === 'playing' || data.phase === 'result')) {
+    if (data.phase === 'playing' || data.phase === 'result') {
       matchState = clone(data.matchState);
       buildBoardCells();
       showOnly('game-area');
-      if (data.phase === 'result') { renderBoard(); refreshTurnUi(); showResult(); }
-      else afterStateChange();
+      if (data.phase === 'result') { renderBoard(); refreshTurnUi(); showResult(); } else afterStateChange();
+    } else if (data.phase === 'setup') {
+      finalSeats = data.finalSeats; readySeats = new Set(data.readySeats || []);
+      buildArmGrid();
+      const mySeat = finalSeats.find((s) => s.playerId === myId);
+      editingSeatIndex = mySeat ? mySeat.seatIndex : null;
+      if (editingSeatIndex == null) { showOnly('lobby-panel'); return; }
+      if (!readySeats.has(editingSeatIndex)) placementsBySeat[editingSeatIndex] = [];
+      armedType = null;
+      renderPlacementScreen();
+      showOnly('placement-screen');
     } else {
-      renderRoster();
-      showOnly('lobby-panel');
+      renderRoster(); showOnly('lobby-panel');
     }
   }
 
@@ -412,6 +567,17 @@
       if (net && net.destroy) net.destroy(); resetSetupScreen(); showOnly('setup-screen'); showError('online-error', message); return;
     }
     if (data.type === 'roster') { roster = data.players || []; onlineSeats = data.seats || onlineSeats; renderRoster(); return; }
+    if (data.type === 'setup-start') {
+      gameId = data.gameId; finalSeats = data.seats; placementsBySeat = [[], [], [], []]; readySeats = new Set();
+      buildArmGrid();
+      const mySeat = finalSeats.find((s) => s.playerId === myId);
+      editingSeatIndex = mySeat ? mySeat.seatIndex : null;
+      armedType = null;
+      renderPlacementScreen();
+      showOnly('placement-screen');
+      return;
+    }
+    if (data.type === 'setup-status') { readySeats = new Set(data.readySeats || []); renderPlacementScreen(); return; }
     if (data.type === 'match-start') { gameId = data.gameId; lastRevision = data.revision || 0; matchesWon = data.matchesWon || matchesWon; beginMatch(data.matchState); return; }
     if (data.type === 'move-result') {
       if (data.gameId !== gameId || data.revision <= lastRevision) return;
@@ -439,7 +605,7 @@
   }
   function quitGame(clearSession) {
     clearTimeout(cpuTimer); cpuTimer = null;
-    matchState = null; selectedFrom = null; legalTargets = [];
+    matchState = null; selectedFrom = null; legalTargets = []; finalSeats = null; placementsBySeat = [[], [], [], []]; readySeats = new Set(); editingSeatIndex = null; localPlacementQueue = []; armedType = null;
     if (mode === 'online') resetOnlineConnection();
     if (clearSession) RejoinStorage.clear(GAME_KEY);
     mode = null;
@@ -487,7 +653,7 @@
   // ---------- イベント登録 ----------
   $('mode-local-btn').addEventListener('click', () => { localSeats = L.createDefaultSeats(); renderLocalSeats(); showOnly('seat-config-screen'); });
   $('local-back-btn').addEventListener('click', () => showOnly('setup-screen'));
-  $('local-start-btn').addEventListener('click', startLocalMatch);
+  $('local-start-btn').addEventListener('click', startLocalSetup);
 
   $('mode-online-btn').addEventListener('click', () => { $('mode-select').classList.add('hidden'); $('online-panel').classList.remove('hidden'); });
   $('online-back-btn').addEventListener('click', () => { $('mode-select').classList.remove('hidden'); $('online-panel').classList.add('hidden'); showError('online-error', ''); });
@@ -498,7 +664,7 @@
     mode = 'online'; isHost = true; myId = HOST_ID;
     roster = [{ id: HOST_ID, name: myName, token: 'host' }];
     onlineSeats = L.assignSeat(L.createEmptySeats(), 0, 'human', HOST_ID, myName);
-    matchState = null; matchesWon = { A: 0, B: 0 };
+    finalSeats = null; matchState = null; matchesWon = { A: 0, B: 0 };
     $('host-btn').disabled = true; $('join-btn').disabled = true; $('join-code-input').disabled = true;
     net = HyperionNet.hostRoom({
       onCode(code) {
@@ -511,7 +677,7 @@
       onPeerDisconnected(peerId) {
         const player = roster.find((p) => p.id === peerId);
         if (!player) return;
-        if (!matchState) {
+        if (!finalSeats) {
           roster = roster.filter((p) => p.id !== peerId);
           onlineSeats = clearSeatByPlayerId(onlineSeats, peerId);
           broadcastRoster(); renderRoster();
@@ -524,6 +690,7 @@
   $('join-btn').addEventListener('click', () => connectGuest(null));
   $('copy-code-btn').addEventListener('click', () => { if (navigator.clipboard) navigator.clipboard.writeText(roomCode).then(() => { $('online-status').textContent = 'コピーしました。'; }); });
   $('leave-lobby-btn').addEventListener('click', () => quitGame(true));
+  $('placement-leave-btn').addEventListener('click', () => quitGame(true));
   $('quit-btn').addEventListener('click', () => quitGame(true));
   $('start-online-btn').addEventListener('click', () => {
     if (!isHost) return;
@@ -531,10 +698,19 @@
     if (!L.canStartMatch(seats)) return;
     onlineSeats = seats;
     matchesWon = { A: 0, B: 0 };
-    gameId += 1; lastRevision = 0;
-    const state = L.createMatchState(seats);
-    net.broadcast({ type: 'match-start', gameId, revision: 0, matchesWon: clone(matchesWon), matchState: clone(state) });
-    beginMatch(state);
+    gameId += 1; lastRevision = -1;
+    net.broadcast({ type: 'setup-start', gameId, seats });
+    startPlacementPhase(seats);
+  });
+  $('placement-ready-btn').addEventListener('click', confirmMyPlacementReady);
+  $('placement-reset-btn').addEventListener('click', () => { if (editingSeatIndex != null && !readySeats.has(editingSeatIndex)) { placementsBySeat[editingSeatIndex] = []; renderPlacementScreen(); } });
+  ['formation-0-btn', 'formation-1-btn', 'formation-2-btn'].forEach((id, idx) => {
+    $(id).addEventListener('click', () => {
+      if (editingSeatIndex == null || readySeats.has(editingSeatIndex)) return;
+      placementsBySeat[editingSeatIndex] = L.formationPlacements(editingSeatIndex, idx);
+      armedType = null;
+      renderPlacementScreen();
+    });
   });
   $('play-again-btn').addEventListener('click', rematch);
 
