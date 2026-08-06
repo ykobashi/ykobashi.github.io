@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../theme.js"></script>
+<link rel="stylesheet" href="../theme-toggle.css">
+<title>ヒュペリオン | SKET DANCEの幻の頭脳ゲームを非公式に再現(無料・1〜4人・CPU・オンライン)</title>
+<meta name="description" content="漫画『SKET DANCE』に登場する謎の頭脳ゲーム「ヒュペリオン」を、作中で判明している断片的な設定をもとにAsobiLaboが独自に再現した非公式の8x8盤ゲーム。2vs2チーム制で、駒「アブラシモビッチ」を先に取られたチームの負け。1〜4人でのローカル対戦、CPU対戦、友達とのオンライン対戦に対応した無料ブラウザゲームです。">
+<meta property="og:title" content="ヒュペリオン | SKET DANCEの幻の頭脳ゲームを非公式に再現">
+<meta property="og:description" content="2vs2チームで駒を取り合う非公式の再現ボードゲーム。1〜4人・CPU対戦・オンライン対戦に対応。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/hyperion/">
+<link rel="canonical" href="https://ykobashi.github.io/hyperion/">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Game",
+  "name": "ヒュペリオン",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "description": "漫画『SKET DANCE』に登場する謎の頭脳ゲーム「ヒュペリオン」を、判明している断片的な設定をもとに独自に再現した非公式の8x8盤ゲーム。2vs2チーム制、1〜4人・CPU対戦・オンライン対戦に対応。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EQ35W720X8');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>ヒュペリオン</h1>
+  <p class="subtitle">SKET DANCEの幻の頭脳ゲームを非公式に再現。2vs2チームで駒を取り合う戦略ゲーム(1〜4人・CPU対戦・オンライン対戦)</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <p id="connection-health" class="connection-health hidden" role="status">通信が不安定です。再接続を試みています…</p>
+
+  <section id="setup-screen" class="setup-screen">
+    <div id="mode-select" class="mode-select">
+      <h2>遊び方を選んでください</h2>
+      <div class="mode-buttons">
+        <button id="mode-local-btn" class="mode-btn" type="button">ローカル対戦(この端末で・CPU補充あり)</button>
+        <button id="mode-online-btn" class="mode-btn" type="button">オンライン対戦(友達と)</button>
+      </div>
+    </div>
+
+    <div id="online-panel" class="online-panel hidden">
+      <button id="online-back-btn" class="link-btn" type="button">&laquo; 戻る</button>
+      <h2>オンライン対戦</h2>
+      <input id="name-input" class="name-input" maxlength="10" placeholder="ニックネーム">
+
+      <div class="online-choice">
+        <button id="host-btn" class="mode-btn" type="button">部屋を作る(招待する)</button>
+        <div class="join-row">
+          <input id="join-code-input" type="text" inputmode="latin" maxlength="6" placeholder="6桁のコード">
+          <button id="join-btn" class="mode-btn" type="button">参加する</button>
+        </div>
+      </div>
+
+      <p id="online-error" class="online-error"></p>
+    </div>
+  </section>
+
+  <section id="seat-config-screen" class="setup-screen hidden">
+    <h2>ローカル対戦の設定</h2>
+    <p class="subtitle">各席を人間かCPUに割り当ててください(4席固定、席0・2がチームA、席1・3がチームB)</p>
+    <div id="local-seat-list" class="seat-editor"></div>
+    <p id="local-config-error" class="error"></p>
+    <div class="mode-buttons">
+      <button id="local-start-btn" class="mode-btn" type="button">対戦開始</button>
+      <button id="local-back-btn" class="link-btn" type="button">&laquo; 戻る</button>
+    </div>
+  </section>
+
+  <section id="lobby-panel" class="setup-screen hidden">
+    <div id="host-wait" class="host-wait hidden">
+      <p>このコードを友達に伝えてください:</p>
+      <div id="room-code-text" class="room-code">------</div>
+      <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+    </div>
+    <p id="online-status" class="online-status"></p>
+    <h2>オンラインロビー</h2>
+    <ul id="roster-list" class="roster"></ul>
+    <div id="online-seat-controls" class="hidden">
+      <h3>座席・チーム(ホストが設定)</h3>
+      <div id="online-seat-list" class="seat-editor"></div>
+    </div>
+    <p id="lobby-error" class="error"></p>
+    <div class="mode-buttons">
+      <button id="start-online-btn" class="mode-btn hidden" type="button" disabled>対戦開始</button>
+      <button id="leave-lobby-btn" class="link-btn" type="button">退出する</button>
+    </div>
+  </section>
+
+  <section id="game-area" class="game-area hidden">
+    <section class="status-bar">
+      <div id="turn-indicator" class="turn-indicator">
+        <span id="turn-team-badge" class="team-badge team-a">A</span>
+        <span id="turn-text">手番です</span>
+      </div>
+      <button id="quit-btn" class="reset-btn" type="button">やめる</button>
+    </section>
+
+    <p id="online-connection-status" class="online-status hidden"></p>
+
+    <section class="board-wrapper">
+      <div id="board" class="board" role="grid" aria-label="ヒュペリオン盤面"></div>
+    </section>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-title" class="result-title">勝負あり!</p>
+      <p id="result-meta" class="result-meta"></p>
+      <ol id="result-scoreboard" class="result-scoreboard"></ol>
+      <div class="result-actions">
+        <button id="play-again-btn" class="mode-btn hidden" type="button">もう一度遊ぶ</button>
+        <a href="../index.html" class="secondary-btn">ゲーム一覧に戻る</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方(ルール)</h2>
+    <p class="disclaimer">「ヒュペリオン」は漫画『SKET DANCE』の作中で実際のルールが明かされない架空のゲームです。判明しているのは「4人零和有限確定完全情報ゲーム」「2vs2チーム戦」「座布(ザフ)という駒」「アブラシモビッチという駒を失うと脱落する」という断片的な設定のみで、以下はそれをもとにAsobiLaboが独自に組み立てた非公式の再現ルールです。</p>
+    <ul>
+      <li><strong>盤面と駒:</strong> 8×8マスの盤に、4つの席がそれぞれ隅に6つの駒(アブラシモビッチ×1・座布(ザフ)×2・兵×3)を持って向かい合います。席0・2がチームA、席1・3がチームBで、対角の相方がチームメイトです。</li>
+      <li><strong>手番:</strong> 席0→1→2→3→0…の順に手番が回ります(脱落した席は自動でスキップ)。</li>
+      <li><strong>駒の動き:</strong> アブラシモビッチは1マス8方向。座布(ザフ)は8方向に最大3マスまでスライド(味方・敵問わず駒に進路を塞がれ、敵の駒は着地マスでのみ捕獲できます)。兵は1マス、上下左右のみ。</li>
+      <li><strong>捕獲と脱落:</strong> 敵の駒がいるマスに移動すると捕獲できます。相手のアブラシモビッチを捕獲すると、その席が持つ残りの駒は盤上から全て取り除かれ、その席は脱落します。</li>
+      <li><strong>勝敗:</strong> 相手チームの2人ともアブラシモビッチを失った時点でチームの勝利です。決着が長引いた場合は、残っている駒の点数(アブラシモビッチ3点・ザフ2点・兵1点)が多いチームの勝ちとなり、同点なら引き分けです。</li>
+      <li>「ローカル対戦」では1台の端末で4席のうち好きな席を人間・CPUに割り当てて遊べます(1人でCPU3体を相手にすることも可能)。「オンライン対戦」では友達とルームコードで集まり、ホストが各席にゲスト・CPUを割り当てて対戦できます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 ヒュペリオン(非公式) · <a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="../common/net-core.js"></script>
+<script src="../common/peer-errors.js"></script>
+<script src="../common/wake-lock.js"></script>
+<script src="../common/rejoin-storage.js"></script>
+<script src="peerjs.min.js"></script>
+<script src="logic.js"></script>
+<script src="net.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
