@@ -6,7 +6,7 @@ const L = require('./logic.js');
 function emptyBoard() { return L.createEmptyBoard(); }
 function seat(seatIndex, overrides) { return Object.assign({ seatIndex, kind: 'human', playerId: 'p' + seatIndex, name: 'P' + seatIndex, team: L.TEAM_OF_SEAT(seatIndex), eliminated: false }, overrides || {}); }
 function fourSeats(overrides) { return [0, 1, 2, 3].map((i) => seat(i, overrides && overrides[i])); }
-function state(board, seats, extra) { return Object.assign({ board, seats, activeSeatIndex: 0, turnCount: 0, version: 0, phase: 'playing', winner: null, drawn: false, lastMove: null }, extra || {}); }
+function state(board, seats, extra) { return Object.assign({ board, seats, turnOrder: [0, 1, 2, 3], activeSeatIndex: 0, turnCount: 0, version: 0, phase: 'playing', winner: null, drawn: false, lastMove: null }, extra || {}); }
 
 // --- 盤面「グランドクロス」: 189マス、4隅は無効 ---
 {
@@ -23,8 +23,23 @@ function state(board, seats, extra) { return Object.assign({ board, seats, activ
   assert.strictEqual(L.isValidSquare(20, 10), true); // 南の腕の先端
   assert.strictEqual(L.isValidSquare(10, 0), true); // 西の腕の先端
 }
-assert.strictEqual(L.TEAM_OF_SEAT(0), 'A'); assert.strictEqual(L.TEAM_OF_SEAT(2), 'A');
-assert.strictEqual(L.TEAM_OF_SEAT(1), 'B'); assert.strictEqual(L.TEAM_OF_SEAT(3), 'B');
+// チームの組み方(ファンブログに明記): 隣同士(0=北・1=東、2=南・3=西)が味方、対面(0⇔2, 1⇔3)が敵。
+assert.strictEqual(L.TEAM_OF_SEAT(0), 'A'); assert.strictEqual(L.TEAM_OF_SEAT(1), 'A');
+assert.strictEqual(L.TEAM_OF_SEAT(2), 'B'); assert.strictEqual(L.TEAM_OF_SEAT(3), 'B');
+assert.strictEqual(L.teammateOf(0), 1); assert.strictEqual(L.teammateOf(1), 0);
+assert.strictEqual(L.teammateOf(2), 3); assert.strictEqual(L.teammateOf(3), 2);
+
+// --- 手番順: 最先手はコイントスで決定、最先手と味方が1番目と4番目になる(味方を2番目に踏まない回転方向) ---
+assert.deepStrictEqual(L.buildTurnOrder(0), [0, 3, 2, 1]);
+assert.deepStrictEqual(L.buildTurnOrder(1), [1, 2, 3, 0]);
+assert.deepStrictEqual(L.buildTurnOrder(2), [2, 1, 0, 3]);
+assert.deepStrictEqual(L.buildTurnOrder(3), [3, 0, 1, 2]);
+[0, 1, 2, 3].forEach((first) => {
+  const order = L.buildTurnOrder(first);
+  assert.strictEqual(order[0], first);
+  assert.strictEqual(order[3], L.teammateOf(first)); // 味方は必ず最後手
+  assert.strictEqual(L.TEAM_OF_SEAT(order[1]), L.TEAM_OF_SEAT(order[2])); // 中2つは敵チームで揃う
+});
 
 // --- localToAbsolute: 各座席の自陣一番奥・中央(depth0,lateral2)が原点と一致するか ---
 assert.deepStrictEqual(L.localToAbsolute(0, 0, 2), { r: 0, c: 10 });
@@ -64,11 +79,28 @@ assert.deepStrictEqual(L.localToAbsolute(1, 6, 2), { r: 10, c: 14 }); // 東: de
 {
   const board = emptyBoard();
   board[10][10] = { seat: 0, type: 'zafu' };
-  board[12][12] = { seat: 1, type: 'tequila' }; // 敵駒: 着地のみ捕獲、その先には進めない
+  board[12][12] = { seat: 2, type: 'tequila' }; // 敵駒: 着地のみ捕獲、その先には進めない
   const moves = L.generateMovesForPiece(board, 10, 10);
   const downRight = moves.filter((m) => m.to.r > 10 && m.to.c > 10 && (m.to.r - 10) === (m.to.c - 10)).map((m) => m.to.r).sort();
   assert.deepStrictEqual(downRight, [11, 12]);
-  assert.deepStrictEqual(moves.find((m) => m.to.r === 12 && m.to.c === 12).capture, { seat: 1, type: 'tequila' });
+  assert.deepStrictEqual(moves.find((m) => m.to.r === 12 && m.to.c === 12).capture, { seat: 2, type: 'tequila' });
+}
+
+// --- 斜め移動は十字の切れ込み(4隅の無効マス)を素通りできる(ファンブログに明記) ---
+{
+  const board = emptyBoard();
+  // 北の腕の右上角(0,12)から右下方向(dr=1,dc=1)は(1,13)〜(7,19)が無効マス(4隅の切れ込み)だが、
+  // その先の東の腕の角(8,20)まで素通りして届く。
+  [1, 2, 3, 4, 5, 6, 7].forEach((step) => assert.strictEqual(L.isValidSquare(step, 12 + step), false));
+  assert.strictEqual(L.isValidSquare(8, 20), true);
+  board[0][12] = { seat: 0, type: 'zafu' };
+  const moves = L.generateMovesForPiece(board, 0, 12);
+  assert(moves.some((m) => m.to.r === 8 && m.to.c === 20));
+  // 敵駒を切れ込みの先に置けば、そこで捕獲して止まる
+  board[8][20] = { seat: 2, type: 'tequila' };
+  const withEnemy = L.generateMovesForPiece(board, 0, 12);
+  const capture = withEnemy.find((m) => m.to.r === 8 && m.to.c === 20);
+  assert.deepStrictEqual(capture.capture, { seat: 2, type: 'tequila' });
 }
 
 // --- ドドンドンドドン(前方直進のみ)。座席ごとに前方が異なることを確認 ---
@@ -140,11 +172,13 @@ assert.deepStrictEqual(L.localToAbsolute(1, 6, 2), { r: 10, c: 14 }); // 東: de
   assert.deepStrictEqual(moves[0].to, { r: 11, c: 10 });
 }
 
-// --- OTL合体: 自分のOL⇔テキーラが同マスに入ると合体。味方(別座席)や敵とは合体しない ---
+// --- OTL合体(ファンブログに明記): OLが敵味方問わずテキーラのマスに入るとOTLになる。
+//     味方(自分含む)のテキーラへは通常なら進入不可なところをこの合体だけ例外的に許可。敵のテキーラは
+//     通常の捕獲だがこちらもOTLになる。テキーラ側からOLへ合体する動きはない。 ---
 {
   const board = emptyBoard();
   board[10][10] = { seat: 0, type: 'ol' };
-  board[9][9] = { seat: 0, type: 'tequila' }; // 斜め1マスに自分のテキーラ
+  board[9][9] = { seat: 0, type: 'tequila' }; // 自分自身のテキーラ
   const merge = L.generateMovesForPiece(board, 10, 10).find((m) => m.to.r === 9 && m.to.c === 9);
   assert.strictEqual(merge.merge, 'otl');
   const result = L.applyMove(state(board, fourSeats()), 0, { r: 10, c: 10 }, { r: 9, c: 9 });
@@ -154,19 +188,57 @@ assert.deepStrictEqual(L.localToAbsolute(1, 6, 2), { r: 10, c: 14 }); // 東: de
   assert.strictEqual(result.state.lastMove.merged, true);
 }
 {
+  // 味方(別座席、seat1はseat0のチームメイト)のテキーラへも例外的に進入でき、OTLになる
   const board = emptyBoard();
   board[10][10] = { seat: 0, type: 'ol' };
-  board[9][9] = { seat: 2, type: 'tequila' }; // 味方(別座席)のテキーラとは合体しない・移動もできない(味方マスはブロック)
+  board[9][9] = { seat: 1, type: 'tequila' };
   const merge = L.generateMovesForPiece(board, 10, 10).find((m) => m.to.r === 9 && m.to.c === 9);
-  assert.strictEqual(merge, undefined);
+  assert.strictEqual(merge.merge, 'otl');
+  assert.strictEqual(merge.capture, null); // 味方の駒なので捕獲ではない
+}
+{
+  // 敵(seat2、チームB)のテキーラは通常通り捕獲しつつ、OTLにもなる
+  const board = emptyBoard();
+  board[10][10] = { seat: 0, type: 'ol' };
+  board[9][9] = { seat: 2, type: 'tequila' };
+  const move = L.generateMovesForPiece(board, 10, 10).find((m) => m.to.r === 9 && m.to.c === 9);
+  assert.strictEqual(move.merge, 'otl');
+  assert.deepStrictEqual(move.capture, { seat: 2, type: 'tequila' });
+  const result = L.applyMove(state(board, fourSeats()), 0, { r: 10, c: 10 }, { r: 9, c: 9 });
+  assert.deepStrictEqual(result.state.board[9][9], { seat: 0, type: 'otl' });
+}
+{
+  // テキーラ側からOLのマスへ合体する動きはない(OL主体の合体のみ)
+  const board = emptyBoard();
+  board[10][10] = { seat: 0, type: 'tequila' }; // 前方1マスのみ動けるテキーラ
+  board[11][10] = { seat: 1, type: 'ol' }; // 前方に味方のOL
+  const moves = L.generateMovesForPiece(board, 10, 10);
+  assert.strictEqual(moves.length, 0); // 味方マスなので進入不可、合体もしない
+}
+
+// --- OTLの移動(千鳥足): 前方3マス先の右または左へ、左→中央→右(またはその逆)の経路を通る。
+//     経路上(中間点)に駒があると、その方向へは移動できない。 ---
+{
+  const board = emptyBoard();
+  board[10][10] = { seat: 0, type: 'otl' }; // 北: 前方=南(行+)、右=西(列-)
+  const moves = L.generateMovesForPiece(board, 10, 10);
+  const targets = moves.map((m) => m.to.r + ':' + m.to.c).sort();
+  assert.deepStrictEqual(targets, ['13:11', '13:9']); // 3マス先の左右(f=3,r=±1 → 行13、列9または11。文字列sortの順)
 }
 {
   const board = emptyBoard();
-  board[10][10] = { seat: 0, type: 'ol' };
-  board[9][9] = { seat: 1, type: 'tequila' }; // 敵のテキーラは通常通り捕獲
-  const move = L.generateMovesForPiece(board, 10, 10).find((m) => m.to.r === 9 && m.to.c === 9);
-  assert.strictEqual(move.merge, undefined);
-  assert.deepStrictEqual(move.capture, { seat: 1, type: 'tequila' });
+  board[10][10] = { seat: 0, type: 'otl' };
+  board[11][9] = { seat: 0, type: 'tequila' }; // (13,11)行きの経路の1歩目を自駒で塞ぐ
+  const moves = L.generateMovesForPiece(board, 10, 10);
+  const targets = moves.map((m) => m.to.r + ':' + m.to.c).sort();
+  assert.deepStrictEqual(targets, ['13:9']); // (13,11)行きだけ塞がれ、(13,9)行きは無事
+}
+{
+  const board = emptyBoard();
+  board[10][10] = { seat: 0, type: 'otl' };
+  board[12][10] = { seat: 2, type: 'tequila' }; // 中央の中間点(2歩目)を敵駒で塞ぐ(両方向とも通る点)
+  const moves = L.generateMovesForPiece(board, 10, 10);
+  assert.strictEqual(moves.length, 0); // 両方向とも経路上に駒があるため移動不可
 }
 
 // --- applyMove: 不正な手の拒否 ---
@@ -197,36 +269,37 @@ assert.deepStrictEqual(L.localToAbsolute(1, 6, 2), { r: 10, c: 14 }); // 東: de
   assert.strictEqual(s.seats[0].eliminated, true);
 }
 assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 0: { eliminated: true } }))), null);
-assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 0: { eliminated: true }, 2: { eliminated: true } }))), 'B');
-assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 1: { eliminated: true }, 3: { eliminated: true } }))), 'A');
+assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 0: { eliminated: true }, 2: { eliminated: true } }))), null); // 0・2は別チームなのでまだ決着しない
+assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 0: { eliminated: true }, 1: { eliminated: true } }))), 'B'); // チームA(0・1)が全滅
+assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 2: { eliminated: true }, 3: { eliminated: true } }))), 'A'); // チームB(2・3)が全滅
 
 // --- applyMove: 王将捕獲 → 脱落カスケード → 勝利判定 ---
-// 座席0(北,チームA)が座席1(東,チームB)の王将を捕獲する。座席3(西,チームB)は事前に脱落済みなので、
-// これでチームB(1・3)が両方脱落しチームAの勝利になる。
+// 座席0(北,チームA)が座席2(南,チームB)の王将を捕獲する。座席3(西,チームB)は事前に脱落済みなので、
+// これでチームB(2・3)が両方脱落しチームAの勝利になる。
 {
   const board = emptyBoard();
   board[6][10] = { seat: 0, type: 'king' };
-  board[6][11] = { seat: 1, type: 'king' };
-  board[10][20] = { seat: 1, type: 'tequila' }; // 遠く離れた駒もカスケードで消える
+  board[7][10] = { seat: 2, type: 'king' };
+  board[10][20] = { seat: 2, type: 'tequila' }; // 遠く離れた駒もカスケードで消える
   const seats = fourSeats({ 3: { eliminated: true } });
   const s = state(board, seats, { activeSeatIndex: 0, turnCount: 5, version: 2 });
-  const result = L.applyMove(s, 0, { r: 6, c: 10 }, { r: 6, c: 11 });
+  const result = L.applyMove(s, 0, { r: 6, c: 10 }, { r: 7, c: 10 });
   assert.strictEqual(result.applied, true);
   assert.strictEqual(result.state.phase, 'result');
   assert.strictEqual(result.state.winner, 'A');
-  assert.strictEqual(result.state.seats[1].eliminated, true);
+  assert.strictEqual(result.state.seats[2].eliminated, true);
   assert.strictEqual(result.state.board[10][20], null);
-  assert.strictEqual(result.state.lastMove.eliminatedSeat, 1);
+  assert.strictEqual(result.state.lastMove.eliminatedSeat, 2);
 }
 
 // --- デッドエクストリームアタック: コダクサン捕獲で最も近い自分のザフが強化される ---
-// 座席0(チームA)が座席1(チームB)のコダクサンを捕獲 → 座席1の残りザフのうち近い方が強化される。
+// 座席0(チームA)が座席2(チームB)のコダクサンを捕獲 → 座席2の残りザフのうち近い方が強化される。
 {
   const board = emptyBoard();
   board[6][10] = { seat: 0, type: 'lance' }; // これでコダクサンを捕獲する(直進で届く位置)
-  board[9][10] = { seat: 1, type: 'kodakusan' };
-  board[9][8] = { seat: 1, type: 'zafu' }; // 近い方
-  board[0][8] = { seat: 1, type: 'zafu' }; // 遠い方
+  board[9][10] = { seat: 2, type: 'kodakusan' };
+  board[9][8] = { seat: 2, type: 'zafu' }; // 近い方
+  board[0][8] = { seat: 2, type: 'zafu' }; // 遠い方
   const s = state(board, fourSeats(), { activeSeatIndex: 0 });
   const result = L.applyMove(s, 0, { r: 6, c: 10 }, { r: 9, c: 10 });
   assert.strictEqual(result.applied, true);
@@ -247,7 +320,7 @@ assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 1: { eliminated
 {
   const board = emptyBoard();
   board[0][10] = { seat: 0, type: 'tequila' };
-  board[20][10] = { seat: 1, type: 'tequila' };
+  board[20][10] = { seat: 2, type: 'tequila' };
   const resolved = L.resolveByPieceValue(state(board, fourSeats()));
   assert.strictEqual(resolved.drawn, true);
   assert.strictEqual(resolved.winner, null);
@@ -286,6 +359,14 @@ Object.keys(L.FORMATIONS).forEach((idxKey) => {
   const full = L.formationPlacements(0, 0);
   assert.strictEqual(L.isSetupComplete(full), true);
 }
+// --- 駒落ち(ファンブログに明記): ザフとテキーラは「まで」の駒なので、任意に減らして0個でもよい ---
+{
+  const mandatoryOnly = L.MANDATORY_PIECE_TYPES.map((type, index) => ({ r: 0, c: 8 + index, type }));
+  assert.strictEqual(mandatoryOnly.length, 7);
+  assert.strictEqual(L.isSetupComplete(mandatoryOnly), true); // ザフ0・テキーラ0でも成立する
+  const missingOne = mandatoryOnly.slice(1); // 必須駒が1つ欠けていると不成立
+  assert.strictEqual(L.isSetupComplete(missingOne), false);
+}
 {
   const allPlacements = [0, 1, 2, 3].map((seatIndex) => L.formationPlacements(seatIndex, 0));
   const board = L.buildBoardFromPlacements(allPlacements);
@@ -314,8 +395,10 @@ assert.strictEqual(L.canStartMatch(L.createEmptySeats()), false);
 {
   const seats = L.createDefaultSeats();
   const allPlacements = [0, 1, 2, 3].map((seatIndex) => L.formationPlacements(seatIndex, 0));
-  const ms = L.createMatchState(seats, allPlacements);
+  const ms = L.createMatchState(seats, allPlacements, () => 0); // rng=0でコイントスの最先手を座席0に固定
   assert.strictEqual(ms.phase, 'playing');
+  assert.deepStrictEqual(ms.turnOrder, [0, 3, 2, 1]);
+  assert.strictEqual(ms.activeSeatIndex, 0);
   let pieces = 0; ms.board.forEach((row) => row.forEach((c) => { if (c) pieces += 1; }));
   assert.strictEqual(pieces, L.TOTAL_PIECES_PER_SEAT * 4);
   const rows = L.buildMatchScoreboard({ A: 2, B: 1 }, ms.seats);
@@ -334,9 +417,9 @@ const stubRng = () => 0;
 {
   const board = emptyBoard();
   board[10][10] = { seat: 0, type: 'ol' };
-  board[9][9] = { seat: 1, type: 'tequila' }; // 通常捕獲(価値1)
+  board[9][9] = { seat: 2, type: 'tequila' }; // 通常捕獲(価値1)
   board[5][10] = { seat: 0, type: 'lance' };
-  board[8][10] = { seat: 1, type: 'king' }; // これを取れば勝利
+  board[8][10] = { seat: 2, type: 'king' }; // これを取れば勝利
   const s = state(board, fourSeats());
   const move = L.chooseCpuMove(s, 0, stubRng);
   assert.deepStrictEqual(move.to, { r: 8, c: 10 });
@@ -345,9 +428,9 @@ const stubRng = () => 0;
 {
   const board = emptyBoard();
   board[10][10] = { seat: 0, type: 'ol' };
-  board[9][9] = { seat: 1, type: 'tequila' }; // 価値1
+  board[9][9] = { seat: 2, type: 'tequila' }; // 価値1
   board[6][10] = { seat: 0, type: 'zafu' };
-  board[7][11] = { seat: 1, type: 'zafu' }; // 価値4、こちらを優先
+  board[7][11] = { seat: 2, type: 'zafu' }; // 価値4、こちらを優先
   const s = state(board, fourSeats());
   const move = L.chooseCpuMove(s, 0, stubRng);
   assert.deepStrictEqual(move.to, { r: 7, c: 11 });
@@ -356,7 +439,7 @@ const stubRng = () => 0;
   // 捕獲手がなく、自分の王将が危険な場合は安全なマスへ退避
   const board = emptyBoard();
   board[6][10] = { seat: 0, type: 'king' };
-  board[6][7] = { seat: 1, type: 'zafu' }; // 王将から見て斜め方向、距離3以内
+  board[6][7] = { seat: 2, type: 'zafu' }; // 王将から見て斜め方向、距離3以内
   const s = state(board, fourSeats());
   const move = L.chooseCpuMove(s, 0, stubRng);
   assert.deepStrictEqual(move.from, { r: 6, c: 10 });

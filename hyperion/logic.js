@@ -1,10 +1,14 @@
 // logic.js - ヒュペリオン 純粋関数ロジック(DOM操作なし)
 //
-// SKET DANCE作中に登場する架空のゲーム。ニコニコ大百科(ユーザー提供の一次資料)に
-// 明記されている盤面「グランドクロス」・駒9種の動き・駒数(1人14駒)・成駒なし、
-// という設定はそのまま踏襲する。それ以外(チームの組み方、決着時の引き分け処理、
-// CPU思考、OTL/デッドエクストリームアタックの具体的な発動条件と効果)は原作に
-//明記がない、または「効果不明」と明言されているため、AsobiLaboが独自に補った。
+// SKET DANCE作中に登場する架空のゲーム。ニコニコ大百科と、それを元に実際にプレイする
+// ためのハウスルールをまとめたファンブログ(https://senyakazuya.hatenablog.com/entry/2021/09/25/165614、
+// ユーザー提供の一次資料)に明記されている設定はそのまま踏襲する: 盤面「グランドクロス」・
+// 駒9種の動き・駒数(1人14駒、ザフとテキーラは「まで」なので駒落ち可)・成駒なし・
+// チームの組み方(隣が味方、対面が敵)・手番順(最先手とその味方が1番目と4番目になる)・
+// OTLの合体条件と移動(千鳥足経路)・コダクサンは前方の駒に妨害されない・中央付近の
+// 斜め移動は十字の切れ込みを素通りできる、など。それ以外(決着時の引き分け処理、CPU思考、
+// デッドエクストリームアタックの具体的な効果)は原作にもファンブログにも記述がない、
+// または「処理しない」と明言されているため、AsobiLaboが独自に補った。
 
 const BOARD_DIM = 21;
 const SEAT_COUNT = 4;
@@ -21,10 +25,11 @@ function isValidSquare(r, c) {
   return inCenter || inNorth || inSouth || inWest || inEast;
 }
 
-// 座席: 0=北・1=東・2=南・3=西(時計回り)。手番は0→1→2→3→0…。
-// チームの組み方(隣が味方か対面が味方か)は原作に記述がなく未確定。
-// 「対岸(北⇔南、東⇔西)が味方」という未確認の仮置き。ここだけ直せば全体に反映される。
-function TEAM_OF_SEAT(seatIndex) { return seatIndex % 2 === 0 ? 'A' : 'B'; }
+// 座席: 0=北・1=東・2=南・3=西(時計回り)。
+// チームの組み方はファンブログに明記: 「味方同士は隣り合うように着席する(対面は必ず相手になる)」。
+// 時計回りで隣同士の0(北)・1(東)をチームA、2(南)・3(西)をチームBとする。
+function TEAM_OF_SEAT(seatIndex) { return seatIndex < 2 ? 'A' : 'B'; }
+function teammateOf(seatIndex) { return [0, 1, 2, 3].find((i) => i !== seatIndex && TEAM_OF_SEAT(i) === TEAM_OF_SEAT(seatIndex)); }
 
 const ARM_BOUNDS = [
   { rMin: 0, rMax: 6, cMin: 8, cMax: 12 },   // 0: 北
@@ -73,8 +78,8 @@ const PIECE_SPECS = {
   ol: { offsets: DIAG, mode: 'fixed' }, // OL: 大将棋の猫刃(斜め1マス)
   kodakusan: { offsets: [{ f: 2, r: 0 }], mode: 'fixed' }, // コダクサン: 前方2マス先へジャンプ(跳び駒)
   tequila: { offsets: [{ f: 1, r: 0 }], mode: 'fixed' }, // テキーラ: 前方1マスのみ
-  // OTL: OL+テキーラが合体した複合駒。千鳥足で前方3マス先の左右どちらかへ跳ぶ、という原作の図(千鳥足の経路)を簡略化して実装。
-  otl: { offsets: [{ f: 3, r: 1 }, { f: 3, r: -1 }], mode: 'fixed' },
+  // OTL: 移動は専用のotlMoves()で扱う(千鳥足の経路を通り、経路上に駒があると移動不可なため
+  // 単純なoffsets方式では表現できない)。
   // デッドエクストリームアタックで強化された量産型ザフ。8方向直進(将棋の飛車角相当)に強化(具体的強化内容は原作に記述なく創作)。
   'zafu-boosted': { offsets: ALL8, mode: 'slide' },
 };
@@ -101,7 +106,8 @@ function pieceMovesGeneric(board, r, c, seatIndex, type) {
     if (spec.mode === 'slide') {
       for (let step = 1; ; step += 1) {
         const nr = r + delta.dr * step, nc = c + delta.dc * step;
-        if (!isValidSquare(nr, nc)) break;
+        if (nr < 0 || nr >= BOARD_DIM || nc < 0 || nc >= BOARD_DIM) break; // 盤の外
+        if (!isValidSquare(nr, nc)) continue; // 十字の切れ込み(4隅の無効マス)は素通りできる(ファンブログに明記)
         const target = board[nr][nc];
         if (!target) { moves.push({ to: { r: nr, c: nc }, capture: null }); continue; }
         if (TEAM_OF_SEAT(target.seat) !== TEAM_OF_SEAT(seatIndex)) moves.push({ to: { r: nr, c: nc }, capture: { seat: target.seat, type: target.type } });
@@ -118,19 +124,51 @@ function pieceMovesGeneric(board, r, c, seatIndex, type) {
   });
   return moves;
 }
-// OL・テキーラは、自分の同じ駒(テキーラ/OL)がいるマスへ限り移動でき、その場合はOTLへ合体する特殊移動を追加する。
+// OTLの移動(千鳥足)。ファンブログの記述「右に行く場合は左→中央→右、左に行く場合は右→中央→左の
+// 経路を通る」「経路上に他の駒が存在している場合は移動できない」をそのまま実装。
+// 中間点(1・2歩目)は空きマスであることが必須、3歩目(最終目的地)だけが捕獲の対象になる。
+const OTL_PATHS = {
+  right: [{ f: 1, r: -1 }, { f: 2, r: 0 }, { f: 3, r: 1 }],
+  left: [{ f: 1, r: 1 }, { f: 2, r: 0 }, { f: 3, r: -1 }],
+};
+function otlMoves(board, r, c, seatIndex) {
+  const moves = [];
+  Object.values(OTL_PATHS).forEach((path) => {
+    for (let i = 0; i < path.length - 1; i += 1) {
+      const delta = templateToDelta(seatIndex, path[i]);
+      const nr = r + delta.dr, nc = c + delta.dc;
+      if (!isValidSquare(nr, nc) || board[nr][nc]) return; // 経路上(中間点)に駒があれば移動不可
+    }
+    const finalDelta = templateToDelta(seatIndex, path[path.length - 1]);
+    const nr = r + finalDelta.dr, nc = c + finalDelta.dc;
+    if (!isValidSquare(nr, nc)) return;
+    const target = board[nr][nc];
+    if (!target) { moves.push({ to: { r: nr, c: nc }, capture: null }); return; }
+    if (TEAM_OF_SEAT(target.seat) !== TEAM_OF_SEAT(seatIndex)) moves.push({ to: { r: nr, c: nc }, capture: { seat: target.seat, type: target.type } });
+  });
+  return moves;
+}
+// OLは、テキーラ(敵味方問わず)がいるマスに入るとOTLへ合体する(ファンブログに明記)。
+// 味方(自分含む)のテキーラへは、通常なら味方マスとして進入できないところをこの合体だけ例外的に許可される。
+// 敵のテキーラへは通常通りの捕獲だが、この場合もOTLへ合体する。テキーラ側からOLへ合体する動きはない。
 function generateMovesForPiece(board, r, c) {
   const cell = board[r] && board[r][c];
   if (!cell) return [];
+  if (cell.type === 'otl') return otlMoves(board, r, c, cell.seat);
   const moves = pieceMovesGeneric(board, r, c, cell.seat, cell.type);
-  if (cell.type === 'ol' || cell.type === 'tequila') {
-    const complement = cell.type === 'ol' ? 'tequila' : 'ol';
-    PIECE_SPECS[cell.type].offsets.forEach((offset) => {
+  if (cell.type === 'ol') {
+    PIECE_SPECS.ol.offsets.forEach((offset) => {
       const delta = templateToDelta(cell.seat, offset);
       const nr = r + delta.dr, nc = c + delta.dc;
       if (!isValidSquare(nr, nc)) return;
       const target = board[nr][nc];
-      if (target && target.seat === cell.seat && target.type === complement) moves.push({ to: { r: nr, c: nc }, capture: null, merge: 'otl' });
+      if (!target || target.type !== 'tequila') return;
+      if (TEAM_OF_SEAT(target.seat) === TEAM_OF_SEAT(cell.seat)) {
+        if (!moves.some((m) => m.to.r === nr && m.to.c === nc)) moves.push({ to: { r: nr, c: nc }, capture: null, merge: 'otl' });
+      } else {
+        const existing = moves.find((m) => m.to.r === nr && m.to.c === nc);
+        if (existing) existing.merge = 'otl';
+      }
     });
   }
   return moves;
@@ -172,8 +210,9 @@ function eliminateSeat(state, seatIndex) {
   return state;
 }
 function checkWinner(state) {
-  const teamAOut = !!(state.seats[0] && state.seats[0].eliminated && state.seats[2] && state.seats[2].eliminated);
-  const teamBOut = !!(state.seats[1] && state.seats[1].eliminated && state.seats[3] && state.seats[3].eliminated);
+  const isOut = (seatIndex) => !!(state.seats[seatIndex] && state.seats[seatIndex].eliminated);
+  const teamAOut = [0, 1, 2, 3].filter((i) => TEAM_OF_SEAT(i) === 'A').every(isOut);
+  const teamBOut = [0, 1, 2, 3].filter((i) => TEAM_OF_SEAT(i) === 'B').every(isOut);
   if (teamAOut) return 'B';
   if (teamBOut) return 'A';
   return null;
@@ -196,9 +235,24 @@ function resolveByPieceValue(state) {
   else { state.winner = valueA > valueB ? 'A' : 'B'; state.drawn = false; }
   return state;
 }
+// 手番順(ファンブログに明記): 最先手はコイントス(フリップオアフロップ)で決定し、最先手と
+// その味方が必ず1番目と4番目になる(例: AB vs CDでAが最先手ならA→D→C→B)。これは「最先手の
+// 隣が味方ならその反対回りに、隣が敵ならそちらの向きに、盤を1周する」のと同じことなので、
+// 味方を2番目に踏まないほうの回転方向(時計/反時計)で4席を1周する順序として実装する。
+function buildTurnOrder(firstMover) {
+  const teammate = teammateOf(firstMover);
+  const clockwiseNext = (firstMover + 1) % SEAT_COUNT;
+  const direction = clockwiseNext === teammate ? -1 : 1;
+  const order = [];
+  let current = firstMover;
+  for (let i = 0; i < SEAT_COUNT; i += 1) { order.push(current); current = (current + direction + SEAT_COUNT) % SEAT_COUNT; }
+  return order;
+}
 function advanceTurn(state) {
+  const order = state.turnOrder || [0, 1, 2, 3];
+  const startIndex = order.indexOf(state.activeSeatIndex);
   for (let step = 1; step <= SEAT_COUNT; step += 1) {
-    const next = (state.activeSeatIndex + step) % SEAT_COUNT;
+    const next = order[(startIndex + step) % SEAT_COUNT];
     const seat = state.seats[next];
     if (seat && !seat.eliminated && hasAnyLegalMove(state.board, state.seats, next)) { state.activeSeatIndex = next; return state; }
   }
@@ -320,7 +374,14 @@ function addPlacement(placements, seatIndex, r, c, type) {
   return placements.concat([{ r, c, type }]);
 }
 function removePlacement(placements, r, c) { return placements.filter((p) => !(p.r === r && p.c === c)); }
-function isSetupComplete(placements) { return placements.length === TOTAL_PIECES_PER_SEAT; }
+// テキーラ(最大5)とザフ(最大2)は原作で「まで」と明記されているため、任意に減らして配置してよい
+// (いわゆる駒落ち)。それ以外の7種は必ず1個ずつ配置する必要がある。
+const MANDATORY_PIECE_TYPES = Object.keys(PIECE_COUNTS).filter((type) => type !== 'zafu' && type !== 'tequila');
+function isSetupComplete(placements) {
+  const counts = {};
+  placements.forEach((p) => { counts[p.type] = (counts[p.type] || 0) + 1; });
+  return MANDATORY_PIECE_TYPES.every((type) => counts[type] === 1);
+}
 
 // 4席分の最終配置(各 seatIndex -> [{r,c,type}]×14)から対局開始時の盤面を組み立てる。
 function buildBoardFromPlacements(allPlacements) {
@@ -364,8 +425,11 @@ function canStartMatch(seats) {
 }
 // CPU席の初期配置はランダムに3陣形から1つを採用する(ユーザー確認済み)。
 function cpuFormationChoice(rng) { return Math.floor((rng ? rng() : Math.random()) * FORMATIONS.length); }
-function createMatchState(seats, allPlacements) {
-  return { board: buildBoardFromPlacements(allPlacements), seats: cloneSeats(seats).map((seat) => ({ ...seat, eliminated: false })), activeSeatIndex: 0, turnCount: 0, version: 0, phase: 'playing', winner: null, drawn: false, lastMove: null };
+// 最先手はフリップオアフロップ(コイントス)で決定する、とファンブログに明記。
+function createMatchState(seats, allPlacements, rng) {
+  const firstMover = Math.floor((rng || Math.random)() * SEAT_COUNT);
+  const turnOrder = buildTurnOrder(firstMover);
+  return { board: buildBoardFromPlacements(allPlacements), seats: cloneSeats(seats).map((seat) => ({ ...seat, eliminated: false })), turnOrder, activeSeatIndex: turnOrder[0], turnCount: 0, version: 0, phase: 'playing', winner: null, drawn: false, lastMove: null };
 }
 function buildMatchScoreboard(matchesWon, seats) {
   const scores = Object.assign({ A: 0, B: 0 }, matchesWon);
@@ -415,10 +479,10 @@ function chooseCpuMove(matchState, seatIndex, rng = Math.random) {
 }
 
 const HyperionLogic = {
-  BOARD_DIM, SEAT_COUNT, MAX_TURNS, PIECE_SPECS, PIECE_COUNTS, PIECE_VALUES, TOTAL_PIECES_PER_SEAT, TEAM_OF_SEAT, ARM_BOUNDS, FORMATIONS,
+  BOARD_DIM, SEAT_COUNT, MAX_TURNS, PIECE_SPECS, PIECE_COUNTS, PIECE_VALUES, TOTAL_PIECES_PER_SEAT, MANDATORY_PIECE_TYPES, TEAM_OF_SEAT, teammateOf, ARM_BOUNDS, FORMATIONS,
   isValidSquare, isInOwnArm, localToAbsolute, absoluteToLocal, createEmptyBoard, cloneBoard,
-  generateMovesForPiece, generateAllMovesForSeat, hasAnyLegalMove, isLegalMove, isSquareThreatenedBy,
-  applyMove, eliminateSeat, checkWinner, teamPieceValue, resolveByPieceValue, advanceTurn, triggerDeadExtremeAttack,
+  generateMovesForPiece, generateAllMovesForSeat, hasAnyLegalMove, isLegalMove, isSquareThreatenedBy, otlMoves,
+  applyMove, eliminateSeat, checkWinner, teamPieceValue, resolveByPieceValue, buildTurnOrder, advanceTurn, triggerDeadExtremeAttack,
   formationPlacements, remainingPieceCounts, canPlacePiece, addPlacement, removePlacement, isSetupComplete, buildBoardFromPlacements,
   createEmptySeats, assignSeat, createDefaultSeats, fillEmptySeatsWithCpu, canStartMatch, cpuFormationChoice, createMatchState,
   buildMatchScoreboard, getMatchWinners, chooseCpuMove,
