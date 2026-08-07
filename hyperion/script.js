@@ -9,8 +9,8 @@
   const REJOIN_GRACE_MS = 30000;
   const CPU_THINK_MS = 650;
 
-  const PIECE_GLYPH = { king: 'ア', zafu: 'ザ', lance: 'ド', gold: 'ス', silver: 'シ', matcha: 'あ', ol: 'O', kodakusan: 'コ', tequila: 'テ', otl: 'OTL', 'zafu-boosted': '強ザ' };
-  const PIECE_LABEL = { king: 'アブラシモビッチ', zafu: '量産型ザフ', lance: 'ドドンドンドドン', gold: 'スチーム', silver: 'シューズ', matcha: '抹茶あずきーな', ol: 'OL', kodakusan: 'コダクサン', tequila: 'テキーラ', otl: 'OTL', 'zafu-boosted': '強化ザフ' };
+  const PIECE_GLYPH = { king: 'ア', zafu: 'ザ', lance: 'ド', gold: 'ス', silver: 'シ', matcha: 'あ', ol: 'O', kodakusan: 'コ', tequila: 'テ', otl: 'OTL', 'zafu-boosted': '強ザ', 'double-arts': 'DA' };
+  const PIECE_LABEL = { king: 'アブラシモビッチ', zafu: '量産型ザフ', lance: 'ドドンドンドドン', gold: 'スチーム', silver: 'シューズ', matcha: '抹茶あずきーな', ol: 'OL', kodakusan: 'コダクサン', tequila: 'テキーラ', otl: 'OTL', 'zafu-boosted': '強化ザフ', 'double-arts': 'ダブルアーツ' };
   const PIECE_ORDER = ['king', 'zafu', 'lance', 'gold', 'silver', 'matcha', 'ol', 'kodakusan', 'tequila'];
 
   const screens = ['setup-screen', 'seat-config-screen', 'lobby-panel', 'placement-screen', 'game-area'];
