@@ -345,12 +345,15 @@
     const board = matchState.board;
     const interactive = isMySeatTurn();
     const legalSet = new Set(legalTargets.map((m) => m.to.r + ':' + m.to.c));
+    const lastMove = matchState.lastMove;
     for (let r = 0; r < L.BOARD_DIM; r += 1) {
       for (let c = 0; c < L.BOARD_DIM; c += 1) {
         const cell = boardCells[r][c];
         if (!cell) continue;
         const piece = board[r][c];
         const isLegal = legalSet.has(r + ':' + c);
+        const isLastMove = !!lastMove && ((lastMove.from.r === r && lastMove.from.c === c) || (lastMove.to.r === r && lastMove.to.c === c));
+        cell.classList.toggle('last-move', isLastMove);
         cell.classList.toggle('selected', !!selectedFrom && selectedFrom.r === r && selectedFrom.c === c);
         cell.classList.toggle('legal-move', isLegal);
         cell.classList.toggle('has-piece', isLegal && !!piece);

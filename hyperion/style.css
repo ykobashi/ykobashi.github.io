@@ -506,6 +506,11 @@ main {
 .cell.piece-rot-180 { transform: rotate(180deg); }
 .cell.piece-rot-270 { transform: rotate(270deg); }
 
+/* 直前の手(移動元・移動先)を示す。CPU/相手の手も含め、どの駒がどこへ動いたか一目で分かるように */
+.cell.last-move {
+  box-shadow: inset 0 0 0 999px color-mix(in srgb, var(--accent2) 30%, transparent);
+}
+
 .cell.selected::after {
   content: "";
   position: absolute;
