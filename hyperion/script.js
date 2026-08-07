@@ -49,6 +49,7 @@
   const boardCells = [];
   const armCells = [];
   const savedSession = RejoinStorage.load(GAME_KEY);
+  let boardViewSeat = null; // 現在盤面を描画している視点の席(この席が画面下に来るよう回転する)
 
   function peerError(err) {
     const target = !$('lobby-panel').classList.contains('hidden') ? 'lobby-error' : 'online-error';
@@ -155,9 +156,9 @@
     const root = $('arm-grid');
     root.innerHTML = '';
     armCells.length = 0;
-    for (let depth = 6; depth >= 0; depth -= 1) {
+    for (let depth = 4; depth >= 0; depth -= 1) {
       const rowEls = [];
-      for (let lateral = 0; lateral < 5; lateral += 1) {
+      for (let lateral = 0; lateral < 7; lateral += 1) {
         const cell = document.createElement('button');
         cell.type = 'button'; cell.className = 'arm-cell';
         cell.addEventListener('click', () => onArmCellClick(depth, lateral));
@@ -167,7 +168,7 @@
       armCells.push(rowEls);
     }
   }
-  function armCellAt(depth, lateral) { const row = armCells[6 - depth]; return row ? row[lateral] : null; }
+  function armCellAt(depth, lateral) { const row = armCells[4 - depth]; return row ? row[lateral] : null; }
   function onArmCellClick(depth, lateral) {
     if (editingSeatIndex == null || readySeats.has(editingSeatIndex)) return;
     const abs = L.localToAbsolute(editingSeatIndex, depth, lateral);
@@ -279,24 +280,48 @@
   }
 
   // ---------- 盤面表示(グランドクロス、21x21のうち有効マスのみ操作可能) ----------
+  // 盤は自分の席が常に画面下(南)に来るよう回転して表示する。オンラインは自分の席固定、
+  // ローカル対戦(手番交代制)は手番の席が画面下に来るよう毎ターン回転し直す。
+  function getViewSeat() {
+    if (!matchState) return 2;
+    if (mode === 'online') {
+      const seat = matchState.seats.find((s) => s.playerId === myId);
+      return seat ? seat.seatIndex : 2;
+    }
+    return matchState.activeSeatIndex;
+  }
+  // 盤中心(10,10)まわりの90度時計回り回転。座席0(北)の1マスは座席1(東)の位置に移る。
+  function rotateStepCW(r, c) { const center = (L.BOARD_DIM - 1) / 2; return { r: center + (c - center), c: center - (r - center) }; }
+  function rotateCW(r, c, steps) {
+    let pos = { r, c };
+    const n = ((steps % 4) + 4) % 4;
+    for (let i = 0; i < n; i += 1) pos = rotateStepCW(pos.r, pos.c);
+    return pos;
+  }
   function buildBoardCells() {
     const boardEl = $('board');
     boardEl.innerHTML = '';
     boardEl.style.gridTemplateColumns = 'repeat(' + L.BOARD_DIM + ', 1fr)';
     boardCells.length = 0;
-    for (let r = 0; r < L.BOARD_DIM; r += 1) {
-      const rowEls = [];
-      for (let c = 0; c < L.BOARD_DIM; c += 1) {
-        if (!L.isValidSquare(r, c)) { const filler = document.createElement('div'); filler.className = 'cell invalid'; boardEl.appendChild(filler); rowEls.push(null); continue; }
+    for (let i = 0; i < L.BOARD_DIM; i += 1) boardCells.push(new Array(L.BOARD_DIM).fill(null));
+    const viewSeat = getViewSeat();
+    // viewSeatの陣地が画面南(座席2の絶対位置)に来る回転量。座標変換はスクリーン位置→絶対位置の逆回転で行う。
+    const rotation = (2 - viewSeat + 4) % 4;
+    const inverse = (4 - rotation) % 4;
+    for (let sr = 0; sr < L.BOARD_DIM; sr += 1) {
+      for (let sc = 0; sc < L.BOARD_DIM; sc += 1) {
+        const abs = rotateCW(sr, sc, inverse);
+        const r = abs.r, c = abs.c;
+        if (!L.isValidSquare(r, c)) { const filler = document.createElement('div'); filler.className = 'cell invalid'; boardEl.appendChild(filler); continue; }
         const cell = document.createElement('button');
         cell.type = 'button'; cell.className = 'cell ' + ((r + c) % 2 === 0 ? 'light' : 'dark');
         cell.dataset.row = r; cell.dataset.col = c;
         cell.addEventListener('click', () => onCellClick(r, c));
         boardEl.appendChild(cell);
-        rowEls.push(cell);
+        boardCells[r][c] = cell;
       }
-      boardCells.push(rowEls);
     }
+    boardViewSeat = viewSeat;
   }
   function isMySeatTurn() {
     if (!matchState || matchState.phase !== 'playing') return false;
@@ -305,8 +330,16 @@
     if (mode === 'local') return true;
     return seat.playerId === myId;
   }
+  // 将棋のように、駒の向き(所有者の前方=盤中央側)に合わせて文字を回転させる。
+  // 自分の駒は正立、対面(2席先)の相手は180度(さかさま)、左右の隣席は90/270度。
+  function pieceRotationClass(ownerSeat, viewSeat) {
+    const steps = ((ownerSeat - viewSeat) % 4 + 4) % 4;
+    return steps === 0 ? null : 'piece-rot-' + (steps * 90);
+  }
   function renderBoard() {
     if (!matchState) return;
+    const viewSeat = getViewSeat();
+    if (boardViewSeat !== viewSeat) buildBoardCells();
     const board = matchState.board;
     const interactive = isMySeatTurn();
     const legalSet = new Set(legalTargets.map((m) => m.to.r + ':' + m.to.c));
@@ -319,9 +352,11 @@
         cell.classList.toggle('selected', !!selectedFrom && selectedFrom.r === r && selectedFrom.c === c);
         cell.classList.toggle('legal-move', isLegal);
         cell.classList.toggle('has-piece', isLegal && !!piece);
-        cell.classList.remove('p1', 'p2', 'p3', 'p4');
+        cell.classList.remove('p1', 'p2', 'p3', 'p4', 'piece-rot-90', 'piece-rot-180', 'piece-rot-270');
         if (piece) {
           cell.classList.add(seatColorClass(piece.seat));
+          const rotClass = pieceRotationClass(piece.seat, viewSeat);
+          if (rotClass) cell.classList.add(rotClass);
           const glyph = PIECE_GLYPH[piece.type] || '';
           cell.textContent = glyph;
           cell.classList.toggle('wide', glyph.length > 1);

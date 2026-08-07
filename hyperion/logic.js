@@ -10,18 +10,19 @@
 // デッドエクストリームアタックの具体的な効果)は原作にもファンブログにも記述がない、
 // または「処理しない」と明言されているため、AsobiLaboが独自に補った。
 
-const BOARD_DIM = 21;
+const BOARD_DIM = 17;
 const SEAT_COUNT = 4;
 const MAX_TURNS = 300;
 
 // 盤面「グランドクロス」: 7x7の中央盤に、四辺へ5x7の陣地が付属した十字形。
+// 陣地の幅(7)は中央の一辺とぴったり合わせ(段差なし)、奥行き5マスだけ外側へ伸ばす。
 function isValidSquare(r, c) {
   if (r < 0 || r >= BOARD_DIM || c < 0 || c >= BOARD_DIM) return false;
-  const inCenter = r >= 7 && r <= 13 && c >= 7 && c <= 13;
-  const inNorth = r >= 0 && r <= 6 && c >= 8 && c <= 12;
-  const inSouth = r >= 14 && r <= 20 && c >= 8 && c <= 12;
-  const inWest = c >= 0 && c <= 6 && r >= 8 && r <= 12;
-  const inEast = c >= 14 && c <= 20 && r >= 8 && r <= 12;
+  const inCenter = r >= 5 && r <= 11 && c >= 5 && c <= 11;
+  const inNorth = r >= 0 && r <= 4 && c >= 5 && c <= 11;
+  const inSouth = r >= 12 && r <= 16 && c >= 5 && c <= 11;
+  const inWest = c >= 0 && c <= 4 && r >= 5 && r <= 11;
+  const inEast = c >= 12 && c <= 16 && r >= 5 && r <= 11;
   return inCenter || inNorth || inSouth || inWest || inEast;
 }
 
@@ -32,25 +33,27 @@ function TEAM_OF_SEAT(seatIndex) { return seatIndex < 2 ? 'A' : 'B'; }
 function teammateOf(seatIndex) { return [0, 1, 2, 3].find((i) => i !== seatIndex && TEAM_OF_SEAT(i) === TEAM_OF_SEAT(seatIndex)); }
 
 const ARM_BOUNDS = [
-  { rMin: 0, rMax: 6, cMin: 8, cMax: 12 },   // 0: 北
-  { rMin: 8, rMax: 12, cMin: 14, cMax: 20 }, // 1: 東
-  { rMin: 14, rMax: 20, cMin: 8, cMax: 12 }, // 2: 南
-  { rMin: 8, rMax: 12, cMin: 0, cMax: 6 },   // 3: 西
+  { rMin: 0, rMax: 4, cMin: 5, cMax: 11 },   // 0: 北
+  { rMin: 5, rMax: 11, cMin: 12, cMax: 16 }, // 1: 東
+  { rMin: 12, rMax: 16, cMin: 5, cMax: 11 }, // 2: 南
+  { rMin: 5, rMax: 11, cMin: 0, cMax: 4 },   // 3: 西
 ];
 // 各座席の「前方(盤中央へ向かう向き)」「右手(前方を向いた時の右側)」の単位ベクトル。
 const FORWARD = [{ dr: 1, dc: 0 }, { dr: 0, dc: -1 }, { dr: -1, dc: 0 }, { dr: 0, dc: 1 }];
 const RIGHT = [{ dr: 0, dc: -1 }, { dr: -1, dc: 0 }, { dr: 0, dc: 1 }, { dr: 1, dc: 0 }];
-// 自陣の一番奥(depth=0)・中央列(lateral=2)の座標。
-const ARM_ORIGIN = [{ r: 0, c: 10 }, { r: 10, c: 20 }, { r: 20, c: 10 }, { r: 10, c: 0 }];
+// 自陣の一番奥(depth=0)・中央列(lateral=3)の座標。
+const ARM_ORIGIN = [{ r: 0, c: 8 }, { r: 8, c: 16 }, { r: 16, c: 8 }, { r: 8, c: 0 }];
+// 陣地の幅(中央の一辺と同じ7マス)の中心インデックス。
+const LATERAL_CENTER = 3;
 
 function isInOwnArm(seatIndex, r, c) {
   const b = ARM_BOUNDS[seatIndex];
   return r >= b.rMin && r <= b.rMax && c >= b.cMin && c <= b.cMax;
 }
-// depth: 0(自陣の一番奥/自分の背後)〜6(盤中央側)。lateral: 0〜4(自分から見て左〜右)。
+// depth: 0(自陣の一番奥/自分の背後)〜4(盤中央側)。lateral: 0〜6(自分から見て左〜右)。
 function localToAbsolute(seatIndex, depth, lateral) {
   const origin = ARM_ORIGIN[seatIndex], f = FORWARD[seatIndex], right = RIGHT[seatIndex];
-  const lat = lateral - 2;
+  const lat = lateral - LATERAL_CENTER;
   return { r: origin.r + depth * f.dr + lat * right.dr, c: origin.c + depth * f.dc + lat * right.dc };
 }
 // localToAbsoluteの逆変換。f・rightは直交単位ベクトルなので内積で係数を復元できる。
@@ -58,7 +61,7 @@ function absoluteToLocal(seatIndex, r, c) {
   const origin = ARM_ORIGIN[seatIndex], f = FORWARD[seatIndex], right = RIGHT[seatIndex];
   const dr = r - origin.r, dc = c - origin.c;
   const depth = dr * f.dr + dc * f.dc;
-  const lateral = (dr * right.dr + dc * right.dc) + 2;
+  const lateral = (dr * right.dr + dc * right.dc) + LATERAL_CENTER;
   return { depth, lateral };
 }
 
@@ -318,36 +321,38 @@ function applyMove(matchState, seatIndex, from, to) {
   return { state, applied: true, reason: null };
 }
 
-// --- 陣形(原作記事に図解されている3つの陣形の座標復元。depth=0が自陣の一番奥、lateral=0〜4が左〜右) ---
+// --- 陣形(原作記事に図解されている3つの陣形の座標復元。depth=0が自陣の一番奥、
+//     lateral=0〜6が左〜右で、中央(lateral=3)が陣地の幅の中心。画像上は5列分だけ使い、
+//     lateral=1〜5(中心3を挟んで左右2列ずつ)に配置することで陣地の中央に揃う。) ---
 const FORMATIONS = [
   { // 0: エクスカリバーの陣
     name: 'エクスカリバーの陣',
     pieces: [
-      { depth: 0, lateral: 0, type: 'silver' }, { depth: 0, lateral: 1, type: 'tequila' }, { depth: 0, lateral: 2, type: 'king' }, { depth: 0, lateral: 3, type: 'tequila' }, { depth: 0, lateral: 4, type: 'gold' },
-      { depth: 1, lateral: 0, type: 'zafu' }, { depth: 1, lateral: 2, type: 'kodakusan' }, { depth: 1, lateral: 4, type: 'zafu' },
-      { depth: 2, lateral: 0, type: 'tequila' }, { depth: 2, lateral: 1, type: 'tequila' }, { depth: 2, lateral: 2, type: 'tequila' },
-      { depth: 3, lateral: 0, type: 'ol' }, { depth: 3, lateral: 2, type: 'matcha' },
-      { depth: 4, lateral: 0, type: 'lance' },
+      { depth: 0, lateral: 1, type: 'silver' }, { depth: 0, lateral: 2, type: 'tequila' }, { depth: 0, lateral: 3, type: 'king' }, { depth: 0, lateral: 4, type: 'tequila' }, { depth: 0, lateral: 5, type: 'gold' },
+      { depth: 1, lateral: 1, type: 'zafu' }, { depth: 1, lateral: 3, type: 'kodakusan' }, { depth: 1, lateral: 5, type: 'zafu' },
+      { depth: 2, lateral: 2, type: 'tequila' }, { depth: 2, lateral: 3, type: 'tequila' }, { depth: 2, lateral: 4, type: 'tequila' },
+      { depth: 3, lateral: 2, type: 'ol' }, { depth: 3, lateral: 4, type: 'matcha' },
+      { depth: 4, lateral: 3, type: 'lance' },
     ],
   },
   { // 1: 千手孔雀陣
     name: '千手孔雀陣',
     pieces: [
-      { depth: 0, lateral: 0, type: 'tequila' }, { depth: 0, lateral: 2, type: 'tequila' },
-      { depth: 1, lateral: 0, type: 'zafu' }, { depth: 1, lateral: 2, type: 'matcha' }, { depth: 1, lateral: 4, type: 'zafu' },
-      { depth: 2, lateral: 0, type: 'lance' }, { depth: 2, lateral: 1, type: 'king' }, { depth: 2, lateral: 2, type: 'ol' }, { depth: 2, lateral: 4, type: 'tequila' },
-      { depth: 3, lateral: 0, type: 'silver' }, { depth: 3, lateral: 2, type: 'kodakusan' }, { depth: 3, lateral: 4, type: 'gold' },
-      { depth: 4, lateral: 0, type: 'tequila' }, { depth: 4, lateral: 2, type: 'tequila' },
+      { depth: 0, lateral: 2, type: 'tequila' }, { depth: 0, lateral: 4, type: 'tequila' },
+      { depth: 1, lateral: 1, type: 'zafu' }, { depth: 1, lateral: 3, type: 'matcha' }, { depth: 1, lateral: 5, type: 'zafu' },
+      { depth: 2, lateral: 2, type: 'lance' }, { depth: 2, lateral: 3, type: 'king' }, { depth: 2, lateral: 4, type: 'ol' }, { depth: 2, lateral: 6, type: 'tequila' },
+      { depth: 3, lateral: 1, type: 'silver' }, { depth: 3, lateral: 3, type: 'kodakusan' }, { depth: 3, lateral: 5, type: 'gold' },
+      { depth: 4, lateral: 2, type: 'tequila' }, { depth: 4, lateral: 4, type: 'tequila' },
     ],
   },
   { // 2: 例の陣
     name: '例の陣',
     pieces: [
-      { depth: 0, lateral: 0, type: 'ol' }, { depth: 0, lateral: 1, type: 'king' }, { depth: 0, lateral: 2, type: 'matcha' },
-      { depth: 1, lateral: 0, type: 'tequila' }, { depth: 1, lateral: 1, type: 'tequila' }, { depth: 1, lateral: 2, type: 'tequila' },
-      { depth: 2, lateral: 0, type: 'silver' }, { depth: 2, lateral: 2, type: 'kodakusan' }, { depth: 2, lateral: 4, type: 'gold' },
-      { depth: 3, lateral: 0, type: 'zafu' }, { depth: 3, lateral: 2, type: 'lance' }, { depth: 3, lateral: 4, type: 'zafu' },
-      { depth: 4, lateral: 0, type: 'tequila' }, { depth: 4, lateral: 4, type: 'tequila' },
+      { depth: 0, lateral: 2, type: 'ol' }, { depth: 0, lateral: 3, type: 'king' }, { depth: 0, lateral: 4, type: 'matcha' },
+      { depth: 1, lateral: 2, type: 'tequila' }, { depth: 1, lateral: 3, type: 'tequila' }, { depth: 1, lateral: 4, type: 'tequila' },
+      { depth: 2, lateral: 1, type: 'silver' }, { depth: 2, lateral: 3, type: 'kodakusan' }, { depth: 2, lateral: 5, type: 'gold' },
+      { depth: 3, lateral: 1, type: 'zafu' }, { depth: 3, lateral: 3, type: 'lance' }, { depth: 3, lateral: 5, type: 'zafu' },
+      { depth: 4, lateral: 1, type: 'tequila' }, { depth: 4, lateral: 5, type: 'tequila' },
     ],
   },
 ];

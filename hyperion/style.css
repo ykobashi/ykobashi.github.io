@@ -347,11 +347,11 @@ main {
 }
 .arm-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(7, 1fr);
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(5, 1fr);
   gap: 2px;
-  width: 220px;
-  aspect-ratio: 5 / 7;
+  width: 260px;
+  aspect-ratio: 7 / 5;
   background: var(--board-bg);
   border: 3px solid var(--line-color);
   border-radius: 6px;
@@ -458,12 +458,12 @@ main {
   justify-content: center;
 }
 
-/* 盤面「グランドクロス」(gomoku-othelloの単色盤とは違い、このゲーム固有の市松模様21x21マス・
+/* 盤面「グランドクロス」(gomoku-othelloの単色盤とは違い、このゲーム固有の市松模様17x17マス・
    十字形に必要な無効マスの表現が新規コンポーネント) */
 .board {
   display: grid;
-  grid-template-columns: repeat(21, 1fr);
-  grid-template-rows: repeat(21, 1fr);
+  grid-template-columns: repeat(17, 1fr);
+  grid-template-rows: repeat(17, 1fr);
   background: var(--board-bg);
   border: 3px solid var(--line-color);
   border-radius: 6px;
@@ -500,6 +500,11 @@ main {
 .cell.p2 { color: var(--p2-color); }
 .cell.p3 { color: var(--p3-color); }
 .cell.p4 { color: var(--p4-color); }
+
+/* 将棋のように、駒の持ち主の向き(盤中央側)に文字が向くよう回転させる */
+.cell.piece-rot-90 { transform: rotate(90deg); }
+.cell.piece-rot-180 { transform: rotate(180deg); }
+.cell.piece-rot-270 { transform: rotate(270deg); }
 
 .cell.selected::after {
   content: "";
