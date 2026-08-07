@@ -280,15 +280,17 @@
   }
 
   // ---------- 盤面表示(グランドクロス、21x21のうち有効マスのみ操作可能) ----------
-  // 盤は自分の席が常に画面下(南)に来るよう回転して表示する。オンラインは自分の席固定、
-  // ローカル対戦(手番交代制)は手番の席が画面下に来るよう毎ターン回転し直す。
+  // 盤は自分の席が常に画面下(南)に来るよう回転して表示する(手番ごとに回転すると
+  // 表示がぐるぐる変わって混乱するため、対局中は固定)。オンラインは自分の席、
+  // ローカル対戦は最初に見つかった人間の席を「自分」として固定する。
   function getViewSeat() {
     if (!matchState) return 2;
     if (mode === 'online') {
       const seat = matchState.seats.find((s) => s.playerId === myId);
       return seat ? seat.seatIndex : 2;
     }
-    return matchState.activeSeatIndex;
+    const humanSeat = matchState.seats.find((s) => s.kind === 'human');
+    return humanSeat ? humanSeat.seatIndex : 2;
   }
   // 盤中心(10,10)まわりの90度時計回り回転。座席0(北)の1マスは座席1(東)の位置に移る。
   function rotateStepCW(r, c) { const center = (L.BOARD_DIM - 1) / 2; return { r: center + (c - center), c: center - (r - center) }; }
