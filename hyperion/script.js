@@ -9,8 +9,8 @@
   const REJOIN_GRACE_MS = 30000;
   const CPU_THINK_MS = 650;
 
-  const PIECE_GLYPH = { king: 'ア', zafu: 'ザ', lance: 'ド', gold: 'ス', silver: 'シ', matcha: 'あ', ol: 'O', kodakusan: 'コ', tequila: 'テ', otl: 'OTL', 'zafu-boosted': '強ザ', 'double-arts': 'DA' };
-  const PIECE_LABEL = { king: 'アブラシモビッチ', zafu: '量産型ザフ', lance: 'ドドンドンドドン', gold: 'スチーム', silver: 'シューズ', matcha: '抹茶あずきーな', ol: 'OL', kodakusan: 'コダクサン', tequila: 'テキーラ', otl: 'OTL', 'zafu-boosted': '強化ザフ', 'double-arts': 'ダブルアーツ' };
+  const PIECE_GLYPH = { king: 'ア', zafu: 'ザ', lance: 'ド', gold: 'ス', silver: 'シ', matcha: 'あ', ol: 'O', kodakusan: 'コ', tequila: 'テ', otl: 'OTL', 'zafu-boosted': '強ザ' };
+  const PIECE_LABEL = { king: 'アブラシモビッチ', zafu: '量産型ザフ', lance: 'ドドンドンドドン', gold: 'スチーム', silver: 'シューズ', matcha: '抹茶あずきーな', ol: 'OL', kodakusan: 'コダクサン', tequila: 'テキーラ', otl: 'OTL', 'zafu-boosted': '強化ザフ' };
   const PIECE_ORDER = ['king', 'zafu', 'lance', 'gold', 'silver', 'matcha', 'ol', 'kodakusan', 'tequila'];
 
   // 矢印は前方=上(行-1)・右方向=列+1として、各駒のoffset(f,r)を絶対の行列差に変換した向きに対応させる。
@@ -98,7 +98,6 @@
   const SPECIAL_DIAGRAM_TYPES = [
     { type: 'otl', build: buildOtlMoveDiagram, note: '千鳥足は逆側を経由して交差します(右の着地点へは先に左へ1歩、左の着地点へは先に右へ1歩)。経路上に駒があるとその方向へは動けません。' },
     { type: 'zafu-boosted', build: () => buildMoveDiagram('zafu-boosted'), note: 'デッドエクストリームアタックで強化された量産型ザフ。8方向すべてに直進できます。' },
-    { type: 'double-arts', build: () => buildMoveDiagram('double-arts'), note: 'サイレントダブルアーツで誕生。前方直進(香車と同じ)+斜め4方向1マス(OLと同じ)の合成です。' },
   ];
   function renderSpecialMoveDiagrams() {
     const container = $('special-move-diagrams');

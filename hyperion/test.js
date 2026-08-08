@@ -354,84 +354,39 @@ assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 2: { eliminated
   assert.strictEqual(result.state.lastMove.eliminatedSeat, 2);
 }
 
-// --- デッドエクストリームアタック: コダクサン捕獲で最も近い自分のザフが強化される ---
-// 座席0(チームA)が座席2(チームB)のコダクサンを捕獲 → 座席2の残りザフのうち近い方が強化される。
+// --- デッドエクストリームアタック: コダクサン捕獲地点の上下左右斜め2マス以内(8方向)に自分の
+//     ザフがいれば、そのうち最も近い1体だけが強化される。範囲外なら不発(独自ルール)。 ---
+// 座席0(チームA)が座席2(チームB)のコダクサンを捕獲 → 座席2の残りザフのうち範囲内で近い方が強化される。
 {
   const board = emptyBoard();
   board[4][8] = { seat: 0, type: 'lance' }; // これでコダクサンを捕獲する(直進で届く位置)
   board[7][8] = { seat: 2, type: 'kodakusan' };
-  board[7][6] = { seat: 2, type: 'zafu' }; // 近い方
-  board[0][6] = { seat: 2, type: 'zafu' }; // 遠い方
+  board[7][6] = { seat: 2, type: 'zafu' }; // 範囲内(斜め2マス)で近い方
+  board[0][6] = { seat: 2, type: 'zafu' }; // 範囲外の遠い方
   const s = state(board, fourSeats(), { activeSeatIndex: 0 });
   const result = L.applyMove(s, 0, { r: 4, c: 8 }, { r: 7, c: 8 });
   assert.strictEqual(result.applied, true);
-  assert.strictEqual(result.state.board[7][6].type, 'zafu-boosted'); // 近い方が強化される
-  assert.strictEqual(result.state.board[0][6].type, 'zafu'); // 遠い方はそのまま
+  assert.strictEqual(result.state.board[7][6].type, 'zafu-boosted'); // 範囲内の方が強化される
+  assert.strictEqual(result.state.board[0][6].type, 'zafu'); // 範囲外はそのまま
   assert.deepStrictEqual(result.state.lastMove.deadExtremeAttack, { r: 7, c: 6 });
 }
-
-// --- サイレントダブルアーツ(独自ルール): 移動の結果として自分のザフとテキーラが隣接すると保留され、
-//     次にその席の手番が来た時点でまだ隣接していれば自動的に合体して「ダブルアーツ」になる ---
 {
-  const s = { board: emptyBoard(), pendingDoubleArts: [] };
-  s.board[8][8] = { seat: 0, type: 'zafu' };
-  s.board[8][9] = { seat: 0, type: 'tequila' };
-  L.registerPendingDoubleArts(s, 0, { r: 8, c: 8 }, 'zafu');
-  assert.strictEqual(s.pendingDoubleArts.length, 1);
-  L.resolvePendingDoubleArts(s, 0);
-  assert.deepStrictEqual(s.board[8][8], { seat: 0, type: 'double-arts' });
-  assert.strictEqual(s.board[8][9], null); // テキーラは消える
-  assert.strictEqual(s.pendingDoubleArts.length, 0);
-}
-{
-  // 保留した後にテキーラがいなくなれば(捕獲など)、合体せず保留も消費される(次のチャンスはない)
-  const s = { board: emptyBoard(), pendingDoubleArts: [] };
-  s.board[8][8] = { seat: 0, type: 'zafu' };
-  s.board[8][9] = { seat: 0, type: 'tequila' };
-  L.registerPendingDoubleArts(s, 0, { r: 8, c: 8 }, 'zafu');
-  s.board[8][9] = null;
-  L.resolvePendingDoubleArts(s, 0);
-  assert.deepStrictEqual(s.board[8][8], { seat: 0, type: 'zafu' });
-  assert.strictEqual(s.pendingDoubleArts.length, 0);
-}
-{
-  // 陣形配置など、移動を経ずに隣接しているだけでは発動しない(必ず移動が引き金)
-  const s = { board: emptyBoard(), pendingDoubleArts: [] };
-  s.board[8][8] = { seat: 0, type: 'zafu' };
-  s.board[8][9] = { seat: 0, type: 'tequila' };
-  L.resolvePendingDoubleArts(s, 0);
-  assert.deepStrictEqual(s.board[8][8], { seat: 0, type: 'zafu' });
-}
-{
-  // ダブルアーツの動き: 前方直進(香車と同じ)+斜め4方向1マス(OLと同じ)の合成
+  // 境界値: 斜め2マスちょうどは範囲内
   const board = emptyBoard();
-  board[8][8] = { seat: 0, type: 'double-arts' };
-  const moves = L.generateMovesForPiece(board, 8, 8);
-  const targets = moves.map((m) => (m.to.r - 8) + ':' + (m.to.c - 8));
-  ['-1:-1', '-1:1', '1:-1', '1:1'].forEach((t) => assert(targets.includes(t))); // 斜め4方向1マス
-  assert(moves.filter((m) => m.to.c === 8 && m.to.r > 8).length >= 2); // 前方(seat0は行+)へ複数マス直進できる
-  assert(!moves.some((m) => m.to.c === 8 && m.to.r < 8)); // 後方への直進はできない
+  board[7][8] = { seat: 2, type: 'kodakusan' };
+  board[5][6] = { seat: 2, type: 'zafu' }; // (行差2, 列差2) = 斜め2マス、範囲内ギリギリ
+  const target = L.triggerDeadExtremeAttack(state(board, fourSeats()), 2, { r: 7, c: 8 });
+  assert.deepStrictEqual(target, { r: 5, c: 6 });
 }
 {
-  // 実戦の流れ: 移動で隣接→他席の手番を挟む→自分の次の手番開始時に自動合体
+  // 範囲内に自分のザフが1体もいなければ不発(遠くにザフがいても発動しない)
   const board = emptyBoard();
-  board[6][8] = { seat: 0, type: 'zafu' };
-  board[8][10] = { seat: 0, type: 'tequila' };
-  board[9][9] = { seat: 2, type: 'tequila' }; // 座席2の適当な駒(座席1・3は脱落済み)
-  const seats = fourSeats({ 1: { eliminated: true }, 3: { eliminated: true } });
-  let s = state(board, seats, { turnOrder: [0, 3, 2, 1], activeSeatIndex: 0 });
-  const move1 = L.applyMove(s, 0, { r: 6, c: 8 }, { r: 7, c: 9 }); // ザフが斜めに進みテキーラへ隣接
-  assert.strictEqual(move1.applied, true);
-  s = move1.state;
-  assert.strictEqual(s.activeSeatIndex, 2); // 座席1は脱落済みなのでスキップされ座席2の番になる
-  assert.strictEqual(s.pendingDoubleArts.length, 1);
-  const move2 = L.applyMove(s, 2, { r: 9, c: 9 }, { r: 8, c: 9 }); // 座席2の手番(自分には無関係)
-  assert.strictEqual(move2.applied, true);
-  s = move2.state;
-  assert.strictEqual(s.activeSeatIndex, 0); // 座席3は脱落済みなのでスキップされ座席0に戻る
-  assert.deepStrictEqual(s.board[7][9], { seat: 0, type: 'double-arts' }); // ここで自動合体している
-  assert.strictEqual(s.board[8][10], null);
-  assert.strictEqual(s.pendingDoubleArts.length, 0);
+  board[7][8] = { seat: 2, type: 'kodakusan' };
+  board[4][8] = { seat: 2, type: 'zafu' }; // 斜め3マスで範囲外
+  const s = state(board, fourSeats(), { activeSeatIndex: 0 });
+  const target = L.triggerDeadExtremeAttack(s, 2, { r: 7, c: 8 });
+  assert.strictEqual(target, null);
+  assert.strictEqual(s.board[4][8].type, 'zafu'); // 強化されない
 }
 
 // --- 手数上限到達時の駒価値タイブレーク ---

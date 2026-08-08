@@ -6,9 +6,10 @@
 // 駒9種の動き・駒数(1人14駒、ザフとテキーラは「まで」なので駒落ち可)・成駒なし・
 // チームの組み方(隣が味方、対面が敵)・手番順(最先手とその味方が1番目と4番目になる)・
 // OTLの合体条件と移動(千鳥足経路)・コダクサンは前方の駒に妨害されない、など。それ以外
-// (決着時の引き分け処理、CPU思考、デッドエクストリームアタック・サイレントダブルアーツの
-// 具体的な発動条件・効果)は原作にもファンブログにも記述がない、または「処理しない」と
-// 明言されているため、AsobiLaboが独自に補った。
+// (決着時の引き分け処理、CPU思考、デッドエクストリームアタックの具体的な発動条件・効果)は
+// 原作にもファンブログにも記述がない、または「処理しない」と明言されているため、
+// AsobiLaboが独自に補った。なお「サイレントダブルアーツ」は名前しか登場せず効果も発動条件も
+// 一切不明なため実装していない。
 // なお「十字の切れ込み(盤に存在しないマス)越しの斜め移動」はファンブログに明記されているが、
 // 陣地を中央に幅を合わせた盤形状では見通しが長くなりすぎて実プレイ上不自然だったため、
 // AsobiLaboの判断で無効マスは完全に移動を遮る(素通り不可)仕様に変更している。
@@ -88,15 +89,12 @@ const PIECE_SPECS = {
   // 単純なoffsets方式では表現できない)。
   // デッドエクストリームアタックで強化された量産型ザフ。8方向直進(将棋の飛車角相当)に強化(具体的強化内容は原作に記述なく創作)。
   'zafu-boosted': { offsets: ALL8, mode: 'slide' },
-  // サイレントダブルアーツ(合体条件・効果とも原作・ファンブログに記述がないためAsobiLaboが独自に設定)。
-  // 前方直進(香車と同じ、offset側でslideに上書き)+斜め4方向1マス(OLと同じ)を合成した動き。
-  'double-arts': { offsets: [{ f: 1, r: 0, mode: 'slide' }, ...DIAG], mode: 'fixed' },
 };
 // 1人あたりの初期駒数(ニコニコ大百科「エクスカリバーの陣」の図から逆算し確認)。
 const PIECE_COUNTS = { king: 1, zafu: 2, lance: 1, gold: 1, silver: 1, matcha: 1, ol: 1, kodakusan: 1, tequila: 5 };
 const TOTAL_PIECES_PER_SEAT = Object.values(PIECE_COUNTS).reduce((a, b) => a + b, 0); // 14
 // 決着が長引いた場合のタイブレーク用の駒価値(原作に記載なし、AsobiLaboが独自に設定)。
-const PIECE_VALUES = { king: 10, zafu: 4, lance: 3, gold: 3, silver: 3, matcha: 2, ol: 2, kodakusan: 2, tequila: 1, otl: 5, 'zafu-boosted': 7, 'double-arts': 6 };
+const PIECE_VALUES = { king: 10, zafu: 4, lance: 3, gold: 3, silver: 3, matcha: 2, ol: 2, kodakusan: 2, tequila: 1, otl: 5, 'zafu-boosted': 7 };
 
 function templateToDelta(seatIndex, offset) {
   const f = FORWARD[seatIndex], r = RIGHT[seatIndex];
@@ -301,7 +299,6 @@ function advanceTurn(state) {
     const seat = state.seats[next];
     if (seat && !seat.eliminated && hasAnyLegalMove(state.board, state.seats, next)) {
       state.activeSeatIndex = next;
-      resolvePendingDoubleArts(state, next);
       return state;
     }
   }
@@ -309,14 +306,17 @@ function advanceTurn(state) {
 }
 
 // デッドエクストリームアタック: 「破壊されたコダクサンから子供が飛び出し、量産型ザフのマスに飛び込む」
-// (効果は原作でも「不明」と明言されているため、盤上の自分のザフのうち最も近い1体を強化する、という
-// 効果をAsobiLaboが独自に設定した)。
+// (効果は原作でも「不明」と明言されているため、AsobiLaboが独自に設定: コダクサンの上下左右斜め
+// 2マス以内に自分のザフがいれば、そのうち最も近い1体だけが強化される。範囲内にいなければ不発)。
+const DEAD_EXTREME_ATTACK_RANGE = 2;
 function triggerDeadExtremeAttack(state, ownerSeat, kodakusanPos) {
   const candidates = [];
   for (let r = 0; r < BOARD_DIM; r += 1) {
     for (let c = 0; c < BOARD_DIM; c += 1) {
       const cell = state.board[r][c];
-      if (cell && cell.seat === ownerSeat && cell.type === 'zafu') candidates.push({ r, c });
+      if (!cell || cell.seat !== ownerSeat || cell.type !== 'zafu') continue;
+      const dist = Math.max(Math.abs(r - kodakusanPos.r), Math.abs(c - kodakusanPos.c)); // 上下左右斜め=8方向のマス数
+      if (dist <= DEAD_EXTREME_ATTACK_RANGE) candidates.push({ r, c });
     }
   }
   if (!candidates.length) return null;
@@ -326,54 +326,8 @@ function triggerDeadExtremeAttack(state, ownerSeat, kodakusanPos) {
   return target;
 }
 
-// サイレントダブルアーツ(合体条件・効果とも原作・ファンブログに記述がないためAsobiLaboが独自に設定):
-// 自分の量産型ザフとテキーラが「移動の結果として」隣接すると保留され、次にその席の手番が回って
-// きた時点でまだ隣接していれば自動的に合体して「ダブルアーツ」になる(OTLの「敵味方問わず即座に
-// 合体」と対になるよう、自陣の駒同士限定・1手番待っての合体とした)。陣形配置による初期隣接では
-// 発動しない(必ず移動が引き金になる)。
-const NEIGHBOR_DELTAS = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
-function findDoubleArtsPairsAt(board, seatIndex, r, c, movedType) {
-  const otherType = movedType === 'zafu' ? 'tequila' : 'zafu';
-  const pairs = [];
-  NEIGHBOR_DELTAS.forEach(([dr, dc]) => {
-    const nr = r + dr, nc = c + dc;
-    if (!isValidSquare(nr, nc)) return;
-    const cell = board[nr] && board[nr][nc];
-    if (cell && cell.seat === seatIndex && cell.type === otherType) {
-      const zafuPos = movedType === 'zafu' ? { r, c } : { r: nr, c: nc };
-      const tequilaPos = movedType === 'zafu' ? { r: nr, c: nc } : { r, c };
-      pairs.push({ seat: seatIndex, zafuPos, tequilaPos });
-    }
-  });
-  return pairs;
-}
-function registerPendingDoubleArts(state, seatIndex, to, movedType) {
-  if (movedType !== 'zafu' && movedType !== 'tequila') return;
-  const pairs = findDoubleArtsPairsAt(state.board, seatIndex, to.r, to.c, movedType);
-  if (pairs.length) state.pendingDoubleArts = (state.pendingDoubleArts || []).concat(pairs);
-}
-function resolvePendingDoubleArts(state, seatIndex) {
-  const pending = (state.pendingDoubleArts || []).filter((p) => p.seat === seatIndex);
-  state.pendingDoubleArts = (state.pendingDoubleArts || []).filter((p) => p.seat !== seatIndex);
-  pending.forEach((p) => {
-    const zafuCell = state.board[p.zafuPos.r][p.zafuPos.c];
-    const tequilaCell = state.board[p.tequilaPos.r][p.tequilaPos.c];
-    const stillValid = zafuCell && zafuCell.seat === seatIndex && zafuCell.type === 'zafu'
-      && tequilaCell && tequilaCell.seat === seatIndex && tequilaCell.type === 'tequila';
-    if (stillValid) {
-      state.board[p.tequilaPos.r][p.tequilaPos.c] = null;
-      state.board[p.zafuPos.r][p.zafuPos.c] = { seat: seatIndex, type: 'double-arts' };
-    }
-  });
-}
-
 function cloneMatchState(matchState) {
-  return {
-    ...matchState,
-    board: cloneBoard(matchState.board),
-    seats: cloneSeats(matchState.seats),
-    pendingDoubleArts: (matchState.pendingDoubleArts || []).map((p) => ({ ...p, zafuPos: { ...p.zafuPos }, tequilaPos: { ...p.tequilaPos } })),
-  };
+  return { ...matchState, board: cloneBoard(matchState.board), seats: cloneSeats(matchState.seats) };
 }
 
 // 純粋リデューサー。不正な手は{applied:false, reason}で元のstateをそのまま返す。
@@ -402,7 +356,6 @@ function applyMove(matchState, seatIndex, from, to) {
     state.board[from.r][from.c] = null;
     if (capturedCell && capturedCell.type === 'king') { eliminateSeat(state, capturedCell.seat); eliminatedSeat = capturedCell.seat; }
     else if (capturedCell && capturedCell.type === 'kodakusan') { deadExtremeAttack = triggerDeadExtremeAttack(state, capturedCell.seat, to); }
-    registerPendingDoubleArts(state, seatIndex, to, movingPiece.type);
   }
 
   state.version = (state.version || 0) + 1;
@@ -530,7 +483,7 @@ function cpuFormationChoice(rng) { return Math.floor((rng ? rng() : Math.random(
 function createMatchState(seats, allPlacements, rng) {
   const firstMover = Math.floor((rng || Math.random)() * SEAT_COUNT);
   const turnOrder = buildTurnOrder(firstMover);
-  return { board: buildBoardFromPlacements(allPlacements), seats: cloneSeats(seats).map((seat) => ({ ...seat, eliminated: false })), turnOrder, activeSeatIndex: turnOrder[0], turnCount: 0, version: 0, phase: 'playing', winner: null, drawn: false, lastMove: null, pendingDoubleArts: [], checkedSeats: [] };
+  return { board: buildBoardFromPlacements(allPlacements), seats: cloneSeats(seats).map((seat) => ({ ...seat, eliminated: false })), turnOrder, activeSeatIndex: turnOrder[0], turnCount: 0, version: 0, phase: 'playing', winner: null, drawn: false, lastMove: null, checkedSeats: [] };
 }
 function buildMatchScoreboard(matchesWon, seats) {
   const scores = Object.assign({ A: 0, B: 0 }, matchesWon);
@@ -584,7 +537,7 @@ const HyperionLogic = {
   isValidSquare, isInOwnArm, localToAbsolute, absoluteToLocal, createEmptyBoard, cloneBoard,
   generateMovesForPiece, generateAllMovesForSeat, hasAnyLegalMove, isLegalMove, isSquareThreatenedBy, otlMoves,
   applyMove, eliminateSeat, checkWinner, teamPieceValue, resolveByPieceValue, buildTurnOrder, advanceTurn, triggerDeadExtremeAttack,
-  registerPendingDoubleArts, resolvePendingDoubleArts, findDoubleArtsPairsAt, getCheckedSeats,
+  getCheckedSeats,
   formationPlacements, remainingPieceCounts, canPlacePiece, addPlacement, removePlacement, isSetupComplete, buildBoardFromPlacements,
   createEmptySeats, assignSeat, createDefaultSeats, fillEmptySeatsWithCpu, canStartMatch, cpuFormationChoice, createMatchState,
   buildMatchScoreboard, getMatchWinners, chooseCpuMove,
