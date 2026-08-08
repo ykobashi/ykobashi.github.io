@@ -15,14 +15,12 @@
 
   // 矢印は前方=上(行-1)・右方向=列+1として、各駒のoffset(f,r)を絶対の行列差に変換した向きに対応させる。
   const MOVE_ARROW_CHAR = { '-1,0': '↑', '-1,1': '↗', '0,1': '→', '1,1': '↘', '1,0': '↓', '1,-1': '↙', '0,-1': '←', '-1,-1': '↖' };
-  // ルール説明用の駒の動き図。実際のPIECE_SPECS(logic.js)から生成するので、駒の動き自体を
-  // 変更してもここが自動的に正しい図になる。5x5マスの中央に駒を置き、直接届くマスにドット、
-  // 直進(slide)する方向は2マス目に矢印を表示して「その先も続く」ことを示す。
-  function buildMoveDiagram(type) {
-    const spec = L.PIECE_SPECS[type];
-    const size = 5, center = 2;
+  // ルール説明用の駒の動き図の土台(中央に駒、周囲に届くマスをドット表示)を作る共通処理。
+  function createDiagramGrid(size) {
     const grid = document.createElement('div');
     grid.className = 'move-diagram-grid';
+    grid.style.gridTemplateColumns = 'repeat(' + size + ', 1fr)';
+    grid.style.gridTemplateRows = 'repeat(' + size + ', 1fr)';
     const cellEls = [];
     for (let i = 0; i < size * size; i += 1) {
       const cell = document.createElement('div');
@@ -30,9 +28,22 @@
       grid.appendChild(cell);
       cellEls.push(cell);
     }
-    const at = (row, col) => cellEls[row * size + col];
-    at(center, center).classList.add('piece');
-    at(center, center).textContent = PIECE_GLYPH[type] || '';
+    return { grid, at: (row, col) => cellEls[row * size + col] };
+  }
+  function setDiagramPieceCell(cell, type) {
+    cell.classList.add('piece');
+    const glyph = PIECE_GLYPH[type] || '';
+    cell.textContent = glyph;
+    cell.classList.toggle('wide', glyph.length > 1);
+  }
+  // 通常駒・強化ザフ・ダブルアーツ用。実際のPIECE_SPECS(logic.js)から生成するので、駒の動き自体を
+  // 変更してもここが自動的に正しい図になる。5x5マスの中央に駒を置き、直接届くマスにドット、
+  // 直進(slide)する方向は2マス目に矢印を表示して「その先も続く」ことを示す。
+  function buildMoveDiagram(type) {
+    const spec = L.PIECE_SPECS[type];
+    const size = 5, center = 2;
+    const { grid, at } = createDiagramGrid(size);
+    setDiagramPieceCell(at(center, center), type);
     spec.offsets.forEach((offset) => {
       const dr = -offset.f, dc = offset.r; // f(前方)は上方向、r(右方向)は右方向に対応
       const mode = offset.mode || spec.mode;
@@ -52,6 +63,22 @@
     });
     return grid;
   }
+  // OTL専用。千鳥足・前方右斜め・前方左斜め・前方2マスはotlMoves()の専用ロジックで、単純な
+  // offsetsでは表現できないため、同じ座標(logic.jsのOTL_PATHS/OTL_EXTRA_OFFSETSと同じ値)を
+  // 手動で対応させて図にする。7x7マス(3マス先まで届くため5x5では収まらない)。
+  function buildOtlMoveDiagram() {
+    const size = 7, center = 3;
+    const { grid, at } = createDiagramGrid(size);
+    setDiagramPieceCell(at(center, center), 'otl');
+    [
+      { row: center - 1, col: center - 1 }, // 前方左斜め1マス
+      { row: center - 1, col: center + 1 }, // 前方右斜め1マス
+      { row: center - 2, col: center }, // 前方2マス
+      { row: center - 3, col: center - 1 }, // 千鳥足の着地点(左)
+      { row: center - 3, col: center + 1 }, // 千鳥足の着地点(右)
+    ].forEach((t) => at(t.row, t.col).classList.add('target'));
+    return grid;
+  }
   function renderPieceMoveDiagrams() {
     const container = $('piece-move-diagrams');
     if (!container) return;
@@ -61,9 +88,34 @@
       card.className = 'move-diagram-card';
       const label = document.createElement('p');
       label.className = 'move-diagram-label';
-      label.textContent = PIECE_GLYPH[type] + ' ' + PIECE_LABEL[type];
+      label.textContent = PIECE_GLYPH[type] === PIECE_LABEL[type] ? PIECE_LABEL[type] : PIECE_GLYPH[type] + ' ' + PIECE_LABEL[type];
       card.appendChild(label);
       card.appendChild(buildMoveDiagram(type));
+      container.appendChild(card);
+    });
+  }
+  // 対局中の合体・強化で登場する特殊な駒の動き図。
+  const SPECIAL_DIAGRAM_TYPES = [
+    { type: 'otl', build: buildOtlMoveDiagram, note: '千鳥足は逆側を経由して交差します(右の着地点へは先に左へ1歩、左の着地点へは先に右へ1歩)。経路上に駒があるとその方向へは動けません。' },
+    { type: 'zafu-boosted', build: () => buildMoveDiagram('zafu-boosted'), note: 'デッドエクストリームアタックで強化された量産型ザフ。8方向すべてに直進できます。' },
+    { type: 'double-arts', build: () => buildMoveDiagram('double-arts'), note: 'サイレントダブルアーツで誕生。前方直進(香車と同じ)+斜め4方向1マス(OLと同じ)の合成です。' },
+  ];
+  function renderSpecialMoveDiagrams() {
+    const container = $('special-move-diagrams');
+    if (!container) return;
+    container.innerHTML = '';
+    SPECIAL_DIAGRAM_TYPES.forEach(({ type, build, note }) => {
+      const card = document.createElement('div');
+      card.className = 'move-diagram-card';
+      const label = document.createElement('p');
+      label.className = 'move-diagram-label';
+      label.textContent = PIECE_GLYPH[type] === PIECE_LABEL[type] ? PIECE_LABEL[type] : PIECE_GLYPH[type] + ' ' + PIECE_LABEL[type];
+      card.appendChild(label);
+      card.appendChild(build());
+      const note_ = document.createElement('p');
+      note_.className = 'move-diagram-note';
+      note_.textContent = note;
+      card.appendChild(note_);
       container.appendChild(card);
     });
   }
@@ -904,6 +956,7 @@
 
   // ---------- 初期表示 ----------
   renderPieceMoveDiagrams();
+  renderSpecialMoveDiagrams();
   showOnly('setup-screen');
   if (savedSession && savedSession.roomCode && savedSession.token && savedSession.name) connectGuest(savedSession);
 })();

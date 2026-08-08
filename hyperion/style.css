@@ -778,12 +778,20 @@ main {
   color: var(--accent);
   font-size: 0.6rem;
 }
+.move-diagram-cell.piece.wide { font-size: 0.4rem; }
 .move-diagram-cell.target::before {
   content: "";
   width: 32%;
   height: 32%;
   border-radius: 50%;
   background: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.move-diagram-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.4;
+  text-align: left;
 }
 
 .error {
