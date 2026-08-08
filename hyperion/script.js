@@ -339,22 +339,42 @@
     const steps = ((ownerSeat - viewSeat) % 4 + 4) % 4;
     return steps === 0 ? null : 'piece-rot-' + (steps * 90);
   }
-  // 直前の手の駒が移動元から移動先へ画面上を滑るゴースト要素を1回だけ再生する。
+  // 1マスぶんの駒表示(文字・チーム色・向き回転・wide・aria-label)を反映する。盤の通常描画と
+  // アニメーション完了時の移動先マス反映(下のanimateLastMove)の両方から呼ぶ共通処理。
+  function renderPieceOnCell(cell, piece, viewSeat) {
+    cell.classList.remove('p1', 'p2', 'p3', 'p4', 'piece-rot-90', 'piece-rot-180', 'piece-rot-270');
+    if (piece) {
+      cell.classList.add(seatColorClass(piece.seat));
+      const rotClass = pieceRotationClass(piece.seat, viewSeat);
+      if (rotClass) cell.classList.add(rotClass);
+      const glyph = PIECE_GLYPH[piece.type] || '';
+      cell.textContent = glyph;
+      cell.classList.toggle('wide', glyph.length > 1);
+      cell.setAttribute('aria-label', seatName(piece.seat) + 'の' + (PIECE_LABEL[piece.type] || piece.type));
+    } else { cell.textContent = ''; cell.classList.remove('wide'); cell.removeAttribute('aria-label'); }
+  }
+  // 直前の手の駒が移動元から移動先へ画面上を滑るゴースト要素を1回だけ再生する。移動先マスの本体は
+  // renderBoard側でアニメーション中は空表示にしてあり、完了後にここでチーム色付きで初めて表示する。
   // 盤の回転後の実際の画面座標(getBoundingClientRect)を基準にするので、視点がどの席でも正しい向きに動く。
-  function animateLastMove(lastMove) {
+  function animateLastMove(lastMove, viewSeat) {
     const fromCell = boardCells[lastMove.from.r] && boardCells[lastMove.from.r][lastMove.from.c];
     const toCell = boardCells[lastMove.to.r] && boardCells[lastMove.to.r][lastMove.to.c];
     if (!fromCell || !toCell) return;
+    const piece = matchState.board[lastMove.to.r][lastMove.to.c];
     const boardEl = $('board');
     const boardRect = boardEl.getBoundingClientRect();
     const fromRect = fromCell.getBoundingClientRect();
     const toRect = toCell.getBoundingClientRect();
     const ghost = document.createElement('div');
     ghost.className = 'move-ghost';
-    ['p1', 'p2', 'p3', 'p4', 'wide', 'piece-rot-90', 'piece-rot-180', 'piece-rot-270'].forEach((cls) => {
-      if (toCell.classList.contains(cls)) ghost.classList.add(cls);
-    });
-    ghost.textContent = toCell.textContent;
+    if (piece) {
+      ghost.classList.add(seatColorClass(piece.seat));
+      const rotClass = pieceRotationClass(piece.seat, viewSeat);
+      if (rotClass) ghost.classList.add(rotClass);
+      const glyph = PIECE_GLYPH[piece.type] || '';
+      ghost.textContent = glyph;
+      ghost.classList.toggle('wide', glyph.length > 1);
+    }
     ghost.style.width = fromRect.width + 'px';
     ghost.style.height = fromRect.height + 'px';
     ghost.style.left = (fromRect.left - boardRect.left) + 'px';
@@ -362,7 +382,11 @@
     boardEl.appendChild(ghost);
     const dx = toRect.left - fromRect.left, dy = toRect.top - fromRect.top;
     requestAnimationFrame(() => { ghost.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)'; });
-    const cleanup = () => { if (ghost.parentNode) ghost.remove(); };
+    const cleanup = () => {
+      if (ghost.parentNode) ghost.remove();
+      const currentToCell = boardCells[lastMove.to.r] && boardCells[lastMove.to.r][lastMove.to.c];
+      if (currentToCell && matchState) renderPieceOnCell(currentToCell, matchState.board[lastMove.to.r][lastMove.to.c], getViewSeat());
+    };
     ghost.addEventListener('transitionend', cleanup);
     setTimeout(cleanup, 500);
   }
@@ -374,6 +398,7 @@
     const interactive = isMySeatTurn();
     const legalSet = new Set(legalTargets.map((m) => m.to.r + ':' + m.to.c));
     const lastMove = matchState.lastMove;
+    const isFreshMove = !!lastMove && matchState.version !== animatedMoveVersion;
     for (let r = 0; r < L.BOARD_DIM; r += 1) {
       for (let c = 0; c < L.BOARD_DIM; c += 1) {
         const cell = boardCells[r][c];
@@ -385,22 +410,15 @@
         cell.classList.toggle('selected', !!selectedFrom && selectedFrom.r === r && selectedFrom.c === c);
         cell.classList.toggle('legal-move', isLegal);
         cell.classList.toggle('has-piece', isLegal && !!piece);
-        cell.classList.remove('p1', 'p2', 'p3', 'p4', 'piece-rot-90', 'piece-rot-180', 'piece-rot-270');
-        if (piece) {
-          cell.classList.add(seatColorClass(piece.seat));
-          const rotClass = pieceRotationClass(piece.seat, viewSeat);
-          if (rotClass) cell.classList.add(rotClass);
-          const glyph = PIECE_GLYPH[piece.type] || '';
-          cell.textContent = glyph;
-          cell.classList.toggle('wide', glyph.length > 1);
-          cell.setAttribute('aria-label', seatName(piece.seat) + 'の' + (PIECE_LABEL[piece.type] || piece.type));
-        } else { cell.textContent = ''; cell.classList.remove('wide'); cell.removeAttribute('aria-label'); }
+        // アニメーション再生対象の移動先マスは、ゴーストが到着するまで本体を表示しない
+        const suppressForAnimation = isFreshMove && lastMove.to.r === r && lastMove.to.c === c;
+        renderPieceOnCell(cell, suppressForAnimation ? null : piece, viewSeat);
         cell.disabled = !interactive;
       }
     }
-    if (lastMove && matchState.version !== animatedMoveVersion) {
+    if (isFreshMove) {
       animatedMoveVersion = matchState.version;
-      animateLastMove(lastMove);
+      animateLastMove(lastMove, viewSeat);
     }
   }
   function selectPiece(r, c) { selectedFrom = { r, c }; legalTargets = L.generateMovesForPiece(matchState.board, r, c); renderBoard(); }

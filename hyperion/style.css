@@ -494,6 +494,10 @@ main {
   transition: transform 0.35s ease;
 }
 .move-ghost.wide { font-size: clamp(0.35rem, 1.3vw, 0.6rem); }
+.move-ghost.p1 { color: var(--p1-color); }
+.move-ghost.p2 { color: var(--p2-color); }
+.move-ghost.p3 { color: var(--p3-color); }
+.move-ghost.p4 { color: var(--p4-color); }
 
 .cell {
   position: relative;
