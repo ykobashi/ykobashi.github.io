@@ -170,7 +170,8 @@ assert.deepStrictEqual(L.localToAbsolute(1, 4, 3), { r: 8, c: 12 }); // 東: dep
 
 // --- OTL合体(ファンブログに明記): OLが敵味方問わずテキーラのマスに入るとOTLになる。
 //     味方(自分含む)のテキーラへは通常なら進入不可なところをこの合体だけ例外的に許可。敵のテキーラは
-//     通常の捕獲だがこちらもOTLになる。テキーラ側からOLへ合体する動きはない。 ---
+//     通常の捕獲だがこちらもOTLになる。逆にテキーラがOLのマスに入った場合も対称的にOTLになる
+//     (この向きはファンブログに記述がなくAsobiLabo独自)。 ---
 {
   const board = emptyBoard();
   board[10][10] = { seat: 0, type: 'ol' };
@@ -204,37 +205,71 @@ assert.deepStrictEqual(L.localToAbsolute(1, 4, 3), { r: 8, c: 12 }); // 東: dep
   assert.deepStrictEqual(result.state.board[9][9], { seat: 0, type: 'otl' });
 }
 {
-  // テキーラ側からOLのマスへ合体する動きはない(OL主体の合体のみ)
+  // テキーラがOLのいるマスに入った場合も対称的にOTLへ合体する(AsobiLabo独自)
   const board = emptyBoard();
-  board[10][10] = { seat: 0, type: 'tequila' }; // 前方1マスのみ動けるテキーラ
-  board[11][10] = { seat: 1, type: 'ol' }; // 前方に味方のOL
-  const moves = L.generateMovesForPiece(board, 10, 10);
-  assert.strictEqual(moves.length, 0); // 味方マスなので進入不可、合体もしない
+  board[10][10] = { seat: 0, type: 'tequila' };
+  board[11][10] = { seat: 0, type: 'ol' }; // 自分自身のOL(前方1マス)
+  const merge = L.generateMovesForPiece(board, 10, 10).find((m) => m.to.r === 11 && m.to.c === 10);
+  assert.strictEqual(merge.merge, 'otl');
+  const result = L.applyMove(state(board, fourSeats()), 0, { r: 10, c: 10 }, { r: 11, c: 10 });
+  assert.strictEqual(result.applied, true);
+  assert.deepStrictEqual(result.state.board[11][10], { seat: 0, type: 'otl' });
+  assert.strictEqual(result.state.board[10][10], null);
+}
+{
+  // 味方(別座席)のOLへも例外的に進入でき、OTLになる
+  const board = emptyBoard();
+  board[10][10] = { seat: 0, type: 'tequila' };
+  board[11][10] = { seat: 1, type: 'ol' };
+  const merge = L.generateMovesForPiece(board, 10, 10).find((m) => m.to.r === 11 && m.to.c === 10);
+  assert.strictEqual(merge.merge, 'otl');
+  assert.strictEqual(merge.capture, null); // 味方の駒なので捕獲ではない
+}
+{
+  // 敵(セット2、チームB)のOLは通常通り捕獲しつつ、OTLにもなる
+  const board = emptyBoard();
+  board[10][10] = { seat: 0, type: 'tequila' };
+  board[11][10] = { seat: 2, type: 'ol' };
+  const move = L.generateMovesForPiece(board, 10, 10).find((m) => m.to.r === 11 && m.to.c === 10);
+  assert.strictEqual(move.merge, 'otl');
+  assert.deepStrictEqual(move.capture, { seat: 2, type: 'ol' });
+  const result = L.applyMove(state(board, fourSeats()), 0, { r: 10, c: 10 }, { r: 11, c: 10 });
+  assert.deepStrictEqual(result.state.board[11][10], { seat: 0, type: 'otl' });
 }
 
-// --- OTLの移動(千鳥足): 前方3マス先の右または左へ、左→中央→右(またはその逆)の経路を通る。
-//     経路上(中間点)に駒があると、その方向へは移動できない。 ---
+// --- OTLの移動: 千鳥足(前方3マス先の右または左へ、左→中央→右またはその逆の経路)に加え、
+//     前方右斜め1マス・前方左斜め1マス・前方2マス先(コダクサンと同じくジャンプで妨害されない)にも
+//     動ける(ユーザー提供の図解により追加)。千鳥足の経路上(中間点)に駒があると、その方向へは
+//     移動できない。 ---
 {
   const board = emptyBoard();
   board[10][10] = { seat: 0, type: 'otl' }; // 北: 前方=南(行+)、右=西(列-)
   const moves = L.generateMovesForPiece(board, 10, 10);
   const targets = moves.map((m) => m.to.r + ':' + m.to.c).sort();
-  assert.deepStrictEqual(targets, ['13:11', '13:9']); // 3マス先の左右(f=3,r=±1 → 行13、列9または11。文字列sortの順)
+  // 千鳥足の最終目的地(13,9)(13,11)に加え、前方右斜め(11,9)・前方左斜め(11,11)・前方2マス(12,10)
+  assert.deepStrictEqual(targets, ['11:11', '11:9', '12:10', '13:11', '13:9']);
 }
 {
   const board = emptyBoard();
   board[10][10] = { seat: 0, type: 'otl' };
-  board[11][9] = { seat: 0, type: 'tequila' }; // (13,11)行きの経路の1歩目を自駒で塞ぐ
+  board[11][9] = { seat: 0, type: 'tequila' }; // 千鳥足「左」の経路の1歩目=前方右斜め(11,9)を自駒で塞ぐ
   const moves = L.generateMovesForPiece(board, 10, 10);
   const targets = moves.map((m) => m.to.r + ':' + m.to.c).sort();
-  assert.deepStrictEqual(targets, ['13:9']); // (13,11)行きだけ塞がれ、(13,9)行きは無事
+  // (13,11)行きの千鳥足と前方右斜め自体は塞がれるが、前方左斜め(11,11)・前方2マス(12,10)・
+  // 千鳥足「右」の最終目的地(13,9)は無事
+  assert.deepStrictEqual(targets, ['11:11', '12:10', '13:9']);
 }
 {
   const board = emptyBoard();
   board[10][10] = { seat: 0, type: 'otl' };
-  board[12][10] = { seat: 2, type: 'tequila' }; // 中央の中間点(2歩目)を敵駒で塞ぐ(両方向とも通る点)
+  board[12][10] = { seat: 2, type: 'tequila' }; // 千鳥足の共通中間点(2歩目)=前方2マスを敵駒で塞ぐ
   const moves = L.generateMovesForPiece(board, 10, 10);
-  assert.strictEqual(moves.length, 0); // 両方向とも経路上に駒があるため移動不可
+  const targets = moves.map((m) => m.to.r + ':' + m.to.c).sort();
+  // 千鳥足は両方向とも経路上に駒があるため移動不可だが、前方2マスの直接ジャンプは間の駒に
+  // 妨害されないためこの敵駒を捕獲できる。前方右斜め・前方左斜めも無事
+  assert.deepStrictEqual(targets, ['11:11', '11:9', '12:10']);
+  const jumpCapture = moves.find((m) => m.to.r === 12 && m.to.c === 10);
+  assert.deepStrictEqual(jumpCapture.capture, { seat: 2, type: 'tequila' });
 }
 
 // --- applyMove: 不正な手の拒否 ---
@@ -268,6 +303,37 @@ assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 0: { eliminated
 assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 0: { eliminated: true }, 2: { eliminated: true } }))), null); // 0・2は別チームなのでまだ決着しない
 assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 0: { eliminated: true }, 1: { eliminated: true } }))), 'B'); // チームA(0・1)が全滅
 assert.strictEqual(L.checkWinner(state(emptyBoard(), fourSeats({ 2: { eliminated: true }, 3: { eliminated: true } }))), 'A'); // チームB(2・3)が全滅
+
+// --- 王手(独自ルール、ニコニコ大百科の用語集で「ストップザミュージック=王手」と確認済み):
+//     生存している各席のアブラシモビッチが敵チームから攻撃されているか判定する ---
+{
+  const board = emptyBoard();
+  board[8][8] = { seat: 0, type: 'king' };
+  board[10][10] = { seat: 2, type: 'zafu' }; // 斜めに王手をかける敵ザフ
+  assert.deepStrictEqual(L.getCheckedSeats(board, fourSeats()), [0]);
+}
+{
+  const board = emptyBoard();
+  board[8][8] = { seat: 0, type: 'king' };
+  board[10][11] = { seat: 2, type: 'zafu' }; // 王手がかからない位置
+  assert.deepStrictEqual(L.getCheckedSeats(board, fourSeats()), []);
+}
+{
+  // 脱落済みの席は判定対象外
+  const board = emptyBoard();
+  board[10][10] = { seat: 2, type: 'zafu' };
+  assert.deepStrictEqual(L.getCheckedSeats(board, fourSeats({ 0: { eliminated: true } })), []);
+}
+{
+  // applyMoveの結果(checkedSeats)にも反映される
+  const board = emptyBoard();
+  board[8][12] = { seat: 0, type: 'zafu' };
+  board[8][8] = { seat: 2, type: 'king' };
+  const s = state(board, fourSeats(), { activeSeatIndex: 0 });
+  const result = L.applyMove(s, 0, { r: 8, c: 12 }, { r: 6, c: 10 }); // 斜めに滑って王手をかける
+  assert.strictEqual(result.applied, true);
+  assert.deepStrictEqual(result.state.checkedSeats, [2]);
+}
 
 // --- applyMove: 王将捕獲 → 脱落カスケード → 勝利判定 ---
 // 座席0(北,チームA)が座席2(南,チームB)の王将を捕獲する。座席3(西,チームB)は事前に脱落済みなので、

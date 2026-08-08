@@ -141,6 +141,9 @@ const OTL_PATHS = {
   right: [{ f: 1, r: -1 }, { f: 2, r: 0 }, { f: 3, r: 1 }],
   left: [{ f: 1, r: 1 }, { f: 2, r: 0 }, { f: 3, r: -1 }],
 };
+// 千鳥足に加え、前方右斜め1マス・前方左斜め1マス・前方2マス先(コダクサンと同じく間の駒に
+// 妨害されないジャンプ)にも動ける(ユーザー提供の図解に基づき追加。原作・ファンブログに記述なし)。
+const OTL_EXTRA_OFFSETS = [{ f: 1, r: 1 }, { f: 1, r: -1 }, { f: 2, r: 0 }];
 function otlMoves(board, r, c, seatIndex) {
   const moves = [];
   Object.values(OTL_PATHS).forEach((path) => {
@@ -156,31 +159,43 @@ function otlMoves(board, r, c, seatIndex) {
     if (!target) { moves.push({ to: { r: nr, c: nc }, capture: null }); return; }
     if (TEAM_OF_SEAT(target.seat) !== TEAM_OF_SEAT(seatIndex)) moves.push({ to: { r: nr, c: nc }, capture: { seat: target.seat, type: target.type } });
   });
+  OTL_EXTRA_OFFSETS.forEach((offset) => {
+    const delta = templateToDelta(seatIndex, offset);
+    const nr = r + delta.dr, nc = c + delta.dc;
+    if (!isValidSquare(nr, nc)) return;
+    const target = board[nr][nc];
+    if (!target) { moves.push({ to: { r: nr, c: nc }, capture: null }); return; }
+    if (TEAM_OF_SEAT(target.seat) !== TEAM_OF_SEAT(seatIndex)) moves.push({ to: { r: nr, c: nc }, capture: { seat: target.seat, type: target.type } });
+  });
   return moves;
 }
-// OLは、テキーラ(敵味方問わず)がいるマスに入るとOTLへ合体する(ファンブログに明記)。
+// OLがテキーラ(敵味方問わず)のいるマスに入るとOTLへ合体する(ファンブログに明記)。
 // 味方(自分含む)のテキーラへは、通常なら味方マスとして進入できないところをこの合体だけ例外的に許可される。
-// 敵のテキーラへは通常通りの捕獲だが、この場合もOTLへ合体する。テキーラ側からOLへ合体する動きはない。
+// 敵のテキーラへは通常通りの捕獲だが、この場合もOTLへ合体する。
+// 逆にテキーラがOLのいるマスに入った場合も、原作・ファンブログには記述がないがAsobiLaboの判断で
+// 同様に対称的にOTLへ合体するものとして扱う(進入する側の所有者が合体後のOTLを得る)。
+function applyOtlMergeDetection(board, r, c, cell, moves, targetType) {
+  PIECE_SPECS[cell.type].offsets.forEach((offset) => {
+    const delta = templateToDelta(cell.seat, offset);
+    const nr = r + delta.dr, nc = c + delta.dc;
+    if (!isValidSquare(nr, nc)) return;
+    const target = board[nr][nc];
+    if (!target || target.type !== targetType) return;
+    if (TEAM_OF_SEAT(target.seat) === TEAM_OF_SEAT(cell.seat)) {
+      if (!moves.some((m) => m.to.r === nr && m.to.c === nc)) moves.push({ to: { r: nr, c: nc }, capture: null, merge: 'otl' });
+    } else {
+      const existing = moves.find((m) => m.to.r === nr && m.to.c === nc);
+      if (existing) existing.merge = 'otl';
+    }
+  });
+}
 function generateMovesForPiece(board, r, c) {
   const cell = board[r] && board[r][c];
   if (!cell) return [];
   if (cell.type === 'otl') return otlMoves(board, r, c, cell.seat);
   const moves = pieceMovesGeneric(board, r, c, cell.seat, cell.type);
-  if (cell.type === 'ol') {
-    PIECE_SPECS.ol.offsets.forEach((offset) => {
-      const delta = templateToDelta(cell.seat, offset);
-      const nr = r + delta.dr, nc = c + delta.dc;
-      if (!isValidSquare(nr, nc)) return;
-      const target = board[nr][nc];
-      if (!target || target.type !== 'tequila') return;
-      if (TEAM_OF_SEAT(target.seat) === TEAM_OF_SEAT(cell.seat)) {
-        if (!moves.some((m) => m.to.r === nr && m.to.c === nc)) moves.push({ to: { r: nr, c: nc }, capture: null, merge: 'otl' });
-      } else {
-        const existing = moves.find((m) => m.to.r === nr && m.to.c === nc);
-        if (existing) existing.merge = 'otl';
-      }
-    });
-  }
+  if (cell.type === 'ol') applyOtlMergeDetection(board, r, c, cell, moves, 'tequila');
+  else if (cell.type === 'tequila') applyOtlMergeDetection(board, r, c, cell, moves, 'ol');
   return moves;
 }
 function generateAllMovesForSeat(board, seats, seatIndex) {
@@ -208,6 +223,26 @@ function isSquareThreatenedBy(board, seats, r, c, byTeam) {
     if (generateAllMovesForSeat(board, seats, seatIndex).some((m) => m.to.r === r && m.to.c === c)) return true;
   }
   return false;
+}
+// 王手(独自ルール、将棋のような詰み判定はしない): 生存している各席のアブラシモビッチが、
+// 敵チームから現在攻撃されているかどうかを調べ、王手されている席番号の一覧を返す。
+function getCheckedSeats(board, seats) {
+  const checked = [];
+  for (let seatIndex = 0; seatIndex < SEAT_COUNT; seatIndex += 1) {
+    const seat = seats[seatIndex];
+    if (!seat || seat.eliminated) continue;
+    let kingPos = null;
+    for (let r = 0; r < BOARD_DIM; r += 1) {
+      for (let c = 0; c < BOARD_DIM; c += 1) {
+        const cell = board[r][c];
+        if (cell && cell.seat === seatIndex && cell.type === 'king') kingPos = { r, c };
+      }
+    }
+    if (!kingPos) continue;
+    const enemyTeam = TEAM_OF_SEAT(seatIndex) === 'A' ? 'B' : 'A';
+    if (isSquareThreatenedBy(board, seats, kingPos.r, kingPos.c, enemyTeam)) checked.push(seatIndex);
+  }
+  return checked;
 }
 
 function eliminateSeat(state, seatIndex) {
@@ -373,6 +408,7 @@ function applyMove(matchState, seatIndex, from, to) {
   state.version = (state.version || 0) + 1;
   state.turnCount = (state.turnCount || 0) + 1;
   state.lastMove = { seatIndex, from, to, captured: capturedCell ? { seat: capturedCell.seat, type: capturedCell.type } : null, eliminatedSeat, merged: matched.merge === 'otl', deadExtremeAttack };
+  state.checkedSeats = getCheckedSeats(state.board, state.seats);
 
   const winner = checkWinner(state);
   if (winner) { state.phase = 'result'; state.winner = winner; state.drawn = false; return { state, applied: true, reason: null }; }
@@ -494,7 +530,7 @@ function cpuFormationChoice(rng) { return Math.floor((rng ? rng() : Math.random(
 function createMatchState(seats, allPlacements, rng) {
   const firstMover = Math.floor((rng || Math.random)() * SEAT_COUNT);
   const turnOrder = buildTurnOrder(firstMover);
-  return { board: buildBoardFromPlacements(allPlacements), seats: cloneSeats(seats).map((seat) => ({ ...seat, eliminated: false })), turnOrder, activeSeatIndex: turnOrder[0], turnCount: 0, version: 0, phase: 'playing', winner: null, drawn: false, lastMove: null, pendingDoubleArts: [] };
+  return { board: buildBoardFromPlacements(allPlacements), seats: cloneSeats(seats).map((seat) => ({ ...seat, eliminated: false })), turnOrder, activeSeatIndex: turnOrder[0], turnCount: 0, version: 0, phase: 'playing', winner: null, drawn: false, lastMove: null, pendingDoubleArts: [], checkedSeats: [] };
 }
 function buildMatchScoreboard(matchesWon, seats) {
   const scores = Object.assign({ A: 0, B: 0 }, matchesWon);
@@ -548,7 +584,7 @@ const HyperionLogic = {
   isValidSquare, isInOwnArm, localToAbsolute, absoluteToLocal, createEmptyBoard, cloneBoard,
   generateMovesForPiece, generateAllMovesForSeat, hasAnyLegalMove, isLegalMove, isSquareThreatenedBy, otlMoves,
   applyMove, eliminateSeat, checkWinner, teamPieceValue, resolveByPieceValue, buildTurnOrder, advanceTurn, triggerDeadExtremeAttack,
-  registerPendingDoubleArts, resolvePendingDoubleArts, findDoubleArtsPairsAt,
+  registerPendingDoubleArts, resolvePendingDoubleArts, findDoubleArtsPairsAt, getCheckedSeats,
   formationPlacements, remainingPieceCounts, canPlacePiece, addPlacement, removePlacement, isSetupComplete, buildBoardFromPlacements,
   createEmptySeats, assignSeat, createDefaultSeats, fillEmptySeatsWithCpu, canStartMatch, cpuFormationChoice, createMatchState,
   buildMatchScoreboard, getMatchWinners, chooseCpuMove,

@@ -13,6 +13,61 @@
   const PIECE_LABEL = { king: 'アブラシモビッチ', zafu: '量産型ザフ', lance: 'ドドンドンドドン', gold: 'スチーム', silver: 'シューズ', matcha: '抹茶あずきーな', ol: 'OL', kodakusan: 'コダクサン', tequila: 'テキーラ', otl: 'OTL', 'zafu-boosted': '強化ザフ', 'double-arts': 'ダブルアーツ' };
   const PIECE_ORDER = ['king', 'zafu', 'lance', 'gold', 'silver', 'matcha', 'ol', 'kodakusan', 'tequila'];
 
+  // 矢印は前方=上(行-1)・右方向=列+1として、各駒のoffset(f,r)を絶対の行列差に変換した向きに対応させる。
+  const MOVE_ARROW_CHAR = { '-1,0': '↑', '-1,1': '↗', '0,1': '→', '1,1': '↘', '1,0': '↓', '1,-1': '↙', '0,-1': '←', '-1,-1': '↖' };
+  // ルール説明用の駒の動き図。実際のPIECE_SPECS(logic.js)から生成するので、駒の動き自体を
+  // 変更してもここが自動的に正しい図になる。5x5マスの中央に駒を置き、直接届くマスにドット、
+  // 直進(slide)する方向は2マス目に矢印を表示して「その先も続く」ことを示す。
+  function buildMoveDiagram(type) {
+    const spec = L.PIECE_SPECS[type];
+    const size = 5, center = 2;
+    const grid = document.createElement('div');
+    grid.className = 'move-diagram-grid';
+    const cellEls = [];
+    for (let i = 0; i < size * size; i += 1) {
+      const cell = document.createElement('div');
+      cell.className = 'move-diagram-cell';
+      grid.appendChild(cell);
+      cellEls.push(cell);
+    }
+    const at = (row, col) => cellEls[row * size + col];
+    at(center, center).classList.add('piece');
+    at(center, center).textContent = PIECE_GLYPH[type] || '';
+    spec.offsets.forEach((offset) => {
+      const dr = -offset.f, dc = offset.r; // f(前方)は上方向、r(右方向)は右方向に対応
+      const mode = offset.mode || spec.mode;
+      if (mode === 'slide') {
+        for (let step = 1; step <= 2; step += 1) {
+          const row = center + dr * step, col = center + dc * step;
+          if (row < 0 || row >= size || col < 0 || col >= size) break;
+          const cell = at(row, col);
+          if (step === 2) { cell.classList.add('slide-arrow'); cell.textContent = MOVE_ARROW_CHAR[dr + ',' + dc] || ''; }
+          else cell.classList.add('target');
+        }
+      } else {
+        const row = center + dr, col = center + dc;
+        if (row < 0 || row >= size || col < 0 || col >= size) return;
+        at(row, col).classList.add('target');
+      }
+    });
+    return grid;
+  }
+  function renderPieceMoveDiagrams() {
+    const container = $('piece-move-diagrams');
+    if (!container) return;
+    container.innerHTML = '';
+    PIECE_ORDER.forEach((type) => {
+      const card = document.createElement('div');
+      card.className = 'move-diagram-card';
+      const label = document.createElement('p');
+      label.className = 'move-diagram-label';
+      label.textContent = PIECE_GLYPH[type] + ' ' + PIECE_LABEL[type];
+      card.appendChild(label);
+      card.appendChild(buildMoveDiagram(type));
+      container.appendChild(card);
+    });
+  }
+
   const screens = ['setup-screen', 'seat-config-screen', 'lobby-panel', 'placement-screen', 'game-area'];
   function showOnly(id) { screens.forEach((s) => $(s).classList.toggle('hidden', s !== id)); }
   function showError(id, text) { $(id).textContent = text || ''; }
@@ -458,9 +513,25 @@
     if (mode === 'local') { $('turn-text').textContent = seat.name + 'さんの番です'; return; }
     $('turn-text').textContent = seat.playerId === myId ? 'あなたの番です' : seat.name + 'さんの番です';
   }
+  // 王手(原作用語では「ストップザミュージック」)の演出。checkedSeatsが空になれば自動的に消える。
+  function refreshCheckBanner() {
+    const banner = $('check-banner');
+    const checkedSeats = matchState && matchState.checkedSeats;
+    if (!checkedSeats || checkedSeats.length === 0) { banner.classList.remove('visible'); banner.textContent = ''; return; }
+    banner.textContent = '';
+    const main = document.createElement('span');
+    main.textContent = 'ストップザミュージック!';
+    const sub = document.createElement('span');
+    sub.className = 'check-sub';
+    sub.textContent = '王手 - ' + checkedSeats.map((seatIndex) => seatName(seatIndex)).join('・') + 'さんのアブラシモビッチ';
+    banner.appendChild(main);
+    banner.appendChild(sub);
+    banner.classList.add('visible');
+  }
   function afterStateChange() {
     selectedFrom = null; legalTargets = [];
     refreshTurnUi();
+    refreshCheckBanner();
     renderBoard();
     if (matchState && matchState.phase === 'result') onMatchEnd();
     else scheduleCpuIfNeeded();
@@ -807,6 +878,7 @@
   $('play-again-btn').addEventListener('click', rematch);
 
   // ---------- 初期表示 ----------
+  renderPieceMoveDiagrams();
   showOnly('setup-screen');
   if (savedSession && savedSession.roomCode && savedSession.token && savedSession.name) connectGuest(savedSession);
 })();

@@ -426,6 +426,38 @@ main {
 .team-badge.team-a { background: var(--accent); }
 .team-badge.team-b { background: var(--accent2); }
 
+/* 王手(ストップザミュージック)演出。.hidden(display:none!important)は使わず、独自の.visible
+   トグルでmax-height/opacityを変化させることでポップイン/アウトを表現する */
+.check-banner {
+  margin: 0 0 0;
+  padding: 0 0.9rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--danger) 15%, var(--card-bg));
+  border-width: 0;
+  border-style: solid;
+  border-color: var(--danger);
+  color: var(--danger);
+  font-weight: 800;
+  text-align: center;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease, opacity 0.2s ease, margin 0.25s ease, padding 0.25s ease;
+}
+.check-banner.visible {
+  margin: 0.6rem 0 0;
+  padding: 0.5rem 0.9rem;
+  border-width: 1px;
+  max-height: 80px;
+  opacity: 1;
+}
+.check-banner .check-sub {
+  display: block;
+  font-weight: 600;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
 .reset-btn {
   padding: 0.5rem 1rem;
   border: none;
@@ -654,6 +686,65 @@ main {
   color: var(--muted);
   font-size: 0.88rem;
   line-height: 1.6;
+}
+.howto h3 {
+  margin: 1.2rem 0 0.3rem;
+  font-size: 1rem;
+}
+
+/* ルール説明の駒の動き図。logic.jsのPIECE_SPECSから生成される(script.jsのbuildMoveDiagram)。 */
+.piece-move-diagrams {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+.move-diagram-card {
+  background: var(--bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 0.6rem;
+  text-align: center;
+}
+.move-diagram-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.move-diagram-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 2px;
+  aspect-ratio: 1 / 1;
+  max-width: 120px;
+  margin: 0 auto;
+  background: var(--board-bg);
+  border-radius: 4px;
+  padding: 2px;
+}
+.move-diagram-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cell-light);
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--accent2);
+}
+.move-diagram-cell.piece {
+  background: var(--cell-dark);
+  color: var(--accent);
+  font-size: 0.6rem;
+}
+.move-diagram-cell.target::before {
+  content: "";
+  width: 32%;
+  height: 32%;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .error {
