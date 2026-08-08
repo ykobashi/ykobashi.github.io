@@ -426,6 +426,44 @@ main {
 .team-badge.team-a { background: var(--accent); }
 .team-badge.team-b { background: var(--accent2); }
 
+/* 4人の陣営(誰が味方か)を常時表示する */
+.team-roster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0;
+}
+.team-roster-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 6%, var(--card-bg));
+  border: 1px solid var(--card-border);
+}
+.team-roster-group.team-b { background: color-mix(in srgb, var(--accent2) 6%, var(--card-bg)); }
+.team-roster-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--muted);
+  margin-right: 0.1rem;
+}
+.team-roster-chip {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+.team-roster-chip.p1 { color: var(--p1-color); }
+.team-roster-chip.p2 { color: var(--p2-color); }
+.team-roster-chip.p3 { color: var(--p3-color); }
+.team-roster-chip.p4 { color: var(--p4-color); }
+.team-roster-chip.eliminated { opacity: 0.4; text-decoration: line-through; }
+
 /* 王手(ストップザミュージック)演出。.hidden(display:none!important)は使わず、独自の.visible
    トグルでmax-height/opacityを変化させることでポップイン/アウトを表現する */
 .check-banner {
@@ -543,9 +581,10 @@ main {
   cursor: pointer;
 }
 .cell.wide { font-size: clamp(0.35rem, 1.3vw, 0.6rem); }
-.cell.light { background: var(--cell-light); }
-.cell.dark { background: var(--cell-dark); }
+/* 将棋盤のように市松模様(チェス盤風)ではなく単色の木目調にし、マス目は罫線で区切る */
+.cell.light, .cell.dark { background: var(--cell-dark); }
 .cell.invalid { background: transparent; cursor: default; }
+.cell:not(.invalid) { border: 1px solid color-mix(in srgb, var(--line-color) 45%, transparent); }
 .cell:disabled { cursor: default; }
 
 .cell.p1 { color: var(--p1-color); }

@@ -502,6 +502,30 @@
     afterStateChange();
   }
 
+  // どの席がどちらのチームか常時分かるようにする(隣同士が味方、対面が敵)。
+  const SEAT_DIRECTION = ['北', '東', '南', '西'];
+  function renderTeamRoster() {
+    const container = $('team-roster');
+    if (!matchState) { container.textContent = ''; return; }
+    container.textContent = '';
+    ['A', 'B'].forEach((team) => {
+      const group = document.createElement('div');
+      group.className = 'team-roster-group team-' + team.toLowerCase();
+      const label = document.createElement('span');
+      label.className = 'team-roster-label';
+      label.textContent = 'チーム' + team;
+      group.appendChild(label);
+      matchState.seats.forEach((seat, seatIndex) => {
+        if (!seat || seat.team !== team) return;
+        const chip = document.createElement('span');
+        chip.className = 'team-roster-chip ' + seatColorClass(seatIndex);
+        chip.classList.toggle('eliminated', !!seat.eliminated);
+        chip.textContent = SEAT_DIRECTION[seatIndex] + ' ' + seat.name;
+        group.appendChild(chip);
+      });
+      container.appendChild(group);
+    });
+  }
   // ---------- 手番表示・結果 ----------
   function refreshTurnUi() {
     if (!matchState) return;
@@ -532,6 +556,7 @@
     selectedFrom = null; legalTargets = [];
     refreshTurnUi();
     refreshCheckBanner();
+    renderTeamRoster();
     renderBoard();
     if (matchState && matchState.phase === 'result') onMatchEnd();
     else scheduleCpuIfNeeded();
@@ -703,7 +728,7 @@
       animatedMoveVersion = matchState.version; // 再接続時点では巻き戻し再生しない
       buildBoardCells();
       showOnly('game-area');
-      if (data.phase === 'result') { renderBoard(); refreshTurnUi(); showResult(); } else afterStateChange();
+      if (data.phase === 'result') { renderBoard(); refreshTurnUi(); renderTeamRoster(); showResult(); } else afterStateChange();
     } else if (data.phase === 'setup') {
       finalSeats = data.finalSeats; readySeats = new Set(data.readySeats || []);
       buildArmGrid();
