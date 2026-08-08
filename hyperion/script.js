@@ -50,6 +50,7 @@
   const armCells = [];
   const savedSession = RejoinStorage.load(GAME_KEY);
   let boardViewSeat = null; // 現在盤面を描画している視点の席(この席が画面下に来るよう回転する)
+  let animatedMoveVersion = -1; // この対局バージョンまでは移動アニメーションを再生済み(再同期時の巻き戻し再生を防ぐ)
 
   function peerError(err) {
     const target = !$('lobby-panel').classList.contains('hidden') ? 'lobby-error' : 'online-error';
@@ -338,6 +339,33 @@
     const steps = ((ownerSeat - viewSeat) % 4 + 4) % 4;
     return steps === 0 ? null : 'piece-rot-' + (steps * 90);
   }
+  // 直前の手の駒が移動元から移動先へ画面上を滑るゴースト要素を1回だけ再生する。
+  // 盤の回転後の実際の画面座標(getBoundingClientRect)を基準にするので、視点がどの席でも正しい向きに動く。
+  function animateLastMove(lastMove) {
+    const fromCell = boardCells[lastMove.from.r] && boardCells[lastMove.from.r][lastMove.from.c];
+    const toCell = boardCells[lastMove.to.r] && boardCells[lastMove.to.r][lastMove.to.c];
+    if (!fromCell || !toCell) return;
+    const boardEl = $('board');
+    const boardRect = boardEl.getBoundingClientRect();
+    const fromRect = fromCell.getBoundingClientRect();
+    const toRect = toCell.getBoundingClientRect();
+    const ghost = document.createElement('div');
+    ghost.className = 'move-ghost';
+    ['p1', 'p2', 'p3', 'p4', 'wide', 'piece-rot-90', 'piece-rot-180', 'piece-rot-270'].forEach((cls) => {
+      if (toCell.classList.contains(cls)) ghost.classList.add(cls);
+    });
+    ghost.textContent = toCell.textContent;
+    ghost.style.width = fromRect.width + 'px';
+    ghost.style.height = fromRect.height + 'px';
+    ghost.style.left = (fromRect.left - boardRect.left) + 'px';
+    ghost.style.top = (fromRect.top - boardRect.top) + 'px';
+    boardEl.appendChild(ghost);
+    const dx = toRect.left - fromRect.left, dy = toRect.top - fromRect.top;
+    requestAnimationFrame(() => { ghost.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)'; });
+    const cleanup = () => { if (ghost.parentNode) ghost.remove(); };
+    ghost.addEventListener('transitionend', cleanup);
+    setTimeout(cleanup, 500);
+  }
   function renderBoard() {
     if (!matchState) return;
     const viewSeat = getViewSeat();
@@ -369,6 +397,10 @@
         } else { cell.textContent = ''; cell.classList.remove('wide'); cell.removeAttribute('aria-label'); }
         cell.disabled = !interactive;
       }
+    }
+    if (lastMove && matchState.version !== animatedMoveVersion) {
+      animatedMoveVersion = matchState.version;
+      animateLastMove(lastMove);
     }
   }
   function selectPiece(r, c) { selectedFrom = { r, c }; legalTargets = L.generateMovesForPiece(matchState.board, r, c); renderBoard(); }
@@ -453,6 +485,7 @@
   }
   function beginMatch(state) {
     matchState = clone(state);
+    animatedMoveVersion = matchState.version; // 対局開始時点では巻き戻し再生しない
     selectedFrom = null; legalTargets = [];
     $('result-overlay').classList.add('hidden');
     WakeLockHelper.enable();
@@ -578,6 +611,7 @@
     setGameStatus('');
     if (data.phase === 'playing' || data.phase === 'result') {
       matchState = clone(data.matchState);
+      animatedMoveVersion = matchState.version; // 再接続時点では巻き戻し再生しない
       buildBoardCells();
       showOnly('game-area');
       if (data.phase === 'result') { renderBoard(); refreshTurnUi(); showResult(); } else afterStateChange();

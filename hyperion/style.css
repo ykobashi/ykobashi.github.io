@@ -461,6 +461,7 @@ main {
 /* 盤面「グランドクロス」(gomoku-othelloの単色盤とは違い、このゲーム固有の市松模様17x17マス・
    十字形に必要な無効マスの表現が新規コンポーネント) */
 .board {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(17, 1fr);
   grid-template-rows: repeat(17, 1fr);
@@ -478,6 +479,21 @@ main {
   opacity: 0.7;
   pointer-events: none;
 }
+
+/* 直前の手の駒が移動元から移動先へ滑るように動く演出(盤の回転後の実際の画面位置を基準にするため
+   getBoundingClientRectの差分をtransformで表現する。手番のたびに1回だけ再生する) */
+.move-ghost {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: clamp(0.5rem, 1.9vw, 0.85rem);
+  pointer-events: none;
+  z-index: 5;
+  transition: transform 0.35s ease;
+}
+.move-ghost.wide { font-size: clamp(0.35rem, 1.3vw, 0.6rem); }
 
 .cell {
   position: relative;
