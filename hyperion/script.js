@@ -11,7 +11,29 @@
 
   const PIECE_GLYPH = { king: 'ア', zafu: 'ザ', lance: 'ド', gold: 'ス', silver: 'シ', matcha: 'あ', ol: 'O', kodakusan: 'コ', tequila: 'テ', otl: 'OTL', 'zafu-boosted': '強ザ' };
   const PIECE_LABEL = { king: 'アブラシモビッチ', zafu: '量産型ザフ', lance: 'ドドンドンドドン', gold: 'スチーム', silver: 'シューズ', matcha: '抹茶あずきーな', ol: 'OL', kodakusan: 'コダクサン', tequila: 'テキーラ', otl: 'OTL', 'zafu-boosted': '強化ザフ' };
+  const PIECE_ICON = {
+    king: 'assets/pieces/king.png',
+    zafu: 'assets/pieces/zafu.png',
+    lance: 'assets/pieces/lance.png',
+    gold: 'assets/pieces/gold.png',
+    silver: 'assets/pieces/silver.png',
+    matcha: 'assets/pieces/matcha.png',
+    ol: 'assets/pieces/ol.png',
+    kodakusan: 'assets/pieces/kodakusan.png',
+    tequila: 'assets/pieces/tequila.png',
+    otl: 'assets/pieces/otl.png',
+    'zafu-boosted': 'assets/pieces/zafu-boosted.png',
+  };
   const PIECE_ORDER = ['king', 'zafu', 'lance', 'gold', 'silver', 'matcha', 'ol', 'kodakusan', 'tequila'];
+
+  function createPieceIcon(path, colorClass) {
+    const icon = document.createElement('span');
+    icon.className = 'piece-icon';
+    if (colorClass) icon.classList.add(colorClass);
+    icon.style.setProperty('--piece-icon', 'url("' + path + '")');
+    icon.setAttribute('aria-hidden', 'true');
+    return icon;
+  }
 
   // 矢印は前方=上(行-1)・右方向=列+1として、各駒のoffset(f,r)を絶対の行列差に変換した向きに対応させる。
   const MOVE_ARROW_CHAR = { '-1,0': '↑', '-1,1': '↗', '0,1': '→', '1,1': '↘', '1,0': '↓', '1,-1': '↙', '0,-1': '←', '-1,-1': '↖' };
@@ -32,6 +54,11 @@
   }
   function setDiagramPieceCell(cell, type) {
     cell.classList.add('piece');
+    const icon = PIECE_ICON[type];
+    if (icon) {
+      cell.appendChild(createPieceIcon(icon));
+      return;
+    }
     const glyph = PIECE_GLYPH[type] || '';
     cell.textContent = glyph;
     cell.classList.toggle('wide', glyph.length > 1);
@@ -88,7 +115,8 @@
       card.className = 'move-diagram-card';
       const label = document.createElement('p');
       label.className = 'move-diagram-label';
-      label.textContent = PIECE_GLYPH[type] === PIECE_LABEL[type] ? PIECE_LABEL[type] : PIECE_GLYPH[type] + ' ' + PIECE_LABEL[type];
+      label.appendChild(createPieceIcon(PIECE_ICON[type]));
+      label.appendChild(document.createTextNode(PIECE_LABEL[type]));
       card.appendChild(label);
       card.appendChild(buildMoveDiagram(type));
       container.appendChild(card);
@@ -108,7 +136,8 @@
       card.className = 'move-diagram-card';
       const label = document.createElement('p');
       label.className = 'move-diagram-label';
-      label.textContent = PIECE_GLYPH[type] === PIECE_LABEL[type] ? PIECE_LABEL[type] : PIECE_GLYPH[type] + ' ' + PIECE_LABEL[type];
+      label.appendChild(createPieceIcon(PIECE_ICON[type]));
+      label.appendChild(document.createTextNode(PIECE_LABEL[type]));
       card.appendChild(label);
       card.appendChild(build());
       const note_ = document.createElement('p');
@@ -141,6 +170,7 @@
   let editingSeatIndex = null; // 現在配置画面を操作している席
   let localPlacementQueue = []; // ローカル対戦: まだ配置していない人間席の残りキュー
   let armedType = null; // パレットで選択中の駒種
+  let lastPlacedPos = null; // 最後に配置した駒の絶対座標(その駒の移動可能マスをプレビュー表示するため)
   let matchState = null;
   let matchesWon = { A: 0, B: 0 };
   let gameId = 0;
@@ -281,10 +311,14 @@
     const abs = L.localToAbsolute(editingSeatIndex, depth, lateral);
     const placements = placementsBySeat[editingSeatIndex];
     const existing = placements.find((p) => p.r === abs.r && p.c === abs.c);
-    if (existing) placementsBySeat[editingSeatIndex] = L.removePlacement(placements, abs.r, abs.c);
-    else if (armedType) {
+    if (existing) {
+      placementsBySeat[editingSeatIndex] = L.removePlacement(placements, abs.r, abs.c);
+      armedType = existing.type; // 消した駒をそのまま選択状態にして、別マスへすぐ置き直せるようにする
+      lastPlacedPos = null;
+    } else if (armedType) {
       const next = L.addPlacement(placements, editingSeatIndex, abs.r, abs.c, armedType);
       placementsBySeat[editingSeatIndex] = next;
+      lastPlacedPos = { r: abs.r, c: abs.c };
     }
     renderPlacementScreen();
   }
@@ -295,7 +329,8 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'palette-btn' + (armedType === type ? ' armed' : '');
-      btn.textContent = PIECE_GLYPH[type] + ' ' + PIECE_LABEL[type] + ' ×' + remaining[type];
+      btn.appendChild(createPieceIcon(PIECE_ICON[type], seatColorClass(editingSeatIndex)));
+      btn.appendChild(document.createTextNode(PIECE_LABEL[type] + ' ×' + remaining[type]));
       btn.disabled = remaining[type] <= 0;
       btn.addEventListener('click', () => { armedType = armedType === type ? null : type; renderPlacementScreen(); });
       root.appendChild(btn);
@@ -306,12 +341,29 @@
     const seat = finalSeats[editingSeatIndex];
     $('placement-seat-label').textContent = seat.name + 'さんの配置(' + teamLabel(seat.team) + ')';
     const placements = placementsBySeat[editingSeatIndex];
-    armCells.forEach((row) => row.forEach((cell) => { cell.textContent = ''; cell.className = 'arm-cell'; cell.disabled = readySeats.has(editingSeatIndex); }));
+    armCells.forEach((row) => row.forEach((cell) => { cell.replaceChildren(); cell.className = 'arm-cell'; cell.removeAttribute('aria-label'); cell.disabled = readySeats.has(editingSeatIndex); }));
     placements.forEach((p) => {
       const local = L.absoluteToLocal(editingSeatIndex, p.r, p.c);
       const cell = armCellAt(local.depth, local.lateral);
-      if (cell) { cell.textContent = PIECE_GLYPH[p.type]; cell.classList.add('filled'); cell.classList.toggle('wide', PIECE_GLYPH[p.type].length > 1); }
+      if (cell) {
+        cell.appendChild(createPieceIcon(PIECE_ICON[p.type], seatColorClass(editingSeatIndex)));
+        cell.classList.add('filled');
+        cell.setAttribute('aria-label', PIECE_LABEL[p.type]);
+      }
     });
+    // 最後に配置した駒が今も残っていれば、その駒(自陣の駒だけの盤で計算)が動けるマスをプレビュー表示する
+    const lastPlaced = lastPlacedPos && placements.find((p) => p.r === lastPlacedPos.r && p.c === lastPlacedPos.c);
+    if (lastPlaced) {
+      const previewBoard = L.createEmptyBoard();
+      placements.forEach((p) => { previewBoard[p.r][p.c] = { seat: editingSeatIndex, type: p.type }; });
+      L.generateMovesForPiece(previewBoard, lastPlacedPos.r, lastPlacedPos.c).forEach((m) => {
+        const local = L.absoluteToLocal(editingSeatIndex, m.to.r, m.to.c);
+        const cell = armCellAt(local.depth, local.lateral);
+        if (cell) cell.classList.add('reachable');
+      });
+    } else {
+      lastPlacedPos = null;
+    }
     renderPalette(placements);
     const complete = L.isSetupComplete(placements);
     $('placement-ready-btn').disabled = !complete || readySeats.has(editingSeatIndex);
@@ -335,6 +387,7 @@
       const mySeat = finalSeats.find((s) => s.playerId === myId);
       editingSeatIndex = mySeat ? mySeat.seatIndex : null;
       armedType = null;
+      lastPlacedPos = null;
       renderPlacementScreen();
       showOnly('placement-screen');
       if (isHost) { net.broadcast({ type: 'setup-status', gameId, readySeats: Array.from(readySeats) }); checkAllReadyAndStart(); }
@@ -344,6 +397,7 @@
     if (!localPlacementQueue.length) { finalizeLocalMatchStart(); return; }
     editingSeatIndex = localPlacementQueue[0];
     armedType = null;
+    lastPlacedPos = null;
     renderPlacementScreen();
     showOnly('placement-screen');
   }
@@ -448,16 +502,26 @@
   // 1マスぶんの駒表示(文字・チーム色・向き回転・wide・aria-label)を反映する。盤の通常描画と
   // アニメーション完了時の移動先マス反映(下のanimateLastMove)の両方から呼ぶ共通処理。
   function renderPieceOnCell(cell, piece, viewSeat) {
-    cell.classList.remove('p1', 'p2', 'p3', 'p4', 'piece-rot-90', 'piece-rot-180', 'piece-rot-270');
+    cell.replaceChildren();
+    cell.classList.remove('p1', 'p2', 'p3', 'p4', 'piece-rot-90', 'piece-rot-180', 'piece-rot-270', 'has-icon', 'wide');
+    cell.style.removeProperty('--piece-icon');
     if (piece) {
       cell.classList.add(seatColorClass(piece.seat));
       const rotClass = pieceRotationClass(piece.seat, viewSeat);
       if (rotClass) cell.classList.add(rotClass);
-      const glyph = PIECE_GLYPH[piece.type] || '';
-      cell.textContent = glyph;
-      cell.classList.toggle('wide', glyph.length > 1);
+      const icon = PIECE_ICON[piece.type];
+      if (icon) {
+        cell.classList.add('has-icon');
+        cell.appendChild(createPieceIcon(icon));
+      } else {
+        const glyph = PIECE_GLYPH[piece.type] || '';
+        cell.textContent = glyph;
+        cell.classList.toggle('wide', glyph.length > 1);
+      }
       cell.setAttribute('aria-label', seatName(piece.seat) + 'の' + (PIECE_LABEL[piece.type] || piece.type));
-    } else { cell.textContent = ''; cell.classList.remove('wide'); cell.removeAttribute('aria-label'); }
+    } else {
+      cell.removeAttribute('aria-label');
+    }
   }
   // 直前の手の駒が移動元から移動先へ画面上を滑るゴースト要素を1回だけ再生する。移動先マスの本体は
   // renderBoard側でアニメーション中は空表示にしてあり、完了後にここでチーム色付きで初めて表示する。
@@ -473,13 +537,23 @@
     const toRect = toCell.getBoundingClientRect();
     const ghost = document.createElement('div');
     ghost.className = 'move-ghost';
+    ghost.setAttribute('aria-hidden', 'true');
     if (piece) {
       ghost.classList.add(seatColorClass(piece.seat));
       const rotClass = pieceRotationClass(piece.seat, viewSeat);
       if (rotClass) ghost.classList.add(rotClass);
-      const glyph = PIECE_GLYPH[piece.type] || '';
-      ghost.textContent = glyph;
-      ghost.classList.toggle('wide', glyph.length > 1);
+      const icon = PIECE_ICON[piece.type];
+      if (icon) {
+        ghost.classList.add('has-icon');
+        ghost.appendChild(createPieceIcon(icon));
+      } else {
+        const glyph = PIECE_GLYPH[piece.type] || '';
+        const glyphEl = document.createElement('span');
+        glyphEl.className = 'piece-glyph';
+        glyphEl.textContent = glyph;
+        ghost.appendChild(glyphEl);
+        ghost.classList.toggle('wide', glyph.length > 1);
+      }
     }
     ghost.style.width = fromRect.width + 'px';
     ghost.style.height = fromRect.height + 'px';
@@ -511,7 +585,7 @@
         if (!cell) continue;
         const piece = board[r][c];
         const isLegal = legalSet.has(r + ':' + c);
-        const isLastMove = !!lastMove && ((lastMove.from.r === r && lastMove.from.c === c) || (lastMove.to.r === r && lastMove.to.c === c));
+        const isLastMove = !!lastMove && lastMove.to.r === r && lastMove.to.c === c; // 移動元は光らせず、移動先だけ示す
         cell.classList.toggle('last-move', isLastMove);
         cell.classList.toggle('selected', !!selectedFrom && selectedFrom.r === r && selectedFrom.c === c);
         cell.classList.toggle('legal-move', isLegal);
@@ -788,6 +862,7 @@
       if (editingSeatIndex == null) { showOnly('lobby-panel'); return; }
       if (!readySeats.has(editingSeatIndex)) placementsBySeat[editingSeatIndex] = [];
       armedType = null;
+      lastPlacedPos = null;
       renderPlacementScreen();
       showOnly('placement-screen');
     } else {
@@ -812,6 +887,7 @@
       const mySeat = finalSeats.find((s) => s.playerId === myId);
       editingSeatIndex = mySeat ? mySeat.seatIndex : null;
       armedType = null;
+      lastPlacedPos = null;
       renderPlacementScreen();
       showOnly('placement-screen');
       return;
@@ -844,7 +920,7 @@
   }
   function quitGame(clearSession) {
     clearTimeout(cpuTimer); cpuTimer = null;
-    matchState = null; selectedFrom = null; legalTargets = []; finalSeats = null; placementsBySeat = [[], [], [], []]; readySeats = new Set(); editingSeatIndex = null; localPlacementQueue = []; armedType = null;
+    matchState = null; selectedFrom = null; legalTargets = []; finalSeats = null; placementsBySeat = [[], [], [], []]; readySeats = new Set(); editingSeatIndex = null; localPlacementQueue = []; armedType = null; lastPlacedPos = null;
     if (mode === 'online') resetOnlineConnection();
     if (clearSession) RejoinStorage.clear(GAME_KEY);
     mode = null;
@@ -948,6 +1024,7 @@
       if (editingSeatIndex == null || readySeats.has(editingSeatIndex)) return;
       placementsBySeat[editingSeatIndex] = L.formationPlacements(editingSeatIndex, idx);
       armedType = null;
+      lastPlacedPos = null;
       renderPlacementScreen();
     });
   });

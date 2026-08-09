@@ -359,6 +359,7 @@ main {
   flex-shrink: 0;
 }
 .arm-cell {
+  position: relative;
   border: 1px solid var(--card-border);
   border-radius: 2px;
   background: var(--cell-light);
@@ -367,9 +368,24 @@ main {
   font-size: 0.85rem;
   cursor: pointer;
   padding: 0;
+  overflow: hidden;
 }
+.arm-cell .piece-icon { inset: 5%; }
 .arm-cell.filled { background: color-mix(in srgb, var(--accent) 22%, var(--cell-light)); }
 .arm-cell:disabled { cursor: default; opacity: 0.7; }
+/* 最後に配置した駒が動けるマスのプレビュー(配置フェーズ固有) */
+.arm-cell.reachable::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 26%;
+  height: 26%;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  pointer-events: none;
+}
 
 .placement-controls {
   flex: 1 1 220px;
@@ -383,6 +399,9 @@ main {
   margin: 0.6rem 0;
 }
 .palette-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.45rem 0.65rem;
   border: 1px solid var(--card-border);
   border-radius: 8px;
@@ -390,6 +409,13 @@ main {
   color: var(--text);
   font-size: 0.85rem;
   cursor: pointer;
+}
+.palette-btn .piece-icon {
+  position: relative;
+  inset: auto;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
 }
 .palette-btn.armed { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, var(--card-bg)); font-weight: 700; }
 .palette-btn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -568,6 +594,54 @@ main {
 .move-ghost.p2 { color: var(--p2-color); }
 .move-ghost.p3 { color: var(--p3-color); }
 .move-ghost.p4 { color: var(--p4-color); }
+.move-ghost.piece-rot-90 > .piece-icon,
+.move-ghost.piece-rot-90 > .piece-glyph { transform: rotate(90deg); }
+.move-ghost.piece-rot-180 > .piece-icon,
+.move-ghost.piece-rot-180 > .piece-glyph { transform: rotate(180deg); }
+.move-ghost.piece-rot-270 > .piece-icon,
+.move-ghost.piece-rot-270 > .piece-glyph { transform: rotate(270deg); }
+
+.piece-icon {
+  position: absolute;
+  inset: 10%;
+  z-index: 1;
+  display: block;
+  background-image: var(--piece-icon);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  isolation: isolate;
+  pointer-events: none;
+}
+.piece-icon.p1 { color: var(--p1-color); }
+.piece-icon.p2 { color: var(--p2-color); }
+.piece-icon.p3 { color: var(--p3-color); }
+.piece-icon.p4 { color: var(--p4-color); }
+@supports (((-webkit-mask-image: linear-gradient(#000, #000)) or (mask-image: linear-gradient(#000, #000))) and (mix-blend-mode: multiply)) {
+  .piece-icon::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: currentColor;
+    -webkit-mask-image: var(--piece-icon);
+    mask-image: var(--piece-icon);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    mix-blend-mode: multiply;
+    opacity: 0.7; /* チーム色の重ねが濃くなりすぎないよう少し薄める */
+    pointer-events: none;
+  }
+}
+/* ルール説明の駒アイコンはチーム所属を持たないので、色重ねはせず素の画像をそのまま見せる
+   (周囲のテキスト色を拾って真っ黒に見えてしまう不具合の修正も兼ねる) */
+.piece-move-diagrams .piece-icon::after {
+  content: none;
+}
+.piece-glyph { display: inline-block; }
 
 .cell {
   position: relative;
@@ -606,6 +680,7 @@ main {
   content: "";
   position: absolute;
   inset: 3px;
+  z-index: 2;
   border: 3px solid var(--accent);
   border-radius: 4px;
   pointer-events: none;
@@ -613,6 +688,7 @@ main {
 .cell.legal-move::before {
   content: "";
   position: absolute;
+  z-index: 2;
   width: 26%;
   height: 26%;
   border-radius: 50%;
@@ -746,9 +822,20 @@ main {
   text-align: center;
 }
 .move-diagram-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   margin: 0 0 0.5rem;
   font-size: 0.8rem;
   font-weight: 700;
+}
+.move-diagram-label .piece-icon {
+  position: relative;
+  inset: auto;
+  width: 1.65rem;
+  height: 1.65rem;
+  flex: 0 0 1.65rem;
 }
 .move-diagram-grid {
   display: grid;
@@ -778,6 +865,7 @@ main {
   color: var(--accent);
   font-size: 0.6rem;
 }
+.move-diagram-cell.piece .piece-icon { inset: 7%; }
 .move-diagram-cell.piece.wide { font-size: 0.4rem; }
 .move-diagram-cell.target::before {
   content: "";
