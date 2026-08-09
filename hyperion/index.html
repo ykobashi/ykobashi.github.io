@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../theme.js"></script>
+<link rel="stylesheet" href="../theme-toggle.css">
+<title>ヒュペリオン | SKET DANCEの幻の頭脳ゲームを非公式に再現(無料・1〜4人・CPU・オンライン)</title>
+<meta name="description" content="漫画『SKET DANCE』に登場する謎の頭脳ゲーム「ヒュペリオン」を、ニコニコ大百科に記載の設定(盤面グランドクロス・駒9種)をもとにAsobiLaboが再現した非公式ゲーム。2vs2チーム制で、駒「アブラシモビッチ」を先に取られたチームの負け。1〜4人でのローカル対戦、CPU対戦、友達とのオンライン対戦に対応した無料ブラウザゲームです。">
+<meta property="og:title" content="ヒュペリオン | SKET DANCEの幻の頭脳ゲームを非公式に再現">
+<meta property="og:description" content="十字形の盤「グランドクロス」で9種類の駒を動かす、2vs2チームの非公式再現ボードゲーム。1〜4人・CPU対戦・オンライン対戦に対応。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<meta property="og:url" content="https://ykobashi.github.io/hyperion/">
+<link rel="canonical" href="https://ykobashi.github.io/hyperion/">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Game",
+  "name": "ヒュペリオン",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "description": "漫画『SKET DANCE』に登場する謎の頭脳ゲーム「ヒュペリオン」を、ニコニコ大百科に記載の設定(盤面グランドクロス・駒9種・1人14駒)をもとに再現した非公式ゲーム。2vs2チーム制、1〜4人・CPU対戦・オンライン対戦に対応。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  }
+}
+</script>
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EQ35W720X8');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header class="site-header">
+  <h1>ヒュペリオン</h1>
+  <p class="subtitle">SKET DANCEの幻の頭脳ゲームを非公式に再現。2vs2チームで駒を取り合う戦略ゲーム(1〜4人・CPU対戦・オンライン対戦)</p>
+</header>
+
+<div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+
+<main>
+  <p id="connection-health" class="connection-health hidden" role="status">通信が不安定です。再接続を試みています…</p>
+
+  <section id="setup-screen" class="setup-screen">
+    <div id="mode-select" class="mode-select">
+      <h2>遊び方を選んでください</h2>
+      <div class="mode-buttons">
+        <button id="mode-local-btn" class="mode-btn" type="button">ローカル対戦(この端末で・CPU補充あり)</button>
+        <button id="mode-online-btn" class="mode-btn" type="button">オンライン対戦(友達と)</button>
+      </div>
+    </div>
+
+    <div id="online-panel" class="online-panel hidden">
+      <button id="online-back-btn" class="link-btn" type="button">&laquo; 戻る</button>
+      <h2>オンライン対戦</h2>
+      <input id="name-input" class="name-input" maxlength="10" placeholder="ニックネーム">
+
+      <div class="online-choice">
+        <button id="host-btn" class="mode-btn" type="button">部屋を作る(招待する)</button>
+        <div class="join-row">
+          <input id="join-code-input" type="text" inputmode="latin" maxlength="6" placeholder="6桁のコード">
+          <button id="join-btn" class="mode-btn" type="button">参加する</button>
+        </div>
+      </div>
+
+      <p id="online-error" class="online-error"></p>
+    </div>
+  </section>
+
+  <section id="seat-config-screen" class="setup-screen hidden">
+    <h2>ローカル対戦の設定</h2>
+    <p class="subtitle">各席を人間かCPUに割り当ててください(4席固定、席0(北)・1(東)がチームA、席2(南)・3(西)がチームB。隣同士が味方、対面が敵です)</p>
+    <div id="local-seat-list" class="seat-editor"></div>
+    <p id="local-config-error" class="error"></p>
+    <div class="mode-buttons">
+      <button id="local-start-btn" class="mode-btn" type="button">次へ(配置フェーズ)</button>
+      <button id="local-back-btn" class="link-btn" type="button">&laquo; 戻る</button>
+    </div>
+  </section>
+
+  <section id="placement-screen" class="setup-screen hidden">
+    <h2 id="placement-seat-label">配置</h2>
+    <p id="placement-status" class="online-status"></p>
+    <div class="placement-layout">
+      <div id="arm-grid" class="arm-grid" aria-label="自陣(5×7マス)への配置"></div>
+      <div class="placement-controls">
+        <p class="subtitle">駒を選んで、空いているマスをクリックすると配置されます。配置済みの駒をクリックすると取り消せます。</p>
+        <div id="piece-palette" class="piece-palette"></div>
+        <div class="mode-buttons formation-buttons">
+          <button id="formation-0-btn" class="link-btn" type="button">エクスカリバーの陣を使う</button>
+          <button id="formation-1-btn" class="link-btn" type="button">千手孔雀陣を使う</button>
+          <button id="formation-2-btn" class="link-btn" type="button">例の陣を使う</button>
+        </div>
+      </div>
+    </div>
+    <div class="mode-buttons">
+      <button id="placement-ready-btn" class="mode-btn" type="button" disabled>準備完了</button>
+      <button id="placement-reset-btn" class="link-btn" type="button">配置をリセット</button>
+      <button id="placement-leave-btn" class="link-btn" type="button">やめる</button>
+    </div>
+  </section>
+
+  <section id="lobby-panel" class="setup-screen hidden">
+    <div id="host-wait" class="host-wait hidden">
+      <p>このコードを友達に伝えてください:</p>
+      <div id="room-code-text" class="room-code">------</div>
+      <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+    </div>
+    <p id="online-status" class="online-status"></p>
+    <h2>オンラインロビー</h2>
+    <ul id="roster-list" class="roster"></ul>
+    <div id="online-seat-controls" class="hidden">
+      <h3>座席・チーム(ホストが設定)</h3>
+      <div id="online-seat-list" class="seat-editor"></div>
+    </div>
+    <p id="lobby-error" class="error"></p>
+    <div class="mode-buttons">
+      <button id="start-online-btn" class="mode-btn hidden" type="button" disabled>対戦開始</button>
+      <button id="leave-lobby-btn" class="link-btn" type="button">退出する</button>
+    </div>
+  </section>
+
+  <section id="game-area" class="game-area hidden">
+    <section class="status-bar">
+      <div id="turn-indicator" class="turn-indicator">
+        <span id="turn-team-badge" class="team-badge team-a">A</span>
+        <span id="turn-text">手番です</span>
+      </div>
+      <button id="quit-btn" class="reset-btn" type="button">やめる</button>
+    </section>
+
+    <div id="team-roster" class="team-roster"></div>
+
+    <p id="check-banner" class="check-banner"></p>
+
+    <p id="online-connection-status" class="online-status hidden"></p>
+
+    <section class="board-wrapper">
+      <div id="board" class="board" role="grid" aria-label="ヒュペリオン盤面"></div>
+    </section>
+  </section>
+
+  <section id="result-overlay" class="overlay hidden">
+    <div class="overlay-card">
+      <p id="result-title" class="result-title">勝負あり!</p>
+      <p id="result-meta" class="result-meta"></p>
+      <ol id="result-scoreboard" class="result-scoreboard"></ol>
+      <div class="result-actions">
+        <button id="play-again-btn" class="mode-btn hidden" type="button">もう一度遊ぶ</button>
+        <a href="../index.html" class="secondary-btn">ゲーム一覧に戻る</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="howto">
+    <h2>遊び方(ルール)</h2>
+    <p class="disclaimer">「ヒュペリオン」は漫画『SKET DANCE』の作中で実際のルールが明かされない架空のゲームです。このページはニコニコ大百科と、それを元にファンが実際に遊ぶために書いたブログ記事(<a href="https://senyakazuya.hatenablog.com/entry/2021/09/25/165614" target="_blank" rel="noopener">机上空論「それが男のヒュペリオン」</a>)に記載されている設定をできる限りそのまま再現しています。それでも記述がない部分(決着時の引き分け処理・CPU思考・デッドエクストリームアタックの具体的な効果など)だけをAsobiLaboが補いました。</p>
+    <h3>駒の動き</h3>
+    <p class="disclaimer">中央のマスが駒の位置、点(●)が直接動けるマス、矢印はその方向へ直進し続けられることを示します。上が前方(盤中央側)です。</p>
+    <div id="piece-move-diagrams" class="piece-move-diagrams"></div>
+    <h3>特殊な駒(合体・強化)の動き</h3>
+    <p class="disclaimer">対局中の合体・強化で登場する駒です。見方は上と同じです。</p>
+    <div id="special-move-diagrams" class="piece-move-diagrams"></div>
+    <h3>ルール</h3>
+    <ul>
+      <li><strong>盤面:</strong> 「グランドクロス」と呼ばれる十字形の盤。7×7マスの中央に、東西南北それぞれへ5×7マスの陣地が付属します(合計189マス)。4人が東西南北に着席し、隣同士(北・東/南・西)が味方、対面(北⇔南/東⇔西)が敵です。</li>
+      <li><strong>手番:</strong> 最初の手番はコイントスで決定し、最初のプレイヤーとその味方が必ず1番目と4番目の手番になります(間の2手は敵チームが連続で行います)。</li>
+      <li><strong>配置フェーズ:</strong> 対局開始前に、各自が自分の陣地(5×7マス)へ持ち駒を自由に並べます。「エクスカリバーの陣」「千手孔雀陣」「例の陣」という原作に登場する3つの陣形をワンクリックで使うこともできます。量産型ザフ(最大2個)とテキーラ(最大5個)は「まで」の駒なので、いわゆる駒落ちとして任意に減らして配置できます。それ以外の7種は必ず1個ずつ配置します。</li>
+      <li><strong>持ち駒(フル装備で1人14個):</strong> 覇王アブラシモビッチ(王将と同じ動き)×1、量産型ザフ(角と同じ)×最大2、重戦士ドドンドンドドン(香車と同じ)×1、スチーム(金将と同じ)×1、シューズ(銀将と同じ)×1、抹茶あずきーな(前後左右1マス)×1、OL(斜め1マス)×1、コダクサン(前方2マス先へジャンプ、間の駒に妨害されない)×1、テキーラ(前方1マスのみ)×最大5。成駒(プロモーション)はなく、取った駒も使えません。十字の外側(盤に存在しないマス)は移動を完全に遮ります。</li>
+      <li><strong>捕獲と脱落:</strong> 敵の駒がいるマスに移動すると捕獲できます。相手のアブラシモビッチを捕獲すると、その席の残りの駒は盤上から全て取り除かれ、その席は脱落します。自分・味方の駒がいるマスには移動できません。</li>
+      <li><strong>OTL:</strong> OLが敵味方問わずテキーラのいるマスに入ると、合体して「OTL」になります(逆にテキーラがOLのマスに入った場合も同様に合体します)。味方の駒へは、この合体に限り例外的に進入できます。OTLは千鳥足で前方3マス先の左右どちらかへ移動できるほか、前方右斜め1マス・前方左斜め1マス・前方2マス先(コダクサンと同じく間の駒に妨害されないジャンプ)にも動けます。千鳥足の経路上に他の駒があるとその方向へは動けません。</li>
+      <li><strong>デッドエクストリームアタック:</strong> 自分のコダクサンが敵に捕獲されると発動します。捕獲された地点から上下左右斜め2マス以内に自分のザフがいれば、そのうち最も近い1体が強化されます(範囲内にいなければ不発)。原作でも「効果不明」と明言されている小ネタで、このサイトでは独自の効果を設定しています。</li>
+      <li><strong>勝敗:</strong> 相手チームの2人ともアブラシモビッチを失った時点でチームの勝利です。決着が長引いた場合は、残っている駒の点数が多いチームの勝ちとなり、同点なら引き分けです。</li>
+      <li>「ローカル対戦」では1台の端末で4席のうち好きな席を人間・CPUに割り当てて遊べます(1人でCPU3体を相手にすることも可能)。「オンライン対戦」では友達とルームコードで集まり、ホストが各席にゲスト・CPUを割り当てて対戦できます。CPU席の配置は3つの陣形からランダムに選ばれます。</li>
+    </ul>
+  </section>
+
+  <div class="ad-slot" aria-label="広告"><!-- Google AdSense placeholder --></div>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 ヒュペリオン(非公式) · <a href="https://ykobashi.github.io/privacy.html">プライバシーポリシー</a></p>
+</footer>
+
+<script src="../common/net-core.js"></script>
+<script src="../common/peer-errors.js"></script>
+<script src="../common/wake-lock.js"></script>
+<script src="../common/rejoin-storage.js"></script>
+<script src="peerjs.min.js"></script>
+<script src="logic.js"></script>
+<script src="net.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
