@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>運営者情報・お問い合わせ | AsobiLabo</title>
+<meta name="description" content="AsobiLaboの運営者情報とお問い合わせ先。サイトの成り立ちや、静的サイトとしての作り方についてご案内します。">
+<meta property="og:title" content="運営者情報・お問い合わせ | AsobiLabo">
+<meta property="og:description" content="AsobiLaboの運営者情報・お問い合わせ先のご案内です。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ykobashi.github.io/about.html">
+<link rel="canonical" href="https://ykobashi.github.io/about.html">
+<meta property="og:image" content="https://ykobashi.github.io/og-image.png">
+<link rel="icon" type="image/svg+xml" href="https://ykobashi.github.io/favicon.svg">
+<link rel="icon" type="image/png" href="https://ykobashi.github.io/favicon-192.png">
+<script src="theme.js"></script>
+<link rel="stylesheet" href="theme-toggle.css">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f7f9;
+    --fg: #1b1b1f;
+    --card-bg: #ffffff;
+    --card-border: #e2e2e6;
+    --accent: #3d5afe;
+    --muted: #6b6b76;
+  }
+  :root[data-theme="dark"] {
+    --bg: #121214;
+    --fg: #ececee;
+    --card-bg: #1c1c20;
+    --card-border: #2c2c31;
+    --accent: #7c93ff;
+    --muted: #9a9aa2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Hiragino Sans", "Yu Gothic", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.8;
+  }
+  nav.site-nav {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+  }
+  nav.site-nav a {
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.8;
+  }
+  nav.site-nav a:hover {
+    opacity: 1;
+    text-decoration: underline;
+  }
+  header {
+    padding: 1.5rem 1.5rem 1rem;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+  section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+  h2 {
+    font-size: 1.05rem;
+    margin: 0 0 0.6rem;
+    border-left: 4px solid var(--accent);
+    padding-left: 0.6rem;
+  }
+  p, li {
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  a {
+    color: var(--accent);
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    padding: 1.5rem;
+  }
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EQ35W720X8');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223">
+</head>
+<body>
+<button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button>
+<nav class="site-nav"><a href="https://ykobashi.github.io/">&larr; トップページに戻る</a></nav>
+<header>
+  <h1>運営者情報・お問い合わせ</h1>
+</header>
+
+<main>
+  <section>
+    <h2>運営者について</h2>
+    <p>「AsobiLabo」は個人が開発・運営しているWebサイトです。企業やチームではなく、1人の個人開発者が、仕事や生活の合間に趣味として制作・更新しています。2026年7月に最初の便利ツールを公開し、その後もツール・診断・ゲームを少しずつ追加しています。</p>
+  </section>
+
+  <section>
+    <h2>サイトの作り方について</h2>
+    <p>本サイトはGitHub Pagesでホストしており、ビルド工程やサーバーサイドの処理を持たない静的サイトです。各ツール・ゲームはHTML/CSS/素のJavaScriptのみで作られており、フレームワークやライブラリへの依存を最小限に抑えています。オンライン対戦系のゲームは、ブラウザ同士がPeerJS(WebRTC)で直接通信する方式を採用しており、対戦内容がサーバーに保存されることはありません。</p>
+    <p>Wikipedia冒頭当てクイズはWikipedia日本語版のREST APIから、YouTube関連のクイズはYouTubeの埋め込みプレーヤーから、それぞれ都度データを取得して表示しています。</p>
+  </section>
+
+  <section>
+    <h2>コンテンツについて</h2>
+    <p>診断・お題・単語などのテキストコンテンツは、公開されている辞書的な情報を参考にしつつ、多くを本サイト用に書き下ろしています。一部のイラスト素材はAI生成ツールを用いて作成しており、該当ページにその旨を明記しています。</p>
+  </section>
+
+  <section>
+    <h2>更新履歴</h2>
+    <p>新しいツール・ゲームの追加や、既存機能の目立った変更は、<a href="https://ykobashi.github.io/">トップページ</a>の「更新履歴」から確認できます。</p>
+  </section>
+
+  <section>
+    <h2>お問い合わせ</h2>
+    <p>不具合の報告、ツール・ゲームへのご要望、掲載内容に関するお問い合わせは、以下のメールアドレスまでご連絡ください。</p>
+    <p><a href="mailto:ykstudio.official.jp@gmail.com">ykstudio.official.jp@gmail.com</a></p>
+    <p>個人運営のため、返信までお時間をいただく場合があります。あらかじめご了承ください。</p>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 AsobiLabo</p>
+  <p><a href="privacy.html">プライバシーポリシー</a></p>
+</footer>
+</body>
+</html>
