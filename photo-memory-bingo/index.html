@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="../theme.js"></script><link rel="stylesheet" href="../theme-toggle.css">
+<title>画像記憶ビンゴ | 画像を覚えて遊ぶオンラインパーティーゲーム</title>
+<meta name="description" content="AI生成画像を15秒だけ観察し、記憶を頼りに3×3の真偽カードを埋める無料オンラインパーティーゲーム。2人から遊べます。">
+<meta property="og:title" content="画像記憶ビンゴ"><meta property="og:description" content="15秒見た画像を覚えて、3×3の真偽ビンゴに挑戦。友達と得点を競うオンライン記憶ゲーム。"><meta property="og:type" content="website"><meta property="og:image" content="https://ykobashi.github.io/og-image.png"><meta property="og:url" content="https://ykobashi.github.io/photo-memory-bingo/"><link rel="canonical" href="https://ykobashi.github.io/photo-memory-bingo/"><link rel="stylesheet" href="style.css"><link rel="icon" href="../favicon.svg">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Game","name":"画像記憶ビンゴ","applicationCategory":"GameApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EQ35W720X8"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-EQ35W720X8');</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2142740595477223" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="ca-pub-2142740595477223"></head>
+<body><button class="theme-toggle-btn" type="button" aria-label="ダークモードに切り替え">🌙</button><nav class="site-nav"><a href="../index.html">&larr; トップページに戻る</a></nav>
+<header class="site-header"><h1>画像記憶ビンゴ</h1><p class="subtitle">15秒だけ見える画像を覚えて、記憶だけでビンゴを作ろう。</p></header><div class="ad-slot" aria-label="広告"></div><main>
+
+<section id="setup-screen" class="setup-screen">
+  <h2>参加準備</h2>
+  <input id="name-input" class="name-input" maxlength="10" placeholder="ニックネーム" aria-label="ニックネーム">
+  <div class="online-choice">
+    <button id="host-btn" class="mode-btn" type="button">部屋を作る</button>
+    <div class="join-row">
+      <input id="join-code-input" maxlength="6" placeholder="6桁コード" aria-label="6桁の部屋コード">
+      <button id="join-btn" class="mode-btn" type="button">参加する</button>
+    </div>
+  </div>
+  <p id="online-error" class="online-error hidden" role="alert"></p>
+</section>
+
+<section id="lobby-panel" class="lobby-panel hidden">
+  <div id="host-wait" class="host-wait hidden">
+    <p>このコードを友達に伝えてください</p>
+    <div id="room-code-text" class="room-code">------</div>
+    <button id="copy-code-btn" class="link-btn" type="button">コードをコピー</button>
+  </div>
+  <p id="online-status" class="online-status" role="status"></p>
+  <h3>参加者</h3>
+  <ul id="roster-list" class="roster"></ul>
+  <button id="start-btn" class="mode-btn hidden" type="button" disabled>ゲーム開始（2人以上）</button>
+</section>
+
+<section id="game-area" class="game-area hidden">
+  <div class="round-heading">
+    <p id="round-status" class="word-label"></p>
+    <p id="phase-label" class="phase-label"></p>
+    <p id="countdown-text" class="countdown-text" role="timer"></p>
+  </div>
+  <div id="observation-panel" class="observation-panel">
+    <p class="photo-instruction">細かいところまで覚えよう！</p>
+    <img id="memory-image" class="memory-image" alt="">
+  </div>
+  <div id="answer-panel" class="answer-panel hidden">
+    <p class="photo-instruction">画像に本当にあったと思うマスを選んでください</p>
+    <div id="statement-grid" class="statement-grid" role="group" aria-label="真偽ビンゴカード"></div>
+    <button id="submit-btn" class="mode-btn" type="button">この内容で確定</button>
+    <p id="answer-status" class="online-status hidden" role="status"></p>
+  </div>
+  <div id="host-progress-box" class="phase-panel hidden">
+    <h3>回答状況</h3>
+    <p id="progress-text" class="online-status" role="status"></p>
+    <ul id="progress-list" class="roster"></ul>
+    <button id="force-result-btn" class="reset-btn force-result-btn hidden" type="button">回答を待たずに結果を見る</button>
+  </div>
+  <p id="game-connection-status" class="online-error hidden" role="alert"></p>
+  <button id="quit-btn" class="link-btn" type="button">やめる</button>
+</section>
+
+<section id="round-result-overlay" class="overlay hidden">
+  <div class="overlay-card result-overlay-card">
+    <p id="result-round-label" class="result-word-label"></p>
+    <h2>一斉オープン！</h2>
+    <div id="result-grid" class="statement-grid result-grid" aria-label="あなたの回答結果"></div>
+    <p id="result-my-points" class="result-my-points"></p>
+    <p id="result-my-bingo" class="result-my-bingo"></p>
+    <p class="result-order-label">このラウンドの得点</p>
+    <ul id="result-deltas-list" class="result-deltas-list"></ul>
+    <p class="result-order-label">通算スコア</p>
+    <ol id="result-scoreboard-list" class="result-scoreboard-list"></ol>
+    <button id="result-next-btn" class="reset-btn hidden" type="button"></button>
+  </div>
+</section>
+
+<section id="final-result-screen" class="final-result-screen hidden">
+  <h2>最終結果</h2>
+  <p id="final-winner-text" class="final-winner-text"></p>
+  <p id="final-my-rank-text" class="final-my-rank-text"></p>
+  <ol id="final-scoreboard-list" class="result-scoreboard-list"></ol>
+  <div class="final-actions">
+    <button id="play-again-btn" class="mode-btn hidden" type="button">もう一度遊ぶ</button>
+    <a id="back-to-top-link" href="../index.html" class="reset-btn back-to-top-btn">ゲーム一覧に戻る</a>
+  </div>
+</section>
+
+<section class="howto">
+  <h2>遊び方</h2>
+  <ul>
+    <li>画像が表示される15秒間に、人物や物の色・数・位置を覚えます。</li>
+    <li>画像が隠れたら、本当だと思う説明を選び、納得できたら確定します。回答時間に制限はありません。</li>
+    <li>9マスそれぞれを正しく判定できると1点。縦・横・斜めのどれか1列を3マスとも正しく判定できると、さらに5点です。</li>
+    <li>全20ラウンドの通算得点で順位を競います。</li>
+  </ul>
+</section>
+
+</main><footer class="site-footer">&copy; 2026 画像記憶ビンゴ</footer>
+<script src="peerjs.min.js"></script><script src="../common/net-core.js"></script><script src="../common/peer-errors.js"></script><script src="../common/wake-lock.js"></script><script src="../common/rejoin-storage.js"></script><script src="../common/ack-send.js"></script><script src="logic.js"></script><script src="net.js"></script><script src="script.js"></script></body></html>
